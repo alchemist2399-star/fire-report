@@ -1,424 +1,737 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>소방 상황보고</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --orange:       #E8600A;
-      --orange-dark:  #C44E05;
-      --orange-light: #FFF4EE;
-      --ink:          #1A1A2E;
-      --ink-soft:     #4A4A6A;
-      --ink-muted:    #9090AA;
-      --surface:      #F9F7F5;
-      --card:         #FFFFFF;
-      --border:       rgba(0,0,0,0.08);
-      --border-md:    rgba(0,0,0,0.13);
-      --radius:       14px;
-      --radius-sm:    8px;
-      --shadow:       0 2px 12px rgba(0,0,0,0.07);
-      --font:         'Noto Sans KR', sans-serif;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { background: var(--surface); -webkit-text-size-adjust: 100%; }
-    body { font-family: var(--font); color: var(--ink); background: var(--surface); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>소방 상황보고 시스템</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --orange:     #E8600A;
+  --orange2:    #FF7A2A;
+  --orange-lt:  #FFF3EC;
+  --orange-md:  #FFE0CC;
+  --orange-bd:  rgba(232,96,10,0.2);
+  --red:        #D93025;
+  --red-lt:     #FFF0EF;
+  --blue:       #1A6EE8;
+  --blue-lt:    #EFF5FF;
+  --green:      #0D9B6A;
+  --green-lt:   #EDFAF4;
+  --yellow:     #B45309;
+  --yellow-lt:  #FFFBEB;
 
-    #app { max-width: 480px; margin: 0 auto; padding: 0 0 60px; }
+  --bg:         #F4F5F7;
+  --surface:    #FFFFFF;
+  --surface2:   #F8F9FB;
+  --border:     #E4E7EE;
+  --border2:    #CDD2DE;
 
-    .app-header {
-      background: var(--orange); padding: 16px 18px 14px;
-      display: flex; align-items: center; gap: 10px;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 16px rgba(232,96,10,0.35);
-    }
-    .header-title { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -0.3px; flex: 1; }
-    .header-sub { font-size: 11px; color: rgba(255,255,255,0.75); }
+  --ink:        #111827;
+  --ink2:       #374151;
+  --ink3:       #6B7280;
+  --ink4:       #9CA3AF;
 
-    .nav-tabs {
-      display: flex; background: #fff;
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 54px; z-index: 99;
-    }
-    .nav-tab {
-      flex: 1; padding: 11px 4px; font-size: 13px; font-weight: 700;
-      color: var(--ink-muted); border: none; background: none;
-      cursor: pointer; font-family: var(--font);
-      border-bottom: 2.5px solid transparent; transition: all 0.18s;
-    }
-    .nav-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+  --r:          14px;
+  --r2:         9px;
+  --r3:         6px;
+  --shadow:     0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow2:    0 2px 8px rgba(232,96,10,0.18), 0 8px 24px rgba(232,96,10,0.12);
+  --font:       'Noto Sans KR', sans-serif;
+  --mono:       'JetBrains Mono', monospace;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html { background:var(--bg); -webkit-text-size-adjust:100%; }
+body { font-family:var(--font); color:var(--ink); background:var(--bg); min-height:100vh; }
 
-    .screen { display: none; padding: 16px; }
-    .screen.active { display: block; animation: fadeUp 0.28s ease both; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+/* ── 헤더 ── */
+.hd {
+  background:var(--orange);
+  padding:0 16px;
+  height:58px;
+  display:flex; align-items:center; gap:11px;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 12px rgba(232,96,10,0.3);
+}
+.hd-emblem {
+  width:36px; height:36px; border-radius:10px;
+  background:rgba(255,255,255,0.18);
+  border:1.5px solid rgba(255,255,255,0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0;
+}
+.hd-info { flex:1; }
+.hd-title { font-size:15px; font-weight:900; color:#fff; letter-spacing:-0.3px; line-height:1.1; }
+.hd-sub   { font-size:10px; color:rgba(255,255,255,0.7); letter-spacing:0.8px; margin-top:1px; font-weight:500; }
+.hd-clock {
+  font-family:var(--mono); font-size:13px; font-weight:700;
+  color:#fff; background:rgba(255,255,255,0.15);
+  padding:5px 11px; border-radius:8px;
+  border:1px solid rgba(255,255,255,0.25);
+  letter-spacing:0.5px;
+}
 
-    .card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px;
-      box-shadow: var(--shadow); margin-bottom: 12px;
-    }
-    .card-title { font-size: 12px; font-weight: 700; color: var(--ink-muted); margin-bottom: 12px; letter-spacing: 0.3px; }
+/* ── 탭 ── */
+.tabs {
+  display:flex; background:var(--surface);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:58px; z-index:99;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.tab {
+  flex:1; padding:13px 4px;
+  font-family:var(--font); font-size:12px; font-weight:700;
+  color:var(--ink4); border:none; background:none;
+  cursor:pointer; border-bottom:2.5px solid transparent;
+  transition:all 0.18s; letter-spacing:0.1px;
+}
+.tab.on { color:var(--orange); border-bottom-color:var(--orange); }
 
-    .type-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
-    .type-btn {
-      padding: 10px 4px; border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-md);
-      background: var(--card); color: var(--ink-soft);
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: var(--font); transition: all 0.15s;
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-    }
-    .type-btn .t-icon { font-size: 20px; }
-    .type-btn.active { border-color: var(--orange); background: var(--orange-light); color: var(--orange-dark); }
+/* ── 화면 ── */
+.screen { display:none; padding:16px; padding-bottom:80px; animation:up .22s ease both; }
+.screen.on { display:block; }
+@keyframes up { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-    .field { margin-bottom: 10px; }
-    .field:last-child { margin-bottom: 0; }
-    .field label { display: block; font-size: 11px; font-weight: 700; color: var(--ink-muted); margin-bottom: 4px; letter-spacing: 0.3px; }
-    .field input, .field textarea {
-      width: 100%; font-size: 14px; padding: 9px 12px;
-      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
-      background: var(--card); color: var(--ink);
-      font-family: var(--font); outline: none; transition: border-color 0.15s;
-    }
-    .field input:focus, .field textarea:focus { border-color: var(--orange); }
-    .field textarea { resize: none; line-height: 1.6; }
+/* ── 유형 선택 ── */
+.type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
+.type-btn {
+  padding:14px 6px 12px; border-radius:var(--r2);
+  border:1.5px solid var(--border);
+  background:var(--surface); color:var(--ink3);
+  font-family:var(--font); font-size:13px; font-weight:700;
+  cursor:pointer; transition:all 0.16s;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  box-shadow:var(--shadow);
+}
+.type-btn .ico { font-size:24px; line-height:1; }
+.type-btn.on-fire   { border-color:var(--orange); background:var(--orange-lt); color:var(--orange); box-shadow:var(--shadow2); }
+.type-btn.on-rescue { border-color:var(--blue);   background:var(--blue-lt);   color:var(--blue); }
+.type-btn.on-ems    { border-color:var(--red);    background:var(--red-lt);    color:var(--red); }
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 10px 16px; border-radius: 100px;
-      border: 1.5px solid var(--border-md); background: var(--card);
-      color: var(--ink-soft); font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: var(--font);
-      transition: all 0.15s; -webkit-tap-highlight-color: transparent;
-    }
-    .btn:active { transform: scale(0.96); opacity: 0.85; }
-    .btn-orange { background: var(--orange); color: #fff; border-color: var(--orange); box-shadow: 0 4px 14px rgba(232,96,10,0.3); }
-    .btn-row { display: flex; gap: 8px; }
+/* ── 카드 ── */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px; margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.card-head {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:14px; padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.card-badge {
+  font-size:10px; font-weight:800; padding:3px 9px;
+  border-radius:100px; letter-spacing:0.5px;
+}
+.badge-orange { background:var(--orange-lt); color:var(--orange); border:1px solid var(--orange-bd); }
+.badge-blue   { background:var(--blue-lt);   color:var(--blue);   border:1px solid rgba(26,110,232,0.2); }
+.badge-green  { background:var(--green-lt);  color:var(--green);  border:1px solid rgba(13,155,106,0.2); }
+.badge-red    { background:var(--red-lt);    color:var(--red);    border:1px solid rgba(217,48,37,0.2); }
+.badge-yellow { background:var(--yellow-lt); color:var(--yellow); border:1px solid rgba(180,83,9,0.2); }
+.card-title { font-size:13px; font-weight:700; color:var(--ink2); }
 
-    .report-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 8px;
-      display: flex; gap: 10px; align-items: flex-start;
-    }
-    .report-item:last-child { margin-bottom: 0; }
-    .report-meta { flex-shrink: 0; text-align: center; min-width: 38px; }
-    .report-num { font-size: 11px; font-weight: 900; color: var(--orange); }
-    .report-time { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
-    .report-text { flex: 1; font-size: 13px; color: var(--ink); line-height: 1.6; word-break: break-all; }
-    .report-del { font-size: 20px; color: var(--ink-muted); cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+/* ── 필드 ── */
+.field { margin-bottom:10px; }
+.field:last-child { margin-bottom:0; }
+.field label {
+  display:block; font-size:10px; font-weight:800;
+  color:var(--ink4); margin-bottom:5px; letter-spacing:0.8px; text-transform:uppercase;
+}
+.field input, .field textarea {
+  width:100%; font-size:14px; padding:10px 13px;
+  border:1.5px solid var(--border); border-radius:var(--r2);
+  background:var(--surface2); color:var(--ink);
+  font-family:var(--font); outline:none; transition:all 0.15s;
+}
+.field input::placeholder, .field textarea::placeholder { color:var(--ink4); }
+.field input:focus, .field textarea:focus {
+  border-color:var(--orange); background:var(--surface);
+  box-shadow:0 0 0 3px rgba(232,96,10,0.1);
+}
+.field textarea { resize:none; line-height:1.6; }
 
-    .output-box {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 14px 16px;
-      font-size: 13px; color: var(--ink); white-space: pre-wrap;
-      line-height: 2.0; min-height: 140px; margin-bottom: 12px;
-      font-family: var(--font); word-break: break-all;
-    }
+/* ── 버튼 ── */
+.btn-row { display:flex; gap:8px; margin-top:12px; }
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:10px 16px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--surface2);
+  color:var(--ink3); font-size:13px; font-weight:700;
+  cursor:pointer; font-family:var(--font); transition:all 0.15s;
+}
+.btn:active { transform:scale(0.96); opacity:0.85; }
+.btn-primary {
+  background:var(--orange); color:#fff;
+  border-color:var(--orange);
+  box-shadow:0 3px 12px rgba(232,96,10,0.3);
+}
 
-    .btn-copy {
-      width: 100%; padding: 15px; font-size: 15px; font-weight: 900;
-      background: var(--orange); color: #fff; border: none; border-radius: var(--radius);
-      cursor: pointer; font-family: var(--font);
-      box-shadow: 0 4px 18px rgba(232,96,10,0.35);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-    }
-    .btn-copy:active { transform: scale(0.97); }
-    .btn-copy.copied { background: #27ae60; box-shadow: 0 4px 18px rgba(39,174,96,0.35); }
+/* ── 큰 버튼 ── */
+.btn-big {
+  width:100%; padding:14px; font-size:14px; font-weight:900;
+  border:none; border-radius:var(--r); cursor:pointer;
+  font-family:var(--font); display:flex; align-items:center;
+  justify-content:center; gap:8px; transition:all 0.16s;
+  letter-spacing:0.2px; margin-top:4px;
+}
+.btn-big:active { transform:scale(0.97); }
+.btn-big-orange {
+  background:var(--orange); color:#fff;
+  box-shadow:0 4px 20px rgba(232,96,10,0.32);
+}
+.btn-big-gray { background:var(--surface2); color:var(--ink3); border:1.5px solid var(--border); }
 
-    .btn-wide {
-      width: 100%; padding: 13px; font-size: 14px; font-weight: 900;
-      border: none; border-radius: var(--radius);
-      cursor: pointer; font-family: var(--font);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.15s; -webkit-tap-highlight-color: transparent; margin-top: 4px;
-    }
-    .btn-wide:active { transform: scale(0.97); }
-    .btn-wide-orange { background: var(--orange); color: #fff; box-shadow: 0 4px 14px rgba(232,96,10,0.3); }
-    .btn-wide-gray   { background: var(--ink-soft); color: #fff; }
+/* ── 상단바 ── */
+.top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.sec-label { font-size:11px; font-weight:800; color:var(--ink3); letter-spacing:0.8px; text-transform:uppercase; }
+.reset-btn {
+  padding:6px 13px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--surface);
+  color:var(--ink4); font-size:11px; font-weight:700;
+  cursor:pointer; font-family:var(--font); transition:all 0.15s;
+}
+.reset-btn:active { opacity:0.6; }
 
-    .top-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-    .btn-reset {
-      padding: 6px 14px; border-radius: 100px;
-      border: 1px solid var(--border-md); background: var(--card);
-      color: var(--ink-muted); font-size: 12px; font-weight: 700;
-      cursor: pointer; font-family: var(--font); -webkit-tap-highlight-color: transparent;
-    }
-    .btn-reset:active { opacity: 0.7; }
+/* ── 보고 목록 ── */
+.report-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--r2); padding:10px 12px; margin-bottom:7px;
+  display:flex; gap:10px; align-items:flex-start;
+}
+.report-item:last-child { margin-bottom:0; }
+.report-no {
+  font-family:var(--mono); font-size:10px; font-weight:700;
+  color:var(--orange); background:var(--orange-lt);
+  padding:2px 7px; border-radius:4px; flex-shrink:0;
+  border:1px solid var(--orange-bd); margin-top:1px;
+}
+.report-ts { font-size:10px; color:var(--ink4); flex-shrink:0; margin-top:3px; font-family:var(--mono); }
+.report-body { flex:1; font-size:13px; color:var(--ink2); line-height:1.65; word-break:break-all; }
+.report-del { font-size:18px; color:var(--ink4); cursor:pointer; flex-shrink:0; transition:color 0.15s; }
+.report-del:active { color:var(--red); }
 
-    .toast {
-      position: fixed; bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--ink); color: #fff; padding: 11px 22px;
-      border-radius: 100px; font-size: 13px; font-weight: 500;
-      z-index: 9999; transition: transform 0.3s, opacity 0.25s;
-      opacity: 0; white-space: nowrap; pointer-events: none;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  </style>
+/* ── 상태 칩 ── */
+.stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+.stat-chip {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r2); padding:11px 12px;
+  box-shadow:var(--shadow);
+}
+.stat-chip-label { font-size:9px; font-weight:800; color:var(--ink4); letter-spacing:0.8px; text-transform:uppercase; margin-bottom:3px; }
+.stat-chip-val { font-size:17px; font-weight:900; color:var(--ink); font-family:var(--mono); }
+.stat-chip-val.orange { color:var(--orange); }
+.stat-chip-val.green  { color:var(--green); }
+
+/* ── 보고문 출력 ── */
+.output-wrap {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden; margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.output-head {
+  background:var(--surface2); padding:10px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.output-head-label { font-size:10px; font-weight:800; color:var(--ink4); letter-spacing:0.8px; text-transform:uppercase; }
+.mac-dots { display:flex; gap:5px; }
+.mac-dot { width:9px; height:9px; border-radius:50%; }
+.output-body {
+  padding:16px; font-size:13px; color:var(--ink);
+  white-space:pre-wrap; line-height:2.1;
+  min-height:130px; font-family:var(--mono);
+  word-break:break-all; background:var(--surface);
+}
+
+/* ── 복사 버튼 ── */
+.copy-btn {
+  width:100%; padding:16px; font-size:15px; font-weight:900;
+  background:var(--orange); color:#fff; border:none;
+  border-radius:var(--r); cursor:pointer; font-family:var(--font);
+  box-shadow:0 4px 20px rgba(232,96,10,0.35);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:all 0.2s; letter-spacing:0.3px;
+}
+.copy-btn:active { transform:scale(0.97); }
+.copy-btn.done { background:var(--green); box-shadow:0 4px 20px rgba(13,155,106,0.3); }
+
+/* ── 템플릿 탭 ── */
+.tpl-cats { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+.tpl-cat {
+  padding:6px 13px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--surface);
+  color:var(--ink3); font-size:11px; font-weight:700;
+  cursor:pointer; font-family:var(--font); transition:all 0.15s;
+  box-shadow:var(--shadow);
+}
+.tpl-cat.on { border-color:var(--orange); background:var(--orange-lt); color:var(--orange); }
+
+/* ── 템플릿 아이템 ── */
+.tpl-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--r2); padding:12px 14px;
+  display:flex; justify-content:space-between; align-items:center;
+  gap:10px; cursor:pointer; transition:all 0.15s; margin-bottom:7px;
+}
+.tpl-item:last-child { margin-bottom:0; }
+.tpl-item:active { border-color:var(--orange); background:var(--orange-lt); }
+.tpl-item-text { font-size:13px; color:var(--ink2); font-weight:600; flex:1; }
+.tpl-item-badge {
+  font-size:10px; font-weight:800; padding:3px 9px;
+  border-radius:100px; flex-shrink:0; letter-spacing:0.3px;
+}
+
+/* ── 미리보기 박스 ── */
+.preview-wrap {
+  background:var(--surface2); border:1.5px solid var(--orange-bd);
+  border-radius:var(--r2); padding:14px 16px; margin-bottom:10px;
+  font-size:13px; color:var(--ink); white-space:pre-wrap;
+  line-height:2.0; font-family:var(--mono); word-break:break-all;
+}
+
+/* ── 토스트 ── */
+.toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--ink); color:#fff;
+  padding:11px 22px; border-radius:100px;
+  font-size:13px; font-weight:500; z-index:9999;
+  transition:transform 0.28s, opacity 0.22s;
+  opacity:0; white-space:nowrap; pointer-events:none;
+  box-shadow:0 8px 24px rgba(0,0,0,0.25);
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* ── 빈 상태 ── */
+.empty { text-align:center; padding:28px 16px; color:var(--ink4); font-size:13px; line-height:1.8; }
+.empty-ico { font-size:30px; margin-bottom:8px; opacity:0.4; }
+</style>
 </head>
 <body>
-<div id="app">
 
-  <header class="app-header">
-    <span style="font-size:22px">🚒</span>
-    <span class="header-title">소방 상황보고</span>
-    <span class="header-sub">상황관리 도우미</span>
-  </header>
+<!-- 헤더 -->
+<header class="hd">
+  <div class="hd-emblem">🚒</div>
+  <div class="hd-info">
+    <div class="hd-title">소방 상황보고 시스템</div>
+    <div class="hd-sub">FIRE DISPATCH REPORTING</div>
+  </div>
+  <div class="hd-clock" id="clock">00:00:00</div>
+</header>
 
-  <nav class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('write')">✏️ 작성</button>
-    <button class="nav-tab" onclick="switchTab('output')">📋 보고문</button>
-  </nav>
+<!-- 탭 -->
+<nav class="tabs">
+  <button class="tab on"  onclick="switchTab('write',this)">✏️ 상황 작성</button>
+  <button class="tab"     onclick="switchTab('template',this)">📋 전파 템플릿</button>
+  <button class="tab"     onclick="switchTab('output',this)">📤 보고문</button>
+</nav>
 
-  <!-- ── 작성 탭 ── -->
-  <div class="screen active" id="tab-write">
-    <div class="top-bar">
-      <button class="btn-reset" onclick="clearAll()">🗑 초기화</button>
-    </div>
+<!-- ══════════ 탭1: 상황 작성 ══════════ -->
+<div class="screen on" id="tab-write">
 
-    <div class="type-row">
-      <button class="type-btn active" onclick="setType('화재',this)"><span class="t-icon">🔥</span>화재</button>
-      <button class="type-btn" onclick="setType('구조',this)"><span class="t-icon">🆘</span>구조</button>
-      <button class="type-btn" onclick="setType('구급',this)"><span class="t-icon">🚑</span>구급</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📌 기본 정보</div>
-      <div class="field">
-        <label>장소</label>
-        <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput()" />
-      </div>
-      <div class="field">
-        <label>소방서 상황실 명칭</label>
-        <input id="sigName" placeholder="예) 서산소방서 상황실" oninput="renderOutput()" />
-      </div>
-      <div id="dynamicFields"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📡 상황보고 추가</div>
-      <div class="field">
-        <textarea id="reportContent" rows="3" placeholder="현장 상황을 입력하세요..."></textarea>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-orange" onclick="addReport()">＋ 추가</button>
-        <button class="btn" onclick="stampNow()">⏱ 현재 시각</button>
-      </div>
-    </div>
-
-    <div class="card" id="reportListCard" style="display:none;">
-      <div class="card-title">📋 보고 목록</div>
-      <div id="reportList"></div>
-    </div>
-
-    <button class="btn-wide btn-wide-orange" onclick="switchTab('output')">📋 보고문 확인 →</button>
+  <div class="top-bar">
+    <div class="sec-label">출동 유형</div>
+    <button class="reset-btn" onclick="clearAll()">🗑 초기화</button>
   </div>
 
-  <!-- ── 보고문 탭 ── -->
-  <div class="screen" id="tab-output">
-    <div class="card">
-      <div class="card-title">📄 자동 생성 보고문</div>
-      <div class="output-box" id="outputBox">작성 탭에서 정보를 입력하면 자동으로 생성됩니다.</div>
-      <button class="btn-copy" id="copyBtn" onclick="copyReport()">
-        📋 복사 — 발송
-      </button>
-    </div>
-    <button class="btn-wide btn-wide-gray" onclick="clearAll(); switchTab('write')">＋ 새 출동 작성</button>
+  <div class="type-grid">
+    <button class="type-btn on-fire"  onclick="setType('화재',this)"><span class="ico">🔥</span>화재</button>
+    <button class="type-btn"          onclick="setType('구조',this)"><span class="ico">🆘</span>구조</button>
+    <button class="type-btn"          onclick="setType('구급',this)"><span class="ico">🚑</span>구급</button>
   </div>
 
+  <div class="card">
+    <div class="card-head">
+      <span class="card-badge badge-orange">기본정보</span>
+      <span class="card-title">출동 기본 정보</span>
+    </div>
+    <div class="field">
+      <label>출동 장소</label>
+      <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput()"/>
+    </div>
+    <div class="field">
+      <label>소방서 상황실</label>
+      <input id="sigName" placeholder="예) 서산소방서 상황실" oninput="renderOutput()"/>
+    </div>
+    <div id="dynFields"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-badge badge-blue">상황보고</span>
+      <span class="card-title">상황 내용 추가</span>
+    </div>
+    <div class="field">
+      <textarea id="reportContent" rows="3" placeholder="현장 상황을 입력하세요..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addReport()">＋ 추가</button>
+      <button class="btn"             onclick="stampNow()">⏱ 현재시각</button>
+    </div>
+  </div>
+
+  <div class="card" id="reportListCard" style="display:none;">
+    <div class="card-head">
+      <span class="card-badge badge-green">목록</span>
+      <span class="card-title">보고 목록</span>
+    </div>
+    <div id="reportList"></div>
+  </div>
+
+  <button class="btn-big btn-big-orange" onclick="switchTab('output',document.querySelectorAll('.tab')[2])">
+    📤 보고문 확인 →
+  </button>
 </div>
+
+<!-- ══════════ 탭2: 전파 템플릿 ══════════ -->
+<div class="screen" id="tab-template">
+
+  <div class="sec-label" style="margin-bottom:12px;">상황별 전파 템플릿</div>
+
+  <div class="tpl-cats" id="tplCats">
+    <button class="tpl-cat on" onclick="setCat('비상',this)">🚨 비상발령</button>
+    <button class="tpl-cat"    onclick="setCat('소집',this)">📢 비상소집</button>
+    <button class="tpl-cat"    onclick="setCat('기상',this)">⛈ 기상특보</button>
+    <button class="tpl-cat"    onclick="setCat('기타',this)">📋 기타</button>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-badge badge-red">템플릿</span>
+      <span class="card-title">선택 후 복사하여 전파</span>
+    </div>
+    <div id="tplList"></div>
+  </div>
+
+  <div class="card" id="tplPreviewCard" style="display:none;">
+    <div class="card-head">
+      <span class="card-badge badge-yellow">미리보기</span>
+      <span class="card-title">전파 내용 확인</span>
+    </div>
+    <div class="preview-wrap" id="tplPreviewBox"></div>
+    <button class="copy-btn" id="tplCopyBtn" onclick="copyTpl()">📋 복사 — 전파</button>
+  </div>
+</div>
+
+<!-- ══════════ 탭3: 보고문 ══════════ -->
+<div class="screen" id="tab-output">
+
+  <div class="stat-row">
+    <div class="stat-chip">
+      <div class="stat-chip-label">유형</div>
+      <div class="stat-chip-val orange" id="statType">화재</div>
+    </div>
+    <div class="stat-chip">
+      <div class="stat-chip-label">보고 수</div>
+      <div class="stat-chip-val" id="statCount">0</div>
+    </div>
+    <div class="stat-chip">
+      <div class="stat-chip-label">보고 번호</div>
+      <div class="stat-chip-val green" id="statNum">제1보</div>
+    </div>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-head">
+      <span class="output-head-label">자동 생성 보고문</span>
+      <div class="mac-dots">
+        <div class="mac-dot" style="background:#FF5F57"></div>
+        <div class="mac-dot" style="background:#FEBC2E"></div>
+        <div class="mac-dot" style="background:#28C840"></div>
+      </div>
+    </div>
+    <div class="output-body" id="outputBox">작성 탭에서 정보를 입력하면
+자동으로 생성됩니다.</div>
+  </div>
+
+  <button class="copy-btn" id="copyBtn" onclick="copyReport()">📋 복사 — 발송</button>
+  <div style="height:8px;"></div>
+  <button class="btn-big btn-big-gray" onclick="clearAll();switchTab('write',document.querySelectorAll('.tab')[0])">
+    ＋ 새 출동 작성
+  </button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-var currentType = '화재';
-var reports     = [];
+var curType = '화재';
+var reports = [];
 var reportCount = 0;
-var toastTimer  = null;
+var toastTimer = null;
+var curCat = '비상';
+var curTplText = '';
 
-var DYNAMIC_FIELDS = {
-  '화재': [
-    { id:'fireObject',   label:'발화 대상물 (건물용도)', placeholder:'예) 단독주택, 공장, 상가' },
-    { id:'fireScale',    label:'화재 규모',              placeholder:'예) 소형, 일부, 반소, 전소' },
-    { id:'fireCasualty', label:'인명 피해',              placeholder:'예) 없음 / 사망 0명·부상 0명' },
+var FIELDS = {
+  '화재':[
+    {id:'fireObject',   label:'발화 대상물 (건물용도)', ph:'예) 단독주택, 공장, 상가'},
+    {id:'fireScale',    label:'화재 규모',              ph:'예) 소형, 일부, 반소, 전소'},
+    {id:'fireCasualty', label:'인명 피해',              ph:'예) 없음 / 사망 0명·부상 0명'},
   ],
-  '구조': [
-    { id:'rescueType',   label:'구조 유형',        placeholder:'예) 교통사고, 추락, 고립, 수난' },
-    { id:'rescueVictim', label:'요구조자 수·상태', placeholder:'예) 1명, 의식 있음, 골절 의심' },
-    { id:'rescueEquip',  label:'사용 장비',        placeholder:'예) 유압구조기구, 로프' },
-    { id:'rescueDone',   label:'구조 완료 여부',   placeholder:'예) 구조 완료 / 구조 중' },
+  '구조':[
+    {id:'rescueType',   label:'구조 유형',        ph:'예) 교통사고, 추락, 수난'},
+    {id:'rescueVictim', label:'요구조자 수·상태', ph:'예) 1명, 의식 있음'},
+    {id:'rescueEquip',  label:'사용 장비',        ph:'예) 유압구조기구, 로프'},
+    {id:'rescueDone',   label:'구조 완료 여부',   ph:'예) 구조 완료 / 구조 중'},
   ],
-  '구급': [
-    { id:'patientCount', label:'환자 수·연령대', placeholder:'예) 1명, 40대 남성' },
-    { id:'symptoms',     label:'증상·의식 여부', placeholder:'예) 호흡곤란, 의식 있음' },
-    { id:'firstAid',     label:'처치 내용',      placeholder:'예) CPR, 산소 공급' },
-    { id:'hospital',     label:'이송 병원',      placeholder:'예) OO병원 응급실' },
+  '구급':[
+    {id:'patientCount', label:'환자 수·연령대', ph:'예) 1명, 40대 남성'},
+    {id:'symptoms',     label:'증상·의식 여부', ph:'예) 호흡곤란, 의식 있음'},
+    {id:'firstAid',     label:'처치 내용',      ph:'예) CPR, 산소 공급'},
+    {id:'hospital',     label:'이송 병원',      ph:'예) OO병원 응급실'},
   ],
 };
 
-function setType(type, btn) {
-  currentType = type;
-  document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  renderDynamic(); renderOutput();
+var TEMPLATES = {
+  '비상':[
+    {title:'대응 1단계 발령', bCls:'badge-orange', bTxt:'1단계',
+     text:'[대응 1단계 발령]\n\n○○ 지역 ○○ 사고 발생으로\n대응 1단계를 발령합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 대상 출동대 : 전 출동대\n▶ 조치 사항 : 즉시 출동 준비 및 대기\n\n<서산소방서 상황실>'},
+    {title:'대응 2단계 발령', bCls:'badge-red', bTxt:'2단계',
+     text:'[대응 2단계 발령]\n\n○○ 지역 대형 사고 발생으로\n대응 2단계를 발령합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 대상 : 전 출동대 및 인접 소방서\n▶ 조치 사항 : 즉시 출동 / 추가 인력 확보\n\n<서산소방서 상황실>'},
+    {title:'대응 3단계 발령', bCls:'badge-red', bTxt:'3단계',
+     text:'[대응 3단계 발령 — 최고 단계]\n\n○○ 지역 재난 발생으로\n대응 3단계를 발령합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 전 가용 인력 즉시 출동\n▶ 타 시·도 응원 요청 검토\n▶ 현장 지휘 : ○○ 서장\n\n<서산소방서 상황실>'},
+    {title:'대응단계 해제', bCls:'badge-green', bTxt:'해제',
+     text:'[대응단계 해제]\n\n○○ 지역 사고 종료로\n대응단계를 해제합니다.\n\n▶ 해제 시각 : ○○시 ○○분\n▶ 귀소 및 장비 정비 바랍니다.\n수고하셨습니다.\n\n<서산소방서 상황실>'},
+  ],
+  '소집':[
+    {title:'비상소집 (전 직원)', bCls:'badge-red', bTxt:'긴급',
+     text:'[비상소집 명령]\n\n○○ 상황 발생으로 비상소집을 명합니다.\n\n▶ 대상 : 전 소방공무원\n▶ 집결 장소 : ○○소방서\n▶ 집결 시각 : ○○시 ○○분까지\n▶ 복장 : 방화복 착용\n\n즉시 소방서로 복귀하시기 바랍니다.\n\n<서산소방서 상황실>'},
+    {title:'비상소집 (당직 외)', bCls:'badge-orange', bTxt:'소집',
+     text:'[비상소집 — 당직 외 인원]\n\n○○ 상황으로 당직 외 인원을 소집합니다.\n\n▶ 대상 : 당직 외 전 인원\n▶ 집결 : ○○소방서 / ○○시 ○○분까지\n\n빠른 복귀 바랍니다.\n\n<서산소방서 상황실>'},
+    {title:'비상소집 해제', bCls:'badge-green', bTxt:'해제',
+     text:'[비상소집 해제]\n\n비상소집을 해제합니다.\n\n▶ 해제 시각 : ○○시 ○○분\n수고하셨습니다.\n\n<서산소방서 상황실>'},
+  ],
+  '기상':[
+    {title:'폭우 출동태세 강화', bCls:'badge-blue', bTxt:'폭우',
+     text:'[폭우 대비 출동태세 강화]\n\n기상청 폭우 특보 발령에 따라\n출동태세를 강화합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 수난구조장비 점검 및 출동 준비\n▶ 저지대·하천 취약지역 예찰 실시\n▶ 신고 폭주 대비 인원 확보\n\n<서산소방서 상황실>'},
+    {title:'태풍 대비 지시', bCls:'badge-blue', bTxt:'태풍',
+     text:'[태풍 ○○호 대비 지시]\n\n태풍 ○○호 북상에 따라\n대비 태세에 돌입합니다.\n\n▶ 예상 영향 시각 : ○○일 ○○시\n▶ 전 차량 차고 입고 완료\n▶ 안전사고 예방 홍보 실시\n\n<서산소방서 상황실>'},
+    {title:'폭설 대비 지시', bCls:'badge-blue', bTxt:'폭설',
+     text:'[폭설 대비 출동태세]\n\n대설 특보 발령에 따라\n출동태세를 강화합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 제설 장비 및 체인 점검\n▶ 교통사고 대비 출동 준비\n\n<서산소방서 상황실>'},
+    {title:'기상특보 해제', bCls:'badge-green', bTxt:'해제',
+     text:'[기상특보 해제]\n\n기상특보가 해제되었습니다.\n\n▶ 해제 시각 : ○○시 ○○분\n▶ 장비 점검 후 정상 운영 전환\n수고하셨습니다.\n\n<서산소방서 상황실>'},
+  ],
+  '기타':[
+    {title:'훈련 출동 지령', bCls:'badge-yellow', bTxt:'훈련',
+     text:'[훈련 출동 지령]\n\n○○ 훈련을 실시합니다.\n\n▶ 일시 : ○○월 ○○일 ○○시\n▶ 장소 : ○○\n▶ 참여 : ○○\n▶ 내용 : ○○\n\n안전에 유의하여 훈련 임하세요.\n\n<서산소방서 상황실>'},
+    {title:'차량 결함 통보', bCls:'badge-yellow', bTxt:'장비',
+     text:'[차량 결함 통보]\n\n○○ 차량에 결함이 발생했습니다.\n\n▶ 차량 번호 : ○○\n▶ 결함 내용 : ○○\n▶ 대체 차량 : ○○\n\n<서산소방서 상황실>'},
+    {title:'일반 공지', bCls:'badge-blue', bTxt:'공지',
+     text:'[공지사항]\n\n○○ 내용을 알립니다.\n\n▶ 내용 : ○○\n▶ 시행 일시 : ○○\n\n<서산소방서 상황실>'},
+  ],
+};
+
+/* ── 초기화 ── */
+function init(){
+  renderDynFields();
+  renderTplList();
+  renderOutput();
+  startClock();
 }
 
-function renderDynamic() {
-  var wrap = document.getElementById('dynamicFields');
-  wrap.innerHTML = '';
-  DYNAMIC_FIELDS[currentType].forEach(function(f) {
-    var div = document.createElement('div');
-    div.className = 'field'; div.style.marginTop = '10px';
-    div.innerHTML = '<label>' + f.label + '</label><input id="' + f.id + '" placeholder="' + f.placeholder + '" oninput="renderOutput()" />';
-    wrap.appendChild(div);
+/* ── 시계 ── */
+function startClock(){
+  function tick(){
+    var n=new Date();
+    document.getElementById('clock').textContent=
+      pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+  }
+  tick(); setInterval(tick,1000);
+}
+function pad(n){return String(n).padStart(2,'0');}
+
+/* ── 탭 전환 ── */
+function switchTab(name,btn){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('tab-'+name).classList.add('on');
+  if(btn) btn.classList.add('on');
+  if(name==='output') renderOutput();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── 유형 변경 ── */
+function setType(type,btn){
+  curType=type;
+  document.querySelectorAll('.type-btn').forEach(function(b){
+    b.classList.remove('on-fire','on-rescue','on-ems');
+  });
+  btn.classList.add(type==='화재'?'on-fire':type==='구조'?'on-rescue':'on-ems');
+  renderDynFields();
+  renderOutput();
+}
+
+/* ── 동적 필드 ── */
+function renderDynFields(){
+  var wrap=document.getElementById('dynFields');
+  wrap.innerHTML='';
+  FIELDS[curType].forEach(function(f){
+    var d=document.createElement('div');
+    d.className='field'; d.style.marginTop='10px';
+    d.innerHTML='<label>'+f.label+'</label>'+
+      '<input id="'+f.id+'" placeholder="'+f.ph+'" oninput="renderOutput()"/>';
+    wrap.appendChild(d);
   });
 }
 
-function stampNow() {
-  var now = new Date();
-  var ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  var ta = document.getElementById('reportContent');
-  ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + '[' + ts + '] ';
+/* ── 시각 삽입 ── */
+function stampNow(){
+  var n=new Date();
+  var ts='['+pad(n.getHours())+':'+pad(n.getMinutes())+'] ';
+  var ta=document.getElementById('reportContent');
+  ta.value=(ta.value.trim()?ta.value.trim()+' ':'')+ts;
   ta.focus();
 }
 
-function addReport() {
-  var content = document.getElementById('reportContent').value.trim();
-  if (!content) { showToast('내용을 입력해 주세요.'); return; }
+/* ── 보고 추가 ── */
+function addReport(){
+  var c=document.getElementById('reportContent').value.trim();
+  if(!c){showToast('내용을 입력해 주세요.');return;}
   reportCount++;
-  var now = new Date();
-  var ts  = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  reports.push({ num: reportCount, time: ts, content: content });
-  document.getElementById('reportContent').value = '';
-  renderReportList(); renderOutput();
+  var n=new Date();
+  reports.push({num:reportCount, time:pad(n.getHours())+':'+pad(n.getMinutes()), content:c});
+  document.getElementById('reportContent').value='';
+  renderReportList();
+  renderOutput();
+  showToast('제'+reportCount+'보 추가됐습니다.');
 }
 
-function deleteReport(idx) {
-  reports.splice(idx, 1);
-  reports.forEach(function(r, i){ r.num = i + 1; });
-  reportCount = reports.length;
-  renderReportList(); renderOutput();
-}
-
-function renderReportList() {
-  var wrap = document.getElementById('reportList');
-  var card = document.getElementById('reportListCard');
-  wrap.innerHTML = '';
-  if (reports.length === 0) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  reports.forEach(function(r, i) {
-    var div = document.createElement('div');
-    div.className = 'report-item';
-    div.innerHTML =
-      '<div class="report-meta"><div class="report-num">제' + r.num + '보</div>' +
-      '<div class="report-time">' + r.time + '</div></div>' +
-      '<div class="report-text">' + escHtml(r.content) + '</div>' +
-      '<span class="report-del" onclick="deleteReport(' + i + ')">×</span>';
-    wrap.appendChild(div);
+/* ── 보고 목록 ── */
+function renderReportList(){
+  var wrap=document.getElementById('reportList');
+  var card=document.getElementById('reportListCard');
+  wrap.innerHTML='';
+  if(!reports.length){card.style.display='none';return;}
+  card.style.display='block';
+  reports.forEach(function(r,i){
+    var d=document.createElement('div');
+    d.className='report-item';
+    d.innerHTML=
+      '<span class="report-no">제'+r.num+'보</span>'+
+      '<span class="report-ts">'+r.time+'</span>'+
+      '<span class="report-body">'+escHtml(r.content)+'</span>'+
+      '<span class="report-del" onclick="delReport('+i+')">×</span>';
+    wrap.appendChild(d);
   });
 }
 
-function getVal(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function delReport(i){
+  reports.splice(i,1);
+  reports.forEach(function(r,j){r.num=j+1;});
+  reportCount=reports.length;
+  renderReportList(); renderOutput();
+}
 
-function buildRow2(location, extraFields) {
-  /* 장소 / 상황보고들 / 나머지 필드값 */
-  var parts = [];
-  if (location) parts.push(location);
-  reports.forEach(function(r) { parts.push(r.content); });
-  extraFields.forEach(function(v) { if (v) parts.push(v); });
+/* ── 보고문 생성 ── */
+function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+
+function buildRow2(loc,extras){
+  var parts=[];
+  if(loc) parts.push(loc);
+  reports.forEach(function(r){parts.push(r.content);});
+  extras.forEach(function(v){if(v) parts.push(v);});
   return parts.join(' / ');
 }
 
-function renderOutput() {
-  var location = getVal('location') || '';
-  var sigName  = getVal('sigName')  || '';
-  var boNum    = reportCount + 1;
-  var lines    = [];
+function renderOutput(){
+  var loc=gv('location'), sig=gv('sigName'), num=reportCount+1;
+  var lines=[];
 
-  if (currentType === '화재') {
-    var obj = getVal('fireObject')   || '';
-    var scl = getVal('fireScale')    || '';
-    var cas = getVal('fireCasualty') || '';
-    lines.push('[제' + boNum + '보] ' + (obj ? obj + ' ' : '') + '화재');
-    var row2 = buildRow2(location, [scl, cas]);
-    if (row2) lines.push(row2);
-
-  } else if (currentType === '구조') {
-    var rt = getVal('rescueType')   || '';
-    var rv = getVal('rescueVictim') || '';
-    var re = getVal('rescueEquip')  || '';
-    var rd = getVal('rescueDone')   || '';
-    lines.push('[제' + boNum + '보] ' + (rt ? rt + ' ' : '') + '구조');
-    var row2g = buildRow2(location, [rv, re, rd]);
-    if (row2g) lines.push(row2g);
-
-  } else if (currentType === '구급') {
-    var pc = getVal('patientCount') || '';
-    var sy = getVal('symptoms')     || '';
-    var fa = getVal('firstAid')     || '';
-    var ho = getVal('hospital')     || '';
-    lines.push('[제' + boNum + '보] ' + (pc ? pc + ' ' : '') + '구급');
-    var row2e = buildRow2(location, [sy, fa, ho]);
-    if (row2e) lines.push(row2e);
+  if(curType==='화재'){
+    var obj=gv('fireObject'),scl=gv('fireScale'),cas=gv('fireCasualty');
+    lines.push('[제'+num+'보] '+(obj?obj+' ':'')+'화재');
+    var r2=buildRow2(loc,[scl,cas]); if(r2) lines.push(r2);
+  } else if(curType==='구조'){
+    var rt=gv('rescueType'),rv=gv('rescueVictim'),re=gv('rescueEquip'),rd=gv('rescueDone');
+    lines.push('[제'+num+'보] '+(rt?rt+' ':'')+'구조');
+    var r2g=buildRow2(loc,[rv,re,rd]); if(r2g) lines.push(r2g);
+  } else {
+    var pc=gv('patientCount'),sy=gv('symptoms'),fa=gv('firstAid'),ho=gv('hospital');
+    lines.push('[제'+num+'보] '+(pc?pc+' ':'')+'구급');
+    var r2e=buildRow2(loc,[sy,fa,ho]); if(r2e) lines.push(r2e);
   }
+  if(sig) lines.push('<'+sig+'>');
 
-  if (sigName) lines.push('<' + sigName + '>');
-
-  document.getElementById('outputBox').textContent = lines.join('\n').trimEnd();
+  document.getElementById('outputBox').textContent=lines.join('\n').trimEnd();
+  document.getElementById('statType').textContent=curType;
+  document.getElementById('statCount').textContent=reports.length;
+  document.getElementById('statNum').textContent='제'+num+'보';
 }
 
-function copyReport() {
-  var text = document.getElementById('outputBox').textContent;
-  var btn  = document.getElementById('copyBtn');
-  function onCopied() {
-    btn.textContent = '✓ 복사 완료!';
-    btn.classList.add('copied');
-    setTimeout(function(){ btn.innerHTML = '📋 복사 — 발송'; btn.classList.remove('copied'); }, 2500);
+/* ── 복사 ── */
+function doCopy(text,btn,label){
+  function ok(){
+    btn.textContent='✓ 복사 완료!'; btn.classList.add('done');
+    setTimeout(function(){btn.innerHTML=label; btn.classList.remove('done');},2500);
   }
-  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(onCopied); }
-  else {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(ok);}
+  else{
+    var ta=document.createElement('textarea');
+    ta.value=text; ta.style.cssText='position:fixed;opacity:0';
     document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta); onCopied();
+    document.execCommand('copy'); document.body.removeChild(ta); ok();
   }
 }
+function copyReport(){ doCopy(document.getElementById('outputBox').textContent, document.getElementById('copyBtn'),'📋 복사 — 발송'); }
+function copyTpl(){    doCopy(curTplText, document.getElementById('tplCopyBtn'),'📋 복사 — 전파'); }
 
-function switchTab(tab) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelectorAll('.nav-tab')[tab === 'write' ? 0 : 1].classList.add('active');
-  if (tab === 'output') renderOutput();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+/* ── 템플릿 ── */
+function setCat(cat,btn){
+  curCat=cat;
+  document.querySelectorAll('.tpl-cat').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  renderTplList();
+  document.getElementById('tplPreviewCard').style.display='none';
 }
 
-function clearAll() {
-  var hasData = reports.length > 0 || document.getElementById('location').value;
-  if (hasData && !confirm('현재 작성 내용을 초기화할까요?')) return;
-  reports = []; reportCount = 0;
+function renderTplList(){
+  var list=document.getElementById('tplList');
+  list.innerHTML='';
+  var items=TEMPLATES[curCat]||[];
+  if(!items.length){
+    list.innerHTML='<div class="empty"><div class="empty-ico">📋</div>템플릿이 없습니다.</div>';
+    return;
+  }
+  items.forEach(function(tpl){
+    var d=document.createElement('div');
+    d.className='tpl-item';
+    d.innerHTML=
+      '<span class="tpl-item-text">'+tpl.title+'</span>'+
+      '<span class="tpl-item-badge '+tpl.bCls+'">'+tpl.bTxt+'</span>';
+    d.onclick=function(){
+      curTplText=tpl.text;
+      document.getElementById('tplPreviewBox').textContent=tpl.text;
+      document.getElementById('tplPreviewCard').style.display='block';
+      document.getElementById('tplPreviewCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    list.appendChild(d);
+  });
+}
+
+/* ── 전체 초기화 ── */
+function clearAll(){
+  var has=reports.length||document.getElementById('location').value;
+  if(has&&!confirm('현재 작성 내용을 초기화할까요?')) return;
+  reports=[]; reportCount=0;
   ['location','sigName','reportContent',
    'fireObject','fireScale','fireCasualty',
    'rescueType','rescueVictim','rescueEquip','rescueDone',
    'patientCount','symptoms','firstAid','hospital'].forEach(function(id){
-    var el = document.getElementById(id); if (el) el.value = '';
+    var e=document.getElementById(id); if(e) e.value='';
   });
   renderReportList(); renderOutput();
 }
 
-function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function showToast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showToast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+  toastTimer=setTimeout(function(){el.classList.remove('show');},2200);
 }
 
-renderDynamic(); renderOutput();
+init();
 </script>
 </body>
 </html>
