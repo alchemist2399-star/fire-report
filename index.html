@@ -9,19 +9,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --red:       #D63031;
-      --red-light: #FFF0EF;
-      --ink:       #1A1A2E;
-      --ink-soft:  #4A4A6A;
-      --ink-muted: #9090AA;
-      --surface:   #F8F7F5;
-      --card:      #FFFFFF;
-      --border:    rgba(0,0,0,0.08);
-      --border-md: rgba(0,0,0,0.13);
-      --radius:    14px;
-      --radius-sm: 8px;
-      --shadow:    0 2px 12px rgba(0,0,0,0.07);
-      --font:      'Noto Sans KR', sans-serif;
+      --orange:       #E8600A;
+      --orange-dark:  #C44E05;
+      --orange-light: #FFF4EE;
+      --ink:          #1A1A2E;
+      --ink-soft:     #4A4A6A;
+      --ink-muted:    #9090AA;
+      --surface:      #F9F7F5;
+      --card:         #FFFFFF;
+      --border:       rgba(0,0,0,0.08);
+      --border-md:    rgba(0,0,0,0.13);
+      --radius:       14px;
+      --radius-sm:    8px;
+      --shadow:       0 2px 12px rgba(0,0,0,0.07);
+      --font:         'Noto Sans KR', sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { background: var(--surface); -webkit-text-size-adjust: 100%; }
@@ -30,13 +31,13 @@
     #app { max-width: 480px; margin: 0 auto; padding: 0 0 60px; }
 
     .app-header {
-      background: var(--red); padding: 16px 18px 14px;
+      background: var(--orange); padding: 16px 18px 14px;
       display: flex; align-items: center; gap: 10px;
       position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 16px rgba(214,48,49,0.3);
+      box-shadow: 0 2px 16px rgba(232,96,10,0.35);
     }
     .header-title { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -0.3px; flex: 1; }
-    .header-sub { font-size: 11px; color: rgba(255,255,255,0.7); }
+    .header-sub { font-size: 11px; color: rgba(255,255,255,0.75); }
 
     .nav-tabs {
       display: flex; background: #fff;
@@ -49,7 +50,7 @@
       cursor: pointer; font-family: var(--font);
       border-bottom: 2.5px solid transparent; transition: all 0.18s;
     }
-    .nav-tab.active { color: var(--red); border-bottom-color: var(--red); }
+    .nav-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
 
     .screen { display: none; padding: 16px; }
     .screen.active { display: block; animation: fadeUp 0.28s ease both; }
@@ -72,7 +73,7 @@
       display: flex; flex-direction: column; align-items: center; gap: 3px;
     }
     .type-btn .t-icon { font-size: 20px; }
-    .type-btn.active { border-color: var(--red); background: var(--red-light); color: var(--red); }
+    .type-btn.active { border-color: var(--orange); background: var(--orange-light); color: var(--orange-dark); }
 
     .field { margin-bottom: 10px; }
     .field:last-child { margin-bottom: 0; }
@@ -83,7 +84,7 @@
       background: var(--card); color: var(--ink);
       font-family: var(--font); outline: none; transition: border-color 0.15s;
     }
-    .field input:focus, .field textarea:focus { border-color: var(--red); }
+    .field input:focus, .field textarea:focus { border-color: var(--orange); }
     .field textarea { resize: none; line-height: 1.6; }
 
     .btn {
@@ -95,14 +96,34 @@
       transition: all 0.15s; -webkit-tap-highlight-color: transparent;
     }
     .btn:active { transform: scale(0.96); opacity: 0.85; }
-    .btn-red { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 4px 14px rgba(214,48,49,0.28); }
+    .btn-orange { background: var(--orange); color: #fff; border-color: var(--orange); box-shadow: 0 4px 14px rgba(232,96,10,0.3); }
     .btn-row { display: flex; gap: 8px; }
+
+    .report-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 8px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .report-item:last-child { margin-bottom: 0; }
+    .report-meta { flex-shrink: 0; text-align: center; min-width: 38px; }
+    .report-num { font-size: 11px; font-weight: 900; color: var(--orange); }
+    .report-time { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+    .report-text { flex: 1; font-size: 13px; color: var(--ink); line-height: 1.6; word-break: break-all; }
+    .report-del { font-size: 20px; color: var(--ink-muted); cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+
+    .output-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      font-size: 13px; color: var(--ink); white-space: pre-wrap;
+      line-height: 2.0; min-height: 140px; margin-bottom: 12px;
+      font-family: var(--font); word-break: break-all;
+    }
 
     .btn-copy {
       width: 100%; padding: 15px; font-size: 15px; font-weight: 900;
-      background: var(--red); color: #fff; border: none; border-radius: var(--radius);
+      background: var(--orange); color: #fff; border: none; border-radius: var(--radius);
       cursor: pointer; font-family: var(--font);
-      box-shadow: 0 4px 18px rgba(214,48,49,0.35);
+      box-shadow: 0 4px 18px rgba(232,96,10,0.35);
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: all 0.2s; -webkit-tap-highlight-color: transparent;
     }
@@ -117,38 +138,8 @@
       transition: all 0.15s; -webkit-tap-highlight-color: transparent; margin-top: 4px;
     }
     .btn-wide:active { transform: scale(0.97); }
-    .btn-wide-red  { background: var(--red); color: #fff; box-shadow: 0 4px 14px rgba(214,48,49,0.28); }
-    .btn-wide-gray { background: var(--ink-soft); color: #fff; box-shadow: none; }
-
-    .chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .chip {
-      padding: 5px 12px; border-radius: 100px;
-      border: 1px solid var(--border-md); background: var(--card);
-      color: var(--ink-soft); font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: var(--font);
-      -webkit-tap-highlight-color: transparent; transition: all 0.13s;
-    }
-    .chip:active { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
-    .report-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 8px;
-      display: flex; gap: 10px; align-items: flex-start;
-    }
-    .report-item:last-child { margin-bottom: 0; }
-    .report-meta { flex-shrink: 0; text-align: center; min-width: 38px; }
-    .report-num { font-size: 11px; font-weight: 900; color: var(--red); }
-    .report-time { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
-    .report-text { flex: 1; font-size: 13px; color: var(--ink); line-height: 1.6; word-break: break-all; }
-    .report-del { font-size: 20px; color: var(--ink-muted); cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
-
-    .output-box {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 14px 16px;
-      font-size: 13px; color: var(--ink); white-space: pre-wrap;
-      line-height: 1.9; min-height: 140px; margin-bottom: 12px;
-      font-family: var(--font); word-break: break-all;
-    }
+    .btn-wide-orange { background: var(--orange); color: #fff; box-shadow: 0 4px 14px rgba(232,96,10,0.3); }
+    .btn-wide-gray   { background: var(--ink-soft); color: #fff; }
 
     .top-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
     .btn-reset {
@@ -200,19 +191,22 @@
       <div class="card-title">📌 기본 정보</div>
       <div class="field">
         <label>장소</label>
-        <input id="location" placeholder="예) OO시 OO구 OO동 123" oninput="renderOutput()" />
+        <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput()" />
+      </div>
+      <div class="field">
+        <label>소방서 상황실 명칭</label>
+        <input id="sigName" placeholder="예) 서산소방서 상황실" oninput="renderOutput()" />
       </div>
       <div id="dynamicFields"></div>
     </div>
 
     <div class="card">
       <div class="card-title">📡 상황보고 추가</div>
-      <div class="chip-wrap" id="quickChips"></div>
       <div class="field">
         <textarea id="reportContent" rows="3" placeholder="현장 상황을 입력하세요..."></textarea>
       </div>
       <div class="btn-row">
-        <button class="btn btn-red" onclick="addReport()">＋ 추가</button>
+        <button class="btn btn-orange" onclick="addReport()">＋ 추가</button>
         <button class="btn" onclick="stampNow()">⏱ 현재 시각</button>
       </div>
     </div>
@@ -222,7 +216,7 @@
       <div id="reportList"></div>
     </div>
 
-    <button class="btn-wide btn-wide-red" onclick="switchTab('output')">📋 보고문 확인 →</button>
+    <button class="btn-wide btn-wide-orange" onclick="switchTab('output')">📋 보고문 확인 →</button>
   </div>
 
   <!-- ── 보고문 탭 ── -->
@@ -245,12 +239,6 @@ var currentType = '화재';
 var reports     = [];
 var reportCount = 0;
 var toastTimer  = null;
-
-var QUICK_CHIPS = {
-  '화재': ['현장 도착','화재 확인','진압 중','진압 완료','잔불 정리','완전 진압','귀소'],
-  '구조': ['현장 도착','요구조자 확인','구조 중','구조 완료','병원 이송','귀소'],
-  '구급': ['현장 도착','환자 확인','응급처치 중','이송 출발','이송 완료','귀소'],
-};
 
 var DYNAMIC_FIELDS = {
   '화재': [
@@ -276,7 +264,7 @@ function setType(type, btn) {
   currentType = type;
   document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
-  renderDynamic(); renderChips(); renderOutput();
+  renderDynamic(); renderOutput();
 }
 
 function renderDynamic() {
@@ -287,20 +275,6 @@ function renderDynamic() {
     div.className = 'field'; div.style.marginTop = '10px';
     div.innerHTML = '<label>' + f.label + '</label><input id="' + f.id + '" placeholder="' + f.placeholder + '" oninput="renderOutput()" />';
     wrap.appendChild(div);
-  });
-}
-
-function renderChips() {
-  var wrap = document.getElementById('quickChips');
-  wrap.innerHTML = '';
-  QUICK_CHIPS[currentType].forEach(function(text) {
-    var btn = document.createElement('button');
-    btn.className = 'chip'; btn.textContent = text;
-    btn.onclick = function() {
-      var ta = document.getElementById('reportContent');
-      ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + text;
-    };
-    wrap.appendChild(btn);
   });
 }
 
@@ -350,63 +324,49 @@ function renderReportList() {
 
 function getVal(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
+function buildRow2(location, extraFields) {
+  /* 장소 / 상황보고들 / 나머지 필드값 */
+  var parts = [];
+  if (location) parts.push(location);
+  reports.forEach(function(r) { parts.push(r.content); });
+  extraFields.forEach(function(v) { if (v) parts.push(v); });
+  return parts.join(' / ');
+}
+
 function renderOutput() {
-  var location = getVal('location') || '미입력';
-  var lines = [];
-  var boNum = reportCount + 1;
+  var location = getVal('location') || '';
+  var sigName  = getVal('sigName')  || '';
+  var boNum    = reportCount + 1;
+  var lines    = [];
 
   if (currentType === '화재') {
-    var obj = getVal('fireObject') || '';
-    var scl = getVal('fireScale')  || '';
+    var obj = getVal('fireObject')   || '';
+    var scl = getVal('fireScale')    || '';
     var cas = getVal('fireCasualty') || '';
-
-    // 1행: [제N보] 발화대상물 화재
-    var headline = '[제' + boNum + '보] ' + (obj ? obj + ' ' : '') + '화재';
-    lines.push(headline);
-
-    // 2행~: 장소·규모·인명
-    lines.push('장소: ' + location);
-    var details = [];
-    if (scl) details.push('규모: ' + scl);
-    if (cas) details.push('인명: ' + cas);
-    if (details.length > 0) lines.push(details.join(' | '));
+    lines.push('[제' + boNum + '보] ' + (obj ? obj + ' ' : '') + '화재');
+    var row2 = buildRow2(location, [scl, cas]);
+    if (row2) lines.push(row2);
 
   } else if (currentType === '구조') {
     var rt = getVal('rescueType')   || '';
     var rv = getVal('rescueVictim') || '';
     var re = getVal('rescueEquip')  || '';
     var rd = getVal('rescueDone')   || '';
-
     lines.push('[제' + boNum + '보] ' + (rt ? rt + ' ' : '') + '구조');
-    lines.push('장소: ' + location);
-    var d2 = [];
-    if (rv) d2.push('요구조자: ' + rv);
-    if (re) d2.push('장비: ' + re);
-    if (rd) d2.push('상태: ' + rd);
-    if (d2.length > 0) lines.push(d2.join(' | '));
+    var row2g = buildRow2(location, [rv, re, rd]);
+    if (row2g) lines.push(row2g);
 
   } else if (currentType === '구급') {
     var pc = getVal('patientCount') || '';
     var sy = getVal('symptoms')     || '';
     var fa = getVal('firstAid')     || '';
     var ho = getVal('hospital')     || '';
-
     lines.push('[제' + boNum + '보] ' + (pc ? pc + ' ' : '') + '구급');
-    lines.push('장소: ' + location);
-    var d3 = [];
-    if (sy) d3.push('증상: ' + sy);
-    if (fa) d3.push('처치: ' + fa);
-    if (ho) d3.push('이송: ' + ho);
-    if (d3.length > 0) lines.push(d3.join(' | '));
+    var row2e = buildRow2(location, [sy, fa, ho]);
+    if (row2e) lines.push(row2e);
   }
 
-  // 보고 내용
-  if (reports.length > 0) {
-    lines.push('');
-    reports.forEach(function(r) {
-      lines.push('[' + r.time + '] ' + r.content);
-    });
-  }
+  if (sigName) lines.push('<' + sigName + '>');
 
   document.getElementById('outputBox').textContent = lines.join('\n').trimEnd();
 }
@@ -441,7 +401,7 @@ function clearAll() {
   var hasData = reports.length > 0 || document.getElementById('location').value;
   if (hasData && !confirm('현재 작성 내용을 초기화할까요?')) return;
   reports = []; reportCount = 0;
-  ['location','reportContent',
+  ['location','sigName','reportContent',
    'fireObject','fireScale','fireCasualty',
    'rescueType','rescueVictim','rescueEquip','rescueDone',
    'patientCount','symptoms','firstAid','hospital'].forEach(function(id){
@@ -458,7 +418,7 @@ function showToast(msg) {
   toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
 }
 
-renderDynamic(); renderChips(); renderOutput();
+renderDynamic(); renderOutput();
 </script>
 </body>
 </html>
