@@ -199,10 +199,6 @@
     <div class="card">
       <div class="card-title">📌 기본 정보</div>
       <div class="field">
-        <label>신고 접수 시각</label>
-        <input id="recvTime" type="time" oninput="renderOutput()" />
-      </div>
-      <div class="field">
         <label>장소</label>
         <input id="location" placeholder="예) OO시 OO구 OO동 123" oninput="renderOutput()" />
       </div>
@@ -355,61 +351,53 @@ function renderReportList() {
 function getVal(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
 function renderOutput() {
-  var recvTime = getVal('recvTime') || '--:--';
   var location = getVal('location') || '미입력';
   var lines = [];
+  var boNum = reportCount + 1;
 
-  // ── 스타일 C — 심플 한줄형 ──
   if (currentType === '화재') {
-    var obj = getVal('fireObject');
-    var scl = getVal('fireScale');
-    var cas = getVal('fireCasualty');
+    var obj = getVal('fireObject') || '';
+    var scl = getVal('fireScale')  || '';
+    var cas = getVal('fireCasualty') || '';
 
-    // 헤더
-    var header = '[제' + (reportCount + 1) + '보 ' + recvTime + '] OO119 / 화재';
-    lines.push(header);
+    // 1행: [제N보] 발화대상물 화재
+    var headline = '[제' + boNum + '보] ' + (obj ? obj + ' ' : '') + '화재';
+    lines.push(headline);
 
-    // 장소·대상
-    var locLine = '장소: ' + location;
-    if (obj) locLine += ' (' + obj + ')';
-    lines.push(locLine);
-
-    // 규모·인명
-    var detailParts = [];
-    if (scl) detailParts.push('규모: ' + scl);
-    if (cas) detailParts.push('인명: ' + cas);
-    if (detailParts.length > 0) lines.push(detailParts.join(' | '));
+    // 2행~: 장소·규모·인명
+    lines.push('장소: ' + location);
+    var details = [];
+    if (scl) details.push('규모: ' + scl);
+    if (cas) details.push('인명: ' + cas);
+    if (details.length > 0) lines.push(details.join(' | '));
 
   } else if (currentType === '구조') {
-    var rt = getVal('rescueType');
-    var rv = getVal('rescueVictim');
-    var re = getVal('rescueEquip');
-    var rd = getVal('rescueDone');
+    var rt = getVal('rescueType')   || '';
+    var rv = getVal('rescueVictim') || '';
+    var re = getVal('rescueEquip')  || '';
+    var rd = getVal('rescueDone')   || '';
 
-    lines.push('[제' + (reportCount + 1) + '보 ' + recvTime + '] OO119 / 구조');
-    var locLine2 = '장소: ' + location;
-    if (rt) locLine2 += ' (' + rt + ')';
-    lines.push(locLine2);
-    var detailParts2 = [];
-    if (rv) detailParts2.push('요구조자: ' + rv);
-    if (re) detailParts2.push('장비: ' + re);
-    if (rd) detailParts2.push('상태: ' + rd);
-    if (detailParts2.length > 0) lines.push(detailParts2.join(' | '));
+    lines.push('[제' + boNum + '보] ' + (rt ? rt + ' ' : '') + '구조');
+    lines.push('장소: ' + location);
+    var d2 = [];
+    if (rv) d2.push('요구조자: ' + rv);
+    if (re) d2.push('장비: ' + re);
+    if (rd) d2.push('상태: ' + rd);
+    if (d2.length > 0) lines.push(d2.join(' | '));
 
   } else if (currentType === '구급') {
-    var pc = getVal('patientCount');
-    var sy = getVal('symptoms');
-    var fa = getVal('firstAid');
-    var ho = getVal('hospital');
+    var pc = getVal('patientCount') || '';
+    var sy = getVal('symptoms')     || '';
+    var fa = getVal('firstAid')     || '';
+    var ho = getVal('hospital')     || '';
 
-    lines.push('[제' + (reportCount + 1) + '보 ' + recvTime + '] OO119 / 구급');
+    lines.push('[제' + boNum + '보] ' + (pc ? pc + ' ' : '') + '구급');
     lines.push('장소: ' + location);
-    var detailParts3 = [];
-    if (pc) detailParts3.push('환자: ' + pc);
-    if (sy) detailParts3.push('증상: ' + sy);
-    if (fa) detailParts3.push('처치: ' + fa);
-    if (ho) detailParts3.push('이송: ' + ho);
-    if (detailParts3.length > 0) lines.push(detailParts3.join(' | '));
+    var d3 = [];
+    if (sy) d3.push('증상: ' + sy);
+    if (fa) d3.push('처치: ' + fa);
+    if (ho) d3.push('이송: ' + ho);
+    if (d3.length > 0) lines.push(d3.join(' | '));
   }
 
   // 보고 내용
@@ -453,7 +441,7 @@ function clearAll() {
   var hasData = reports.length > 0 || document.getElementById('location').value;
   if (hasData && !confirm('현재 작성 내용을 초기화할까요?')) return;
   reports = []; reportCount = 0;
-  ['recvTime','location','reportContent',
+  ['location','reportContent',
    'fireObject','fireScale','fireCasualty',
    'rescueType','rescueVictim','rescueEquip','rescueDone',
    'patientCount','symptoms','firstAid','hospital'].forEach(function(id){
