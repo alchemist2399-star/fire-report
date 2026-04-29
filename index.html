@@ -523,7 +523,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
       <div style="margin-bottom:10px;">
         <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">&#128205; 출동 장소 <span style="background:var(--orange);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;margin-left:3px;">필수</span></div>
-        <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:15px;font-weight:700;padding:13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
+        <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:14px;font-weight:700;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
         <div>
@@ -661,12 +661,22 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="sec-lbl" style="margin-bottom:0;">&#128222; 출동대 연락처</div>
       <button class="reset-btn" onclick="addContact('dispatch')">＋ 추가</button>
     </div>
-    <div class="card" id="dispatchAddCard" style="display:none;">
-      <div class="card-head"><span class="card-badge b-orange">새 연락처</span><span class="card-title">출동대 정보 입력</span></div>
-      <div class="field"><label>출동대 이름</label><input id="dispatchName" placeholder="예) 서산소방서 1팀"/></div>
-      <div class="field"><label>전화번호</label><input id="dispatchTel" type="tel" placeholder="예) 041-000-0000"/></div>
-      <div class="field"><label>메모</label><input id="dispatchMemo" placeholder="예) 펌프1·탱크1 운용"/></div>
-      <div class="btn-row"><button class="btn btn-primary" onclick="saveContact('dispatch')">저장</button><button class="btn" onclick="cancelContact('dispatch')">취소</button></div>
+    <div class="id="dispatchAddCard" style="display:none;background:var(--surface);border:1.5px solid var(--orange-bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+      <div style="background:linear-gradient(135deg,var(--orange),#ff8c42);padding:11px 16px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:15px;">&#128680;</span><span style="font-size:13px;font-weight:900;color:#fff;">출동대 정보 입력</span>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="margin-bottom:10px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#127970; 출동대 이름</div>
+        <input id="dispatchName" placeholder="예) 서산소방서 1팀" style="width:100%;font-size:14px;font-weight:700;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="margin-bottom:10px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128222; 전화번호</div>
+        <input id="dispatchTel" type="tel" placeholder="예) 041-000-0000" style="width:100%;font-size:14px;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="margin-bottom:14px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128196; 메모</div>
+        <input id="dispatchMemo" placeholder="예) 펌프1·탱크1 운용" style="width:100%;font-size:13px;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveContact('dispatch')" style="flex:2;padding:13px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128190; 저장</button>
+          <button onclick="cancelContact('dispatch')" style="flex:1;padding:13px;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">취소</button>
+        </div>
+      </div>
     </div>
     <div id="dispatchList"></div>
     <div class="empty" id="dispatchEmpty"><div style="font-size:32px;margin-bottom:8px;">&#128196;</div>＋ 버튼으로 출동대를 추가하세요.</div>
@@ -676,12 +686,22 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="sec-lbl" style="margin-bottom:0;">&#128222; 유관기관 연락처</div>
       <button class="reset-btn" onclick="addContact('agency')">＋ 추가</button>
     </div>
-    <div class="card" id="agencyAddCard" style="display:none;">
-      <div class="card-head"><span class="card-badge b-blue">새 연락처</span><span class="card-title">유관기관 정보 입력</span></div>
-      <div class="field"><label>기관 이름</label><input id="agencyName" placeholder="예) 서산경찰서"/></div>
-      <div class="field"><label>전화번호</label><input id="agencyTel" type="tel" placeholder="예) 041-000-0000"/></div>
-      <div class="field"><label>메모</label><input id="agencyMemo" placeholder="예) 상황실 직통"/></div>
-      <div class="btn-row"><button class="btn btn-primary" onclick="saveContact('agency')">저장</button><button class="btn" onclick="cancelContact('agency')">취소</button></div>
+    <div class="id="agencyAddCard" style="display:none;background:var(--surface);border:1.5px solid rgba(26,58,107,0.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+      <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:15px;">&#127970;</span><span style="font-size:13px;font-weight:900;color:#fff;">유관기관 정보 입력</span>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="margin-bottom:10px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#127970; 기관 이름</div>
+        <input id="agencyName" placeholder="예) 서산경찰서" style="width:100%;font-size:14px;font-weight:700;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="margin-bottom:10px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128222; 전화번호</div>
+        <input id="agencyTel" type="tel" placeholder="예) 041-000-0000" style="width:100%;font-size:14px;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="margin-bottom:14px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128196; 메모</div>
+        <input id="agencyMemo" placeholder="예) 상황실 직통" style="width:100%;font-size:13px;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'"/></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveContact('agency')" style="flex:2;padding:13px;background:linear-gradient(135deg,var(--navy),#2a5298);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128190; 저장</button>
+          <button onclick="cancelContact('agency')" style="flex:1;padding:13px;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">취소</button>
+        </div>
+      </div>
     </div>
     <div id="agencyList"></div>
     <div class="empty" id="agencyEmpty"><div style="font-size:32px;margin-bottom:8px;">&#128196;</div>＋ 버튼으로 유관기관을 추가하세요.</div>
@@ -953,6 +973,25 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <!-- 탭: 지도 -->
 <div class="screen" id="tab-map">
 
+  <!-- 출동장소 현황 -->
+  <div id="mapLocCard" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);">
+    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:15px;">&#128205;</span>
+      <span style="font-size:13px;font-weight:900;color:#fff;">현재 출동장소</span>
+    </div>
+    <div style="padding:13px 16px;">
+      <div id="mapLocText" style="font-size:14px;font-weight:700;color:var(--ink4);">출동 탭에서 장소를 입력하세요</div>
+      <div id="mapLocHint" style="font-size:11px;color:var(--ink4);margin-top:4px;">장소 입력 후 아래 지도앱으로 바로 열 수 있습니다</div>
+    </div>
+  </div>
+  <!-- 빠른 주소 검색 -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:14px;box-shadow:var(--shadow);">
+    <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;">&#128269; 주소 직접 검색</div>
+    <div style="display:flex;gap:8px;">
+      <input id="mapSearchInput" placeholder="검색할 주소 입력" style="flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')searchMapAddr()"/>
+      <button onclick="searchMapAddr()" style="padding:9px 14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">검색</button>
+    </div>
+  </div>
   <div class="sec-lbl">지도 앱 바로열기</div>
   <a id="mapNaver" href="https://map.naver.com" target="_blank" class="map-app-btn"><div class="map-app-icon" style="background:#03C75A;">N</div><div class="map-app-info"><div class="map-app-name">네이버지도</div><div class="map-app-loc" id="naverLocLabel" style="display:none;"></div></div><div class="map-app-arrow">&#8250;</div></a>
   <a id="mapKakao" href="https://map.kakao.com" target="_blank" class="map-app-btn"><div class="map-app-icon" style="background:#FEE500;">K</div><div class="map-app-info"><div class="map-app-name">카카오맵</div><div class="map-app-loc" id="kakaoLocLabel" style="display:none;"></div></div><div class="map-app-arrow">&#8250;</div></a>
@@ -1614,8 +1653,19 @@ function renderStats(){
   Object.keys(slots).sort().forEach(function(key){var cnt=slots[key],pct=maxVal>0?Math.round(cnt/maxVal*100):0;var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);';row.innerHTML='<span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink4);min-width:60px;flex-shrink:0;">'+key+'</span><div style="flex:1;height:8px;background:var(--surface2);border-radius:100px;overflow:hidden;"><div style="height:100%;border-radius:100px;background:var(--orange);width:'+pct+'%;"></div></div><span style="font-size:12px;font-weight:800;color:var(--ink3);min-width:28px;text-align:right;">'+cnt+'건</span>';tlEl.appendChild(row);});
 }
 
+function searchMapAddr(){
+  var q=(document.getElementById('mapSearchInput').value||'').trim();
+  if(!q)return;
+  window.open('https://map.naver.com/v5/search/'+encodeURIComponent(q),'_blank');
+}
 function updateMapLinks(){
   var loc=gv('location');
+  var lt=document.getElementById('mapLocText');
+  var lh=document.getElementById('mapLocHint');
+  if(lt){
+    if(loc){lt.textContent=loc;lt.style.color='var(--ink)';if(lh)lh.textContent='아래 지도앱을 탭하면 바로 열립니다';}
+    else{lt.textContent='출동 탭에서 장소를 입력하세요';lt.style.color='var(--ink4)';}
+  }
   var boxEl=document.getElementById('locStatusBox'),mainEl=document.getElementById('locStatusMain');
   if(!loc){if(boxEl)boxEl.className='loc-status-box no-loc';if(mainEl)mainEl.textContent='출동장소 미입력';['mapNaver','mapKakao','mapGoogle'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('active-loc');});['naverLocLabel','kakaoLocLabel','googleLocLabel'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});return;}
   if(boxEl)boxEl.className='loc-status-box has-loc';if(mainEl)mainEl.textContent='&#128506; '+loc;
