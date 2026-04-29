@@ -1993,7 +1993,51 @@ function updateKeyStatus() {
   if(banner) banner.style.display = gk ? 'none' : 'flex';
 }
 
-function showKeyStatus(msg, ok) {
+function changePw(){
+  var cur=document.getElementById('pwCurrent').value;
+  var nw=document.getElementById('pwNew').value;
+  var cf=document.getElementById('pwConfirm').value;
+  if(!cur||!nw||!cf){showPwMsg('모든 항목을 입력해 주세요.',false);return;}
+  var stored=localStorage.getItem('sobang_pw_hash')||hashStr('119119');
+  if(hashStr(cur)!==stored){showPwMsg('현재 비밀번호가 틀렸습니다.',false);return;}
+  if(nw!==cf){showPwMsg('새 비밀번호가 일치하지 않습니다.',false);return;}
+  if(nw.length<4){showPwMsg('비밀번호는 4자 이상이어야 합니다.',false);return;}
+  var newHash=hashStr(nw);
+  localStorage.setItem('sobang_pw_hash',newHash);
+  localStorage.setItem(APP_LOCK_KEY,newHash);
+  document.getElementById('pwCurrent').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwConfirm').value='';
+  showPwMsg('✅ 비밀번호가 변경됐습니다.',true);
+}
+function showPwMsg(msg,ok){
+  var el=document.getElementById('pwChangeMsg');if(!el)return;
+  el.textContent=msg;el.style.display='block';
+  el.style.background=ok?'var(--green-lt)':'var(--red-lt)';
+  el.style.color=ok?'var(--green)':'var(--red)';
+  setTimeout(function(){el.style.display='none';},3000);
+}
+function setServiceStatus(mode){
+  var title=(document.getElementById('noticeInputTitle').value||'').trim();
+  var msg=(document.getElementById('noticeInputMsg').value||'').trim();
+  var banner=document.getElementById('noticeBanner');
+  var nt=document.getElementById('noticeTitle');
+  var nm=document.getElementById('noticeMsg');
+  var badge=document.getElementById('serviceStatusBadge');
+  if(mode==='stop'){
+    if(banner){banner.style.display='flex';banner.style.background='var(--red-lt)';banner.style.borderColor='rgba(217,48,37,0.3)';}
+    if(nt){nt.style.color='var(--red)';nt.textContent=title||'⚠ 서비스 사용 중단';}
+    if(nm){nm.textContent=msg||'현재 시스템 점검 중입니다. 잠시 후 다시 이용해 주세요.';}
+    if(badge){badge.style.background='var(--red-lt)';badge.style.color='var(--red)';badge.textContent='● 현재 사용 중단 상태';}
+    localStorage.setItem('sobang_service_status','stop');
+    localStorage.setItem('sobang_notice_title',title||'⚠ 서비스 사용 중단');
+    localStorage.setItem('sobang_notice_msg',msg||'현재 시스템 점검 중입니다.');
+    showToast('⚠ 사용 중단으로 변경됐습니다.');
+  } else if(mode==='resume'){
+    if(banner){banner.style.display='flex';banner.style.background='var(--green-lt)';banner.style.borderColor='rgba(13,155,106,0.25)';}
+    if(nt){nt.style.color='var(--green)';nt.textContent=title||'✅ 서비스 정상 운영';}
+    if(nm){nm.textContent=msg||'정상 운영 중입니다.';}
+    if(badge){badge.style.background='var(--green-lt)';badge.style.color='va
   var el = document.getElementById('keyStatus');
   if(!el) return;
   el.textContent = msg;
