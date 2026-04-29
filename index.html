@@ -827,16 +827,41 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <div style="background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
           <span style="font-size:14px;">&#128680;</span><span style="font-size:12px;font-weight:800;color:var(--orange);">서산소방서</span><span style="font-size:10px;color:var(--ink4);font-weight:400;">(고정)</span>
         </div>
-        <div class="grid-2">
-          <div class="field"><label>발생일시 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label><input type="datetime-local" id="rptDt"/></div>
-          <div class="field"><label>신고건수 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label><input type="number" id="rptCallCount" oninput="rptLiveUpdate();" placeholder="4" min="1"/></div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:6px;">🚨 재난 유형</div>
+          <div class="rpt-type-grid">
+            <button class="rpt-type-btn" onclick="rptSelType(this,'화재')"><span class="ico">🔥</span>화재</button>
+            <button class="rpt-type-btn" onclick="rptSelType(this,'구조')"><span class="ico">🛠</span>구조</button>
+            <button class="rpt-type-btn" onclick="rptSelType(this,'구급')"><span class="ico">🚑</span>구급</button>
+            <button class="rpt-type-btn" onclick="rptSelType(this,'풍수해')"><span class="ico">🌊</span>풍수해</button>
+            <button class="rpt-type-btn" onclick="rptSelType(this,'기타')"><span class="ico">📋</span>기타</button>
+          </div>
         </div>
-        <div class="field" style="margin-top:10px;">
-          <label>발생장소 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label>
+
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📅 발생일시 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <input type="datetime-local" id="rptDt" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📞 신고건수 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <input type="number" id="rptCallCount" oninput="rptLiveUpdate();" placeholder="4" min="1" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">📍 발생장소 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
           <input type="text" id="rptAddr" placeholder="충남 서산시 석남동 ○○번지 건물명" oninput="rptOnAddrInput();rptLiveUpdate();" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
-      </div>
-    </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">👤 상황관리자</div>
+          <input type="text" id="rptManager" placeholder="예) 홍길동" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">🖊 당직근무자</div>
+          <input type="text" id="rptStaff" placeholder="예) 김소방" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📝 사고경위 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <textarea id="rptSit" rows="3" placeholder="사고 경위를 입력하세요" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5
 
 <script>
 /* 실시간 미리보기 */
