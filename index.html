@@ -504,12 +504,13 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- 탭1: 출동 -->
 <div class="screen on" id="tab-dispatch">
-  <div id="noKeyBanner" style="display:none!important;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="switchTab('settings',document.getElementById('nav-settings'))">
-    <span style="font-size:20px;">&#9888;</span>
+  <div id="noticeBanner" style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:18px;">📢</span>
     <div style="flex:1;">
-      <div style="font-size:12px;font-weight:800;color:var(--red);">API 키 미설정</div>
-      <div style="font-size:11px;color:var(--ink4);">AI 분석 기능 사용을 위해 설정 탭에서 키를 등록하세요 →</div>
+      <div style="font-size:12px;font-weight:800;color:var(--blue);" id="noticeTitle">서산소방서 상황보고 시스템</div>
+      <div style="font-size:11px;color:var(--ink4);" id="noticeMsg">정상 운영 중입니다.</div>
     </div>
+    <button onclick="document.getElementById('noticeBanner').style.display='none'" style="font-size:16px;color:var(--ink4);background:none;border:none;cursor:pointer;flex-shrink:0;line-height:1;">✕</button>
   </div>
    <!-- 출동 유형 선택 -->
   <div style="display:flex;gap:8px;margin-bottom:12px;">
