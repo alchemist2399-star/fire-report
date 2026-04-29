@@ -496,6 +496,24 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 </header>
 
+<!-- 앱 진입 잠금 화면 -->
+<div id="appLockScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#E8600A;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:380px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:72px;height:72px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;">🚨</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;">소방 상황보고</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.75);">서산소방서 전용 시스템</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:24px;">
+      <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:12px;text-align:center;">🔒 비밀번호를 입력하세요</div>
+      <input type="password" id="appLockInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')checkAppLock()" style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:2px solid rgba(255,255,255,0.3);border-radius:10px;background:rgba(255,255,255,0.15);color:#fff;font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+      <button onclick="checkAppLock()" style="width:100%;padding:15px;background:#fff;color:var(--orange);border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">🔓 입장</button>
+      <div id="appLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:#fff;text-align:center;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">❌ 비밀번호가 틀렸습니다.</div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.5);">허가된 인원만 접근 가능합니다</div>
+  </div>
+</div>
+
 <div class="install-banner" id="installBanner">
   <div class="install-banner-text">&#128241; 홈화면에 앱으로 설치하기<span>브라우저 없이 바로 실행됩니다</span></div>
   <button class="install-btn" onclick="doInstall()">설치</button>
@@ -921,9 +939,40 @@ function rptCalcVeh(){var ft=gn('veh_cmd')+gn('veh_pump')+gn('veh_tank')+gn('veh
 function rptSetMobilField(id,val){var e=document.getElementById(id);if(e)e.value=parseInt(val)||0;}
 function rptGetMobilData(){rptCalcPpl();var vr=rptCalcVeh();var pd={fire:gn('ppl_fire'),police:gn('ppl_police'),army:gn('ppl_army'),gov:gn('ppl_gov'),med:gn('ppl_med'),forest:gn('ppl_forest'),etc:gn('ppl_etc'),total:0};pd.total=pd.fire+pd.police+pd.army+pd.gov+pd.med+pd.forest+pd.etc;var vd={cmd:gn('veh_cmd'),pump:gn('veh_pump'),tank:gn('veh_tank'),rescue:gn('veh_rescue'),ems:gn('veh_ems'),chem:gn('veh_chem'),ladder:gn('veh_ladder'),smoke:gn('veh_smoke'),light:gn('veh_light'),special:gn('veh_special'),etc:gn('veh_etc'),fireTot:vr.fireTot,rpolice:gn('rel_police'),rarmy:gn('rel_army'),rgov:gn('rel_gov'),rmed:gn('rel_med'),retc:gn('rel_etc'),relTot:vr.relTot};return{ppl:pd.total+'명',veh:(vd.fireTot+vd.relTot)+'대',pplDetail:pd,vehDetail:vd};}
 
+var APP_LOCK_KEY='sobang_app_lock_pw';
+var APP_SESSION_KEY='sobang_session';
+
+function checkAppLock(){
+  var pw=document.getElementById('appLockInput').value;
+  if(!pw)return;
+  var stored=localStorage.getItem(APP_LOCK_KEY)||hashStr('119119');
+  if(hashStr(pw)===stored){
+    document.getElementById('appLockScreen').style.display='none';
+    sessionStorage.setItem(APP_SESSION_KEY,'1');
+    document.getElementById('appLockError').style.display='none';
+    document.getElementById('appLockInput').value='';
+    init();
+  } else {
+    document.getElementById('appLockError').style.display='block';
+    document.getElementById('appLockInput').value='';
+    document.getElementById('appLockInput').focus();
+  }
+}
+
+function initAppLock(){
+  if(sessionStorage.getItem(APP_SESSION_KEY)==='1'){
+    document.getElementById('appLockScreen').style.display='none';
+    init();
+  } else {
+    document.getElementById('appLockScreen').style.display='flex';
+    setTimeout(function(){document.getElementById('appLockInput').focus();},300);
+  }
+}
+
 function init(){
   renderOutput();startClock();checkShareSupport();initPWA();
   loadApiKeys();
+  loadServiceStatus();
   renderFixedContacts();renderContactList('dispatch');renderContactList('agency');
 }
 function initPWA(){
@@ -1815,10 +1864,10 @@ function showToast(msg){var el=document.getElementById('toast');el.textContent=m
 if(window.kakao && window.kakao.maps && typeof kakao.maps.load==='function'){
   kakao.maps.load(function(){
     window.kakaoMapReady = true;
-    init();
+    initAppLock();
   });
 } else {
-  init();
+  initAppLock();
 }
 
 /* ═══════════════════════════════════════
