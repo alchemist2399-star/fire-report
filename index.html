@@ -34,7 +34,7 @@
   --font:'Noto Sans KR',sans-serif;
   --mono:'JetBrains Mono',monospace;
   --nav-h:0px;
-  --hd-h:110px;
+  --hd-h:96px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);-webkit-text-size-adjust:100%;}
@@ -487,7 +487,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="hd-title" style="font-size:17px;letter-spacing:-0.5px;color:#fff;font-weight:900;">상황보고</div>
     <div style="margin-left:auto;"><div class="hd-clock" id="clock">00:00:00</div></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);width:100%;height:52px;background:rgba(0,0,0,0.22);border-top:1px solid rgba(255,255,255,0.15);">
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);width:100%;height:40px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.15);">
     <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)">출동</button>
     <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)">동향보고서</button>
     <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)">지도</button>
@@ -504,7 +504,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- 탭1: 출동 -->
 <div class="screen on" id="tab-dispatch">
-  <div id="noKeyBanner" style="display:none;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="switchTab('settings',document.getElementById('nav-settings'))">
+  <div id="noKeyBanner" style="display:none!important;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="switchTab('settings',document.getElementById('nav-settings'))">
     <span style="font-size:20px;">&#9888;</span>
     <div style="flex:1;">
       <div style="font-size:12px;font-weight:800;color:var(--red);">API 키 미설정</div>
