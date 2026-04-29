@@ -2217,7 +2217,8 @@ function setServiceStatus(mode){
   var nt=document.getElementById('noticeTitle');
   var nm=document.getElementById('noticeMsg');
   var badge=document.getElementById('serviceStatusBadge');
-  if(mode==='stop'){
+  var gk=localStorage.getItem('sobang_gemini_key')||'';
+  if(status==='stop'){
     if(banner){banner.style.display='flex';banner.style.background='var(--red-lt)';banner.style.borderColor='rgba(217,48,37,0.3)';}
     if(nt){nt.style.color='var(--red)';nt.textContent=title||'⚠ 서비스 사용 중단';}
     if(nm){nm.textContent=msg||'현재 시스템 점검 중입니다. 잠시 후 다시 이용해 주세요.';}
@@ -2265,6 +2266,11 @@ function loadServiceStatus(){
     if(nt){nt.style.color='var(--blue)';nt.textContent=title||'공지사항';}
     if(nm){nm.textContent=msg||'';}
     if(badge){badge.style.background='var(--blue-lt)';badge.style.color='var(--blue)';badge.textContent='● 공지 표시 중';}
+  } else if(!gk) {
+    if(banner){banner.style.display='flex';banner.style.background='var(--yellow-lt)';banner.style.borderColor='rgba(180,83,9,0.3)';}
+    if(nt){nt.style.color='var(--yellow)';nt.textContent='⚠ AI 기능 사용 불가';}
+    if(nm){nm.textContent='Gemini API 키 미등록 — AI 자동분석·맞춤법 검사를 사용할 수 없습니다. 설정 탭에서 등록해 주세요.';}
+    if(badge){badge.style.background='var(--yellow-lt)';badge.style.color='var(--yellow)';badge.textContent='● AI 기능 미등록';}
   } else {
     if(banner){banner.style.display='flex';banner.style.background='var(--green-lt)';banner.style.borderColor='rgba(13,155,106,0.25)';}
     if(nt){nt.style.color='var(--green)';nt.textContent='서산소방서 상황보고 시스템';}
