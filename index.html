@@ -967,7 +967,6 @@ function initAppLock(){
 
 function init(){
   renderOutput();startClock();checkShareSupport();initPWA();
-  (function(){var n=new Date();var el=document.getElementById('appVersion');if(el)el.textContent='v'+n.getFullYear()+'.'+(n.getMonth()+1)+'.'+n.getDate();})();
   loadApiKeys();
   loadServiceStatus();
   renderFixedContacts();renderContactList('dispatch');renderContactList('agency');
@@ -2087,6 +2086,7 @@ function showKeyStatus(msg, ok) {
 }
 
 
+(function(){var n=new Date();var el=document.getElementById('appVersion');if(el)el.textContent='v'+n.getFullYear()+'.'+(n.getMonth()+1)+'.'+n.getDate();})();
 </script>
 <!-- ===== 탭: 지도 ===== -->
 <div class="screen" id="tab-map">
