@@ -1525,6 +1525,23 @@ function rptBuildHTML(){
 }
 
 /* ── 미리보기: 우측 패널 스크롤로 대체 ── */
+function rptLiveUpdate(){
+  var frame=document.getElementById('rptLiveFrame');
+  if(!frame)return;
+  var html=rptBuildHTML();
+  var existing=frame.querySelector('iframe');
+  if(existing)existing.remove();
+  var iframe=document.createElement('iframe');
+  iframe.style.cssText='width:100%;border:none;display:block;min-height:600px;';
+  iframe.setAttribute('sandbox','allow-same-origin');
+  frame.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  setTimeout(function(){try{var h=doc.body.scrollHeight;if(h>200)iframe.style.height=h+'px';}catch(e){}},400);
+}
+
+function rptInitMap(){}
+
 function rptShowPreview(){
   // 우측 패널이 있으면 스크롤, 없으면 rptLiveUpdate
   var previewEl=document.getElementById('rptSplitPreview');
