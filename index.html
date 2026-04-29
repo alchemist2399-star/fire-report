@@ -641,19 +641,40 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div id="fixedEmpty" style="font-size:12px;color:var(--ink4);text-align:center;padding:6px 0;">&#9998; 편집을 눌러 번호를 등록하세요.</div>
     </div>
     <div id="fixedContactEdit" style="display:none;">
-      <div style="font-size:11px;font-weight:800;color:var(--orange);margin-bottom:8px;">&#9733; 고정 1</div>
-      <div class="grid-2">
-        <div class="field"><label>이름</label><input id="fixed1NameInput" placeholder="지휘팀"/></div>
-        <div class="field"><label>전화번호</label><input id="fixed1TelInput" type="tel" placeholder="041-000-0000"/></div>
+      <!-- 고정1 -->
+      <div style="background:var(--orange-lt);border:1.5px solid var(--orange-bd);border-radius:var(--r2);padding:13px 14px;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:900;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="background:var(--orange);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">1</span>고정 연락처 1
+        </div>
+        <div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">이름</div>
+          <input id="fixed1NameInput" placeholder="예) 현장지휘" style="width:100%;font-size:14px;font-weight:700;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">&#128222; 전화번호</div>
+          <input id="fixed1TelInput" type="tel" placeholder="010-0000-0000" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">메모</div>
+          <input id="fixed1MemoInput" placeholder="예) 서산소방서 지휘팀" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
       </div>
-      <div class="field" style="margin-bottom:14px;"><label>메모</label><input id="fixed1MemoInput" placeholder="서산소방서 지휘팀"/></div>
-      <div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:8px;">&#9733; 고정 2</div>
-      <div class="grid-2">
-        <div class="field"><label>이름</label><input id="fixed2NameInput" placeholder="화재조사"/></div>
-        <div class="field"><label>전화번호</label><input id="fixed2TelInput" type="tel" placeholder="041-000-0000"/></div>
+      <!-- 고정2 -->
+      <div style="background:#fff8f5;border:1.5px solid rgba(217,48,37,0.2);border-radius:var(--r2);padding:13px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:900;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="background:var(--red);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">2</span>고정 연락처 2
+        </div>
+        <div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">이름</div>
+          <input id="fixed2NameInput" placeholder="예) 화재조사" style="width:100%;font-size:14px;font-weight:700;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">&#128222; 전화번호</div>
+          <input id="fixed2TelInput" type="tel" placeholder="010-0000-0000" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div><div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">메모</div>
+          <input id="fixed2MemoInput" placeholder="예) 화재조사팀" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
       </div>
-      <div class="field"><label>메모</label><input id="fixed2MemoInput" placeholder="화재조사팀"/></div>
-      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary" onclick="saveFixedContacts()">저장</button><button class="btn" onclick="toggleFixedEdit()">취소</button></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="saveFixedContacts()" style="flex:2;padding:13px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128190; 저장</button>
+        <button onclick="toggleFixedEdit()" style="flex:1;padding:13px;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">취소</button>
+      </div>
     </div>
   </div>
   <div id="contactSeg-dispatch">
@@ -661,7 +682,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="sec-lbl" style="margin-bottom:0;">&#128222; 출동대 연락처</div>
       <button class="reset-btn" onclick="addContact('dispatch')">＋ 추가</button>
     </div>
-    <div class="id="dispatchAddCard" style="display:none;background:var(--surface);border:1.5px solid var(--orange-bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+    <div id="dispatchAddCard" style="display:none;background:var(--surface);border:1.5px solid var(--orange-bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
       <div style="background:linear-gradient(135deg,var(--orange),#ff8c42);padding:11px 16px;display:flex;align-items:center;gap:8px;">
         <span style="font-size:15px;">&#128680;</span><span style="font-size:13px;font-weight:900;color:#fff;">출동대 정보 입력</span>
       </div>
@@ -686,7 +707,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="sec-lbl" style="margin-bottom:0;">&#128222; 유관기관 연락처</div>
       <button class="reset-btn" onclick="addContact('agency')">＋ 추가</button>
     </div>
-    <div class="id="agencyAddCard" style="display:none;background:var(--surface);border:1.5px solid rgba(26,58,107,0.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+    <div id="agencyAddCard" style="display:none;background:var(--surface);border:1.5px solid rgba(26,58,107,0.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
       <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
         <span style="font-size:15px;">&#127970;</span><span style="font-size:13px;font-weight:900;color:#fff;">유관기관 정보 입력</span>
       </div>
