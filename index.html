@@ -47,7 +47,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .hd-sub{font-size:9px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-top:1px;font-weight:600;}
 .hd-clock{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.22);letter-spacing:0.5px;}
 
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.08);padding-bottom:env(safe-area-inset-bottom);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.08);padding-bottom:env(safe-area-inset-bottom);}
 .nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;font-family:var(--font);color:var(--ink4);font-size:10px;font-weight:700;transition:all 0.15s;padding:6px 2px 2px;position:relative;}
 .nav-btn .nav-ico{font-size:22px;line-height:1;transition:transform 0.18s;}
 .nav-btn.on{color:var(--orange);}
@@ -498,6 +498,13 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- 탭1: 출동 -->
 <div class="screen on" id="tab-dispatch">
+  <div id="noKeyBanner" style="display:none;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="switchTab('settings',document.getElementById('nav-settings'))">
+    <span style="font-size:20px;">&#9888;</span>
+    <div style="flex:1;">
+      <div style="font-size:12px;font-weight:800;color:var(--red);">API 키 미설정</div>
+      <div style="font-size:11px;color:var(--ink4);">AI 분석 기능 사용을 위해 설정 탭에서 키를 등록하세요 →</div>
+    </div>
+  </div>
   <div class="top-bar" style="margin-bottom:8px;">
     <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">&#128680;</span><span style="font-size:14px;font-weight:800;color:var(--ink2);">서산소방서 출동보고</span></div>
     <button class="reset-btn" onclick="clearAll()">&#9851; 초기화</button>
@@ -915,18 +922,78 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 </div>
 
 <!-- 탭: 기상상황 -->
+
+<!-- ===== 탭: 설정 ===== -->
+<div class="screen" id="tab-settings">
+  <div class="card" style="border:1.5px solid var(--orange-bd);">
+    <div class="card-head">
+      <span class="badge b-orange">API 키</span>
+      <span class="card-title">API 키 설정</span>
+    </div>
+    <div class="info-box" style="margin-bottom:14px;">
+      &#128274; API 키는 이 기기에만 저장됩니다. GitHub에 업로드되지 않습니다.
+    </div>
+    <div class="field">
+      <label>Gemini API 키 (AI 분석·맞춤법)</label>
+      <input type="password" id="settingGeminiKey" placeholder="AIzaSy..."/>
+      <div style="font-size:10px;color:var(--ink4);margin-top:4px;">aistudio.google.com 에서 발급</div>
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label>Kakao REST API 키 (지도)</label>
+      <input type="password" id="settingKakaoKey" placeholder="fa62c0..."/>
+      <div style="font-size:10px;color:var(--ink4);margin-top:4px;">developers.kakao.com 에서 발급</div>
+    </div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-primary" onclick="saveApiKeys()" style="flex:2;">&#128274; 저장</button>
+      <button class="btn" onclick="clearApiKeys()" style="flex:1;color:var(--red);">삭제</button>
+    </div>
+    <div id="keyStatus" style="display:none;margin-top:10px;font-size:12px;font-weight:700;padding:9px 13px;border-radius:var(--r3);text-align:center;"></div>
+  </div>
+
+  <div class="card" style="margin-top:4px;">
+    <div class="card-head"><span class="badge b-green">현재 상태</span><span class="card-title">API 키 등록 현황</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
+        <span id="geminiStatus" style="font-size:18px;">&#10060;</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--ink);">Gemini API</div>
+          <div style="font-size:11px;color:var(--ink4);" id="geminiStatusText">미등록 — AI 분석·맞춤법 검사 불가</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
+        <span id="kakaoStatus" style="font-size:18px;">&#10060;</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--ink);">Kakao API</div>
+          <div style="font-size:11px;color:var(--ink4);" id="kakaoStatusText">미등록 — 지도 검색 불가</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px;">
+    <div class="card-head"><span class="badge b-navy">앱 정보</span><span class="card-title">소방 상황보고 시스템</span></div>
+    <div style="font-size:12px;color:var(--ink4);line-height:2.0;">
+      <div>개발: 서산소방서</div>
+      <div>배포: fire-report-5m3.pages.dev</div>
+      <div style="margin-top:8px;font-size:11px;">API 키는 이 기기의 브라우저에만 저장되며<br>외부로 전송되지 않습니다.</div>
+    </div>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)"><span class="nav-ico">&#128680;</span><span>출동</span></button>
   <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)"><span class="nav-ico">&#128196;</span><span>동향보고서</span></button>
   <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)"><span class="nav-ico">&#128506;</span><span>지도</span></button>
   <button class="nav-btn" id="nav-contacts" onclick="switchTab('contacts',this)"><span class="nav-ico">&#128222;</span><span>연락처</span></button>
+  <button class="nav-btn" id="nav-settings" onclick="switchTab('settings',this)"><span class="nav-ico">&#9881;</span><span>설정</span></button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var KAKAO_REST_KEY='fa62c04656c77068e530d938df079533';
-var GEMINI_API_KEY='AIzaSyBGvthLgzX_xqZuOV-hG5sraIn9en2Wtck';
+// API 키 - localStorage에서 로드
+var KAKAO_REST_KEY = localStorage.getItem('sobang_kakao_key') || '';
+var GEMINI_API_KEY = localStorage.getItem('sobang_gemini_key') || '';
 var GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=';
 
 var FIELDS={
@@ -2069,6 +2136,71 @@ kakao.maps.load(function(){
   window.kakaoMapReady = true;
   init();
 });
+
+/* ═══════════════════════════════════════
+   API 키 설정
+═══════════════════════════════════════ */
+function loadApiKeys() {
+  var gk = localStorage.getItem('sobang_gemini_key') || '';
+  var kk = localStorage.getItem('sobang_kakao_key') || '';
+  GEMINI_API_KEY = gk;
+  KAKAO_REST_KEY = kk;
+  updateKeyStatus();
+  // 키 없으면 배너 표시
+  var banner = document.getElementById('noKeyBanner');
+  if(banner) banner.style.display = (!gk) ? 'flex' : 'none';
+  // 입력창 마스킹 표시
+  var gi = document.getElementById('settingGeminiKey');
+  var ki = document.getElementById('settingKakaoKey');
+  if(gi && gk) gi.placeholder = '●●●●●●●●●●●● (등록됨)';
+  if(ki && kk) ki.placeholder = '●●●●●●●●●●●● (등록됨)';
+}
+
+function saveApiKeys() {
+  var gk = (document.getElementById('settingGeminiKey').value || '').trim();
+  var kk = (document.getElementById('settingKakaoKey').value || '').trim();
+  var saved = false;
+  if(gk) { localStorage.setItem('sobang_gemini_key', gk); GEMINI_API_KEY = gk; saved = true; }
+  if(kk) { localStorage.setItem('sobang_kakao_key', kk); KAKAO_REST_KEY = kk; saved = true; }
+  if(!saved) { showKeyStatus('입력된 키가 없습니다.', false); return; }
+  document.getElementById('settingGeminiKey').value = '';
+  document.getElementById('settingKakaoKey').value = '';
+  updateKeyStatus();
+  showKeyStatus('✅ 저장됐습니다! 이 기기에만 보관됩니다.', true);
+}
+
+function clearApiKeys() {
+  if(!confirm('저장된 API 키를 모두 삭제할까요?')) return;
+  localStorage.removeItem('sobang_gemini_key');
+  localStorage.removeItem('sobang_kakao_key');
+  GEMINI_API_KEY = ''; KAKAO_REST_KEY = '';
+  updateKeyStatus();
+  showKeyStatus('삭제됐습니다.', false);
+}
+
+function updateKeyStatus() {
+  var gk = localStorage.getItem('sobang_gemini_key') || '';
+  var kk = localStorage.getItem('sobang_kakao_key') || '';
+  var gIcon = document.getElementById('geminiStatus');
+  var kIcon = document.getElementById('kakaoStatus');
+  var gText = document.getElementById('geminiStatusText');
+  var kText = document.getElementById('kakaoStatusText');
+  if(gIcon) gIcon.textContent = gk ? '✅' : '❌';
+  if(kIcon) kIcon.textContent = kk ? '✅' : '❌';
+  if(gText) gText.textContent = gk ? '등록됨 — AI 분석·맞춤법 검사 사용 가능' : '미등록 — AI 분석·맞춤법 검사 불가';
+  if(kText) kText.textContent = kk ? '등록됨 — 지도 검색 사용 가능' : '미등록 — 기본 지도앱 사용 가능';
+}
+
+function showKeyStatus(msg, ok) {
+  var el = document.getElementById('keyStatus');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = ok ? 'var(--green-lt)' : 'var(--red-lt)';
+  el.style.color = ok ? 'var(--green)' : 'var(--red)';
+  setTimeout(function(){ el.style.display='none'; }, 3000);
+}
+
 </script>
 </body>
 </html>
