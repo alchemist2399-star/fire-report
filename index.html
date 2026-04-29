@@ -823,7 +823,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     // rptMapSection removed
   },300);
 }
-
+        
+<script>
 /* 실시간 미리보기 */
 var rptPreviewTimer=null;
 var reports=[],reportCount=0,curSeq='출동',curType='화재'; var dispLog=[],dispLogSeq=0,toastTimer=null,deferredInstallPrompt=null; var GEMINI_API_KEY='',KAKAO_REST_KEY=''; var GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='; var ALL_FIELD_IDS=['accNo','location','fireObject','fireScale','fireCasualty','sigName']; var rpt={type:'',report:'',data:{},dmgRows:[],actionRows:[],mapPhotoURL:null,scenePhotoURL:null,distNote:'',scanImages:[],distTimer:null}; var rptKakaoMap=null,rptKakaoMarker=null,rptKakaoIW=null; var curCat='',curTplOrig='',TEMPLATES={};  function rptUpdatePreview(){
