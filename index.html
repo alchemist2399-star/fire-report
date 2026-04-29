@@ -930,24 +930,44 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <span class="badge b-orange">API 키</span>
       <span class="card-title">API 키 설정</span>
     </div>
-    <div class="info-box" style="margin-bottom:14px;">
-      &#128274; API 키는 이 기기에만 저장됩니다. GitHub에 업로드되지 않습니다.
+
+    <!-- 잠금 화면 -->
+    <div id="settingsLock" style="text-align:center;padding:10px 0 6px;">
+      <div style="font-size:36px;margin-bottom:10px;">&#128274;</div>
+      <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:14px;">관리자 비밀번호를 입력하세요</div>
+      <div class="field" style="text-align:left;">
+        <input type="password" id="settingsPassword" placeholder="비밀번호 입력"
+          onkeydown="if(event.key==='Enter')checkSettingsPassword()"
+          style="text-align:center;font-size:18px;letter-spacing:4px;"/>
+      </div>
+      <button onclick="checkSettingsPassword()" style="width:100%;padding:13px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);margin-top:4px;">확인</button>
+      <div id="lockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:var(--red);padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 틀렸습니다.</div>
     </div>
-    <div class="field">
-      <label>Gemini API 키 (AI 분석·맞춤법)</label>
-      <input type="password" id="settingGeminiKey" placeholder="AIzaSy..."/>
-      <div style="font-size:10px;color:var(--ink4);margin-top:4px;">aistudio.google.com 에서 발급</div>
+
+    <!-- 설정 내용 (잠금 해제 후 표시) -->
+    <div id="settingsContent" style="display:none;">
+      <div class="info-box" style="margin-bottom:14px;">
+        &#128274; API 키는 이 기기에만 저장됩니다. GitHub에 업로드되지 않습니다.
+      </div>
+      <div class="field">
+        <label>Gemini API 키 (AI 분석·맞춤법)</label>
+        <input type="password" id="settingGeminiKey" placeholder="AIzaSy..."/>
+        <div style="font-size:10px;color:var(--ink4);margin-top:4px;">aistudio.google.com 에서 발급</div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label>Kakao REST API 키 (지도)</label>
+        <input type="password" id="settingKakaoKey" placeholder="fa62c0..."/>
+        <div style="font-size:10px;color:var(--ink4);margin-top:4px;">developers.kakao.com 에서 발급</div>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="saveApiKeys()" style="flex:2;">&#128274; 저장</button>
+        <button class="btn" onclick="clearApiKeys()" style="flex:1;color:var(--red);">삭제</button>
+      </div>
+      <div id="keyStatus" style="display:none;margin-top:10px;font-size:12px;font-weight:700;padding:9px 13px;border-radius:var(--r3);text-align:center;"></div>
+      <div style="margin-top:12px;text-align:right;">
+        <button onclick="lockSettings()" style="font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-family:var(--font);">&#128274; 잠금</button>
+      </div>
     </div>
-    <div class="field" style="margin-top:10px;">
-      <label>Kakao REST API 키 (지도)</label>
-      <input type="password" id="settingKakaoKey" placeholder="fa62c0..."/>
-      <div style="font-size:10px;color:var(--ink4);margin-top:4px;">developers.kakao.com 에서 발급</div>
-    </div>
-    <div class="btn-row" style="margin-top:14px;">
-      <button class="btn btn-primary" onclick="saveApiKeys()" style="flex:2;">&#128274; 저장</button>
-      <button class="btn" onclick="clearApiKeys()" style="flex:1;color:var(--red);">삭제</button>
-    </div>
-    <div id="keyStatus" style="display:none;margin-top:10px;font-size:12px;font-weight:700;padding:9px 13px;border-radius:var(--r3);text-align:center;"></div>
   </div>
 
   <div class="card" style="margin-top:4px;">
@@ -1294,6 +1314,7 @@ function switchTab(name,btn){
   document.getElementById('tab-'+name).classList.add('on');
   if(btn)btn.classList.add('on');
   if(name==='map')updateMapLinks();
+  if(name!=='settings'){var lk=document.getElementById('settingsLock');var sc=document.getElementById('settingsContent');if(lk)lk.style.display='block';if(sc)sc.style.display='none';}
   if(name==='report'){updateMapLinks();rptAutoFill();setTimeout(rptLiveUpdate,600);}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -2132,14 +2153,65 @@ function rptShowDist(lat,lng){
 function showToast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},2400);}
 
 // 카카오 SDK 로드 완료 후 init 실행
-kakao.maps.load(function(){
-  window.kakaoMapReady = true;
+if(window.kakao && window.kakao.maps && typeof kakao.maps.load==='function'){
+  kakao.maps.load(function(){
+    window.kakaoMapReady = true;
+    init();
+  });
+} else {
   init();
-});
+}
 
 /* ═══════════════════════════════════════
    API 키 설정
 ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   설정 비밀번호 잠금
+═══════════════════════════════════════ */
+var SETTINGS_PW_HASH = localStorage.getItem('sobang_pw_hash') || '';
+var SETTINGS_DEFAULT_PW = '119119'; // 기본 비밀번호
+
+function hashStr(str) {
+  // 간단한 해시 (보안 목적이 아닌 평문 노출 방지용)
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var ch = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + ch;
+    hash = hash & hash;
+  }
+  return String(hash);
+}
+
+function checkSettingsPassword() {
+  var pw = document.getElementById('settingsPassword').value;
+  var stored = localStorage.getItem('sobang_pw_hash') || hashStr(SETTINGS_DEFAULT_PW);
+  if (hashStr(pw) === stored) {
+    document.getElementById('settingsLock').style.display = 'none';
+    document.getElementById('settingsContent').style.display = 'block';
+    document.getElementById('lockError').style.display = 'none';
+    document.getElementById('settingsPassword').value = '';
+    // 마스킹 표시
+    var gk = localStorage.getItem('sobang_gemini_key') || '';
+    var kk = localStorage.getItem('sobang_kakao_key') || '';
+    var gi = document.getElementById('settingGeminiKey');
+    var ki = document.getElementById('settingKakaoKey');
+    if(gi && gk) gi.placeholder = '●●●●●●●● (등록됨)';
+    if(ki && kk) ki.placeholder = '●●●●●●●● (등록됨)';
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+    document.getElementById('settingsPassword').value = '';
+  }
+}
+
+function lockSettings() {
+  document.getElementById('settingsLock').style.display = 'block';
+  document.getElementById('settingsContent').style.display = 'none';
+  document.getElementById('lockError').style.display = 'none';
+}
+
+// 탭 전환 시 자동 잠금
+var _origSwitchTab = switchTab;
+
 function loadApiKeys() {
   var gk = localStorage.getItem('sobang_gemini_key') || '';
   var kk = localStorage.getItem('sobang_kakao_key') || '';
