@@ -967,6 +967,7 @@ function initAppLock(){
 
 function init(){
   renderOutput();startClock();checkShareSupport();initPWA();
+  (function(){var n=new Date();var el=document.getElementById('appVersion');if(el)el.textContent='v'+n.getFullYear()+'.'+(n.getMonth()+1)+'.'+n.getDate();})();
   loadApiKeys();
   loadServiceStatus();
   renderFixedContacts();renderContactList('dispatch');renderContactList('agency');
@@ -2224,6 +2225,7 @@ function showKeyStatus(msg, ok) {
     <div style="font-size:12px;color:var(--ink2);line-height:2.2;">
       <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">개발</span><span style="font-weight:700;">서산소방서</span></div>
       <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">배포</span><span style="font-weight:700;font-family:var(--mono);font-size:11px;">fire-report-5m3.pages.dev</span></div>
+      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">버전</span><span id="appVersion" style="font-weight:700;font-family:var(--mono);font-size:11px;"></span></div>
     </div>
   </div>
 </div>
