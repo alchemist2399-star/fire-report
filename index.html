@@ -833,14 +833,10 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         </div>
         <div class="field" style="margin-top:10px;">
           <label>발생장소 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label>
-          <input type="text" id="rptAddr" placeholder="충남 서산시 석남동 ○○번지 건물명" oninput="rptOnAddrInput();rptLiveUpdate();"/>
-        </div>',zIndex:1});
-    rptKakaoIW.open(rptKakaoMap,rptKakaoMarker);
-    // rptMapSection removed
-  },300);
-}
-</div></div></div>
-</div>
+          <input type="text" id="rptAddr" placeholder="충남 서산시 석남동 ○○번지 건물명" oninput="rptOnAddrInput();rptLiveUpdate();" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+      </div>
+    </div>
 
 <script>
 /* 실시간 미리보기 */
