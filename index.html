@@ -840,15 +840,15 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         </div>
 
         <div style="margin-bottom:10px;">
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📅 발생일시 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📅 발생일시</div>
           <input type="datetime-local" id="rptDt" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div style="margin-bottom:10px;">
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📞 신고건수 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📞 신고건수</div>
           <input type="number" id="rptCallCount" oninput="rptLiveUpdate();" placeholder="4" min="1" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div style="margin-bottom:10px;">
-          <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">📍 발생장소 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">📍 발생장소</div>
           <input type="text" id="rptAddr" placeholder="충남 서산시 석남동 ○○번지 건물명" oninput="rptOnAddrInput();rptLiveUpdate();" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div style="margin-bottom:10px;">
@@ -860,7 +860,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <input type="text" id="rptStaff" placeholder="예) 김소방" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📝 사고경위 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">📝 사고경위</div>
           <textarea id="rptSit" rows="3" placeholder="사고 경위를 입력하세요" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;resize:none;line-height:1.7;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"></textarea>
         </div>
       </div>
@@ -894,7 +894,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <input type="text" id="rptPropSummary" placeholder="예) 조사 중, 없음" oninput="rptLiveUpdate()" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:6px;">🏢 층별 현황 <span style="background:var(--green);color:#fff;font-size:9px;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></div>
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:6px;">🏢 층별 현황</div>
           <table class="rpt-dmg-table">
             <thead><tr><th>구분</th><th>구조</th><th>크기</th><th>용도</th><th>비고</th><th style="width:26px;"></th></tr></thead>
             <tbody id="rptDmgBody"></tbody>
