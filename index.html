@@ -511,15 +511,12 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:11px;color:var(--ink4);">AI 분석 기능 사용을 위해 설정 탭에서 키를 등록하세요 →</div>
     </div>
   </div>
-  <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
-    <button class="reset-btn" onclick="clearAll()">♻ 초기화</button>
-  </div>
   <!-- 출동 기본정보 (리디자인) -->
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
     <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:12px 16px;display:flex;align-items:center;gap:8px;">
       <span style="font-size:16px;">&#128680;</span>
       <span style="font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.3px;">출동 기본정보</span>
-      <span style="font-size:9px;color:rgba(255,255,255,0.5);margin-left:auto;letter-spacing:1px;">INCIDENT INFO</span>
+      <button onclick="clearAll()" style="margin-left:auto;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">⟳ 초기화</button>
     </div>
     <div style="padding:14px 16px 16px;">
       <div style="margin-bottom:10px;">
