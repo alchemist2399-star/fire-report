@@ -2037,7 +2037,48 @@ function setServiceStatus(mode){
     if(banner){banner.style.display='flex';banner.style.background='var(--green-lt)';banner.style.borderColor='rgba(13,155,106,0.25)';}
     if(nt){nt.style.color='var(--green)';nt.textContent=title||'✅ 서비스 정상 운영';}
     if(nm){nm.textContent=msg||'정상 운영 중입니다.';}
-    if(badge){badge.style.background='var(--green-lt)';badge.style.color='va
+    if(badge){badge.style.background='var(--green-lt)';badge.style.color='var(--green)';badge.textContent='● 현재 정상 운영 중';}
+    localStorage.setItem('sobang_service_status','resume');
+    localStorage.setItem('sobang_notice_title',title||'✅ 서비스 정상 운영');
+    localStorage.setItem('sobang_notice_msg',msg||'정상 운영 중입니다.');
+    showToast('✅ 사용 재개로 변경됐습니다.');
+  } else if(mode==='notice'){
+    if(!title&&!msg){showToast('공지 제목 또는 내용을 입력해 주세요.');return;}
+    if(banner){banner.style.display='flex';banner.style.background='var(--blue-lt)';banner.style.borderColor='rgba(26,110,232,0.25)';}
+    if(nt){nt.style.color='var(--blue)';nt.textContent=title||'공지사항';}
+    if(nm){nm.textContent=msg||'';}
+    if(badge){badge.style.background='var(--blue-lt)';badge.style.color='var(--blue)';badge.textContent='● 공지 표시 중';}
+    localStorage.setItem('sobang_service_status','notice');
+    localStorage.setItem('sobang_notice_title',title);
+    localStorage.setItem('sobang_notice_msg',msg);
+    showToast('📢 공지가 적용됐습니다.');
+  }
+}
+function loadServiceStatus(){
+  var status=localStorage.getItem('sobang_service_status')||'resume';
+  var title=localStorage.getItem('sobang_notice_title')||'';
+  var msg=localStorage.getItem('sobang_notice_msg')||'';
+  var banner=document.getElementById('noticeBanner');
+  var nt=document.getElementById('noticeTitle');
+  var nm=document.getElementById('noticeMsg');
+  var badge=document.getElementById('serviceStatusBadge');
+  if(status==='stop'){
+    if(banner){banner.style.display='flex';banner.style.background='var(--red-lt)';banner.style.borderColor='rgba(217,48,37,0.3)';}
+    if(nt){nt.style.color='var(--red)';nt.textContent=title||'⚠ 서비스 사용 중단';}
+    if(nm){nm.textContent=msg||'현재 시스템 점검 중입니다.';}
+    if(badge){badge.style.background='var(--red-lt)';badge.style.color='var(--red)';badge.textContent='● 현재 사용 중단 상태';}
+  } else if(status==='notice'){
+    if(banner){banner.style.display='flex';banner.style.background='var(--blue-lt)';banner.style.borderColor='rgba(26,110,232,0.25)';}
+    if(nt){nt.style.color='var(--blue)';nt.textContent=title||'공지사항';}
+    if(nm){nm.textContent=msg||'';}
+    if(badge){badge.style.background='var(--blue-lt)';badge.style.color='var(--blue)';badge.textContent='● 공지 표시 중';}
+  } else {
+    if(banner){banner.style.display='flex';banner.style.background='var(--green-lt)';banner.style.borderColor='rgba(13,155,106,0.25)';}
+    if(nt){nt.style.color='var(--green)';nt.textContent='서산소방서 상황보고 시스템';}
+    if(nm){nm.textContent='정상 운영 중입니다.';}
+  }
+}
+function showKeyStatus(msg, ok) {
   var el = document.getElementById('keyStatus');
   if(!el) return;
   el.textContent = msg;
