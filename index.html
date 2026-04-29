@@ -2196,10 +2196,15 @@ function rptShowDist(lat,lng){
 function showToast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},2400);}
 
 // 카카오 SDK 로드 완료 후 init 실행
-kakao.maps.load(function(){
-  window.kakaoMapReady = true;
+if(window.kakao && window.kakao.maps){
+  kakao.maps.load(function(){
+    window.kakaoMapReady = true;
+    init();
+  });
+} else {
+  // 카카오 SDK 로드 실패 시 init만 실행
   init();
-});
+}
 </script>
 </body>
 </html>
