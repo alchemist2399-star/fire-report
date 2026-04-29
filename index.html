@@ -895,6 +895,7 @@ function rptGetMobilData(){rptCalcPpl();var vr=rptCalcVeh();var pd={fire:gn('ppl
 
 function init(){
   renderOutput();startClock();checkShareSupport();initPWA();
+  loadApiKeys();
   renderFixedContacts();renderContactList('dispatch');renderContactList('agency');
 }
 function initPWA(){
