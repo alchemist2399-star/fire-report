@@ -799,557 +799,21 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="rpt-page" id="rptP1">
       <div class="card">
         <div class="card-head"><span class="card-badge b-orange">STEP 1</span><span class="card-title">유형 및 기본정보</span></div>
-        <div class="rpt-ai-banner" id="rptP1AiBanner"><span class="rpt-ai-banner-ico">&#9889;</span><span class="rpt-ai-banner-text">AI가 자동 입력했습니다 ? 내용을 확인하고 필요하면 수정하세요.</span></div>
-        <div class="sec-lbl" style="margin-bottom:8px;">사고 유형 선택</div>
-        <div class="rpt-type-grid">
-          <button class="rpt-type-btn" onclick="rptSelType(this,'화재')"><span class="ico">&#128293;</span>화재</button>
-          <button class="rpt-type-btn" onclick="rptSelType(this,'구조')"><span class="ico">&#128736;</span>구조</button>
-          <button class="rpt-type-btn" onclick="rptSelType(this,'구급')"><span class="ico">&#128657;</span>구급</button>
-          <button class="rpt-type-btn" onclick="rptSelType(this,'가스누출')"><span class="ico">&#128168;</span>가스누출</button>
-          <button class="rpt-type-btn" onclick="rptSelType(this,'자연재난')"><span class="ico">&#127754;</span>자연재난</button>
-          <button class="rpt-type-btn" onclick="rptSelType(this,'기타')"><span class="ico">&#128203;</span>기타</button>
-        </div>
+        <div class="rpt-ai-banner" id="rptP1AiBanner"><span class="rpt-ai-banner-ico">&#9889;</span><span class="rpt-ai-banner-text">AI 자동입력 완료 — 확인 후 필요시 수정하세요.</span></div>
+
         <div style="background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
           <span style="font-size:14px;">&#128680;</span><span style="font-size:12px;font-weight:800;color:var(--orange);">서산소방서</span><span style="font-size:10px;color:var(--ink4);font-weight:400;">(고정)</span>
         </div>
         <div class="grid-2">
-          <div class="field"><label>발생일시 ?자동</label><input type="datetime-local" id="rptDt"/></div>
-          <div class="field"><label>신고건수</label><input type="number" id="rptCallCount" oninput="rptLiveUpdate();" placeholder="4" min="1"/></div>
+          <div class="field"><label>발생일시 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label><input type="datetime-local" id="rptDt"/></div>
+          <div class="field"><label>신고건수 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label><input type="number" id="rptCallCount" oninput="rptLiveUpdate();" placeholder="4" min="1"/></div>
         </div>
         <div class="field" style="margin-top:10px;">
-          <label>발생장소 (주소)</label>
+          <label>발생장소 <span style="font-size:9px;background:var(--green);color:#fff;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:3px;">AI자동</span></label>
           <input type="text" id="rptAddr" placeholder="충남 서산시 석남동 ○○번지 건물명" oninput="rptOnAddrInput();rptLiveUpdate();"/>
-        </div>
-        <div id="rptMapSection" style="display:none;margin-top:8px;border-radius:var(--r2);overflow:hidden;border:1.5px solid var(--navy);">
-          <div style="background:var(--navy);padding:7px 13px;font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);letter-spacing:0.7px;display:flex;align-items:center;gap:6px;">&#128506; 현장 위치 지도<a id="rptMapKakaoLink" href="#" target="_blank" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.75);font-weight:600;text-decoration:none;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:4px;">카카오맵 보기</a></div>
-          <div id="rptMapCanvas" style="width:100%;height:340px;"</div>
-        </div>
-        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;">
-          <div class="sec-lbl" style="margin-bottom:10px;">&#128661; 선착대 / 출동 거리 및 시간 (직접 입력)</div>
-          <div class="grid-2">
-            <div class="field"><label>선착대명</label><input type="text" id="rptFirstUnit" oninput="rptLiveUpdate();" placeholder="예) 부석119안전센터"/></div>
-            <div class="field"><label>선착대 거리</label><input type="text" id="rptFirstDist" oninput="rptLiveUpdate();" placeholder="예) 3.2km"/></div>
-          </div>
-          <div class="grid-2">
-            <div class="field"><label>선착대 도착예상</label><input type="text" id="rptFirstTime" oninput="rptLiveUpdate();" placeholder="예) 약 5분"/></div>
-            <div class="field"><label>본서(서산소방서) 거리</label><input type="text" id="rptHqDist" oninput="rptLiveUpdate();" placeholder="예) 18.2km"/></div>
-          </div>
-          <div class="grid-2">
-            <div class="field"><label>본서 도착예상</label><input type="text" id="rptHqTime" oninput="rptLiveUpdate();" placeholder="예) 약 27분"/></div>
-          </div>
-        </div>
-        <div class="grid-2" style="margin-top:10px;">
-          <div class="field"><label>상황관리 (직급·이름)</label><input type="text" id="rptManager" oninput="rptLiveUpdate();" placeholder="소방장 유경수 (☎306)"/></div>
-          <div class="field"><label>담당근무자</label><input type="text" id="rptStaff" oninput="rptLiveUpdate();" placeholder="소방경 장순조"/></div>
-        </div>
-        <div class="field" style="margin-top:10px;"><label>사고 경위</label><textarea id="rptSit" oninput="rptLiveUpdate();" rows="3" placeholder="4층 어린이 수영장에서 검은연기가 발생함."></textarea></div>
-      </div>
-      <div class="rpt-nav-row">
-        <button class="rpt-nav-prev" onclick="rptGoTo(0)">← 스캔</button>
-        <button class="rpt-nav-next" onclick="rptGoTo(2)">피해현황 →</button>
-      </div>
-    </div>
-
-    <!-- PAGE 2: 피해현황 -->
-    <div class="rpt-page" id="rptP2">
-      <div class="card">
-        <div class="card-head"><span class="card-badge b-red">STEP 2</span><span class="card-title">피해현황</span></div>
-        <div class="rpt-ai-banner" id="rptP2AiBanner"><span class="rpt-ai-banner-ico">&#9889;</span><span class="rpt-ai-banner-text">AI가 자동 입력했습니다 ? 확인 후 수정하세요.</span></div>
-        <div class="sec-lbl" style="margin-bottom:8px;">인명 피해</div>
-        <div class="grid-2">
-          <div class="field"><label>인명피해 요약</label><input type="text" id="rptCasualty" oninput="rptLiveUpdate();" placeholder="없음 / 1명 부상"/></div>
-          <div class="field"><label>재산피해 요약</label><input type="text" id="rptPropSummary" oninput="rptLiveUpdate();" placeholder="4층 보일러실 화재 추정"/></div>
-          <div class="field"><label>사망 (명)</label><input type="number" id="rptDead" oninput="rptLiveUpdate();" value="0" min="0" style="text-align:center;font-family:var(--mono);font-size:16px;font-weight:700;"/></div>
-          <div class="field"><label>부상 (명)</label><input type="number" id="rptInj" oninput="rptLiveUpdate();" value="0" min="0" style="text-align:center;font-family:var(--mono);font-size:16px;font-weight:700;"/></div>
-        </div>
-        <div class="sec-lbl" style="margin-top:14px;margin-bottom:8px;">층별 구조 · 면적 현황</div>
-        <div style="overflow-x:auto;">
-          <table class="rpt-dmg-table">
-            <thead><tr><th style="width:15%;">구분</th><th style="width:18%;">구조</th><th style="width:18%;">크기</th><th style="width:22%;">용도</th><th style="width:18%;">비고</th><th style="width:9%;"></th></tr></thead>
-            <tbody id="rptDmgBody"></tbody>
-          </table>
-        </div>
-        <button class="rpt-add-btn" onclick="rptAddDmgRow()">＋ 층 추가</button>
-      </div>
-      <div class="rpt-nav-row">
-        <button class="rpt-nav-prev" onclick="rptGoTo(1)">← 기본정보</button>
-        <button class="rpt-nav-next" onclick="rptGoTo(3)">동원현황 →</button>
-      </div>
-    </div>
-
-    <!-- PAGE 3: 동원현황 -->
-    <div class="rpt-page" id="rptP3">
-      <div class="card">
-        <div class="card-head"><span class="card-badge b-blue">STEP 3</span><span class="card-title">동원현황</span></div>
-        <div class="rpt-ai-banner" id="rptP3AiBanner"><span class="rpt-ai-banner-ico">&#9889;</span><span class="rpt-ai-banner-text">AI가 자동 입력했습니다 ? 확인 후 수정하세요.</span></div>
-        <div class="sec-lbl" style="margin-bottom:5px;">&#128100; 출동인원 (명)</div>
-        <div style="overflow-x:auto;margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;min-width:460px;"><thead><tr><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">소방</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">경찰</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">군</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">관공서</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">의료</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">산림</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">기타</th><th style="background:#1a3a6b;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;background:rgba(0,0,0,0.25);">합계</th></tr></thead><tbody><tr><td style="border:1px solid var(--border);"><input type="number" id="ppl_fire" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_police" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_army" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_gov" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_med" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_forest" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="ppl_etc" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid #1a3a6b;background:#1a3a6b;color:#fff;font-weight:900;text-align:center;font-size:14px;font-family:var(--mono);" id="ppl_total">0</td></tr></tbody></table></div>
-        <div class="sec-lbl" style="margin-bottom:5px;">&#128658; 소방 장비 (대)</div>
-        <div style="overflow-x:auto;margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;min-width:540px;"><thead><tr><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">지휘</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">펌프</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">탱크</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">구조</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">구급</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">화학</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">고가/굴절</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">배연</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">조명</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">특수</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;">기타</th><th style="background:#E8600A;color:#fff;padding:5px 3px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:9px;font-weight:700;background:rgba(0,0,0,0.25);">합계</th></tr></thead><tbody><tr><td style="border:1px solid var(--border);"><input type="number" id="veh_cmd" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_pump" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_tank" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_rescue" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_ems" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_chem" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_ladder" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_smoke" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_light" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_special" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="veh_etc" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid #E8600A;background:#E8600A;color:#fff;font-weight:900;text-align:center;font-size:14px;font-family:var(--mono);" id="veh_fire_total">0</td></tr></tbody></table></div>
-        <div class="sec-lbl" style="margin-bottom:5px;">&#128661; 유관기관 장비 (대)</div>
-        <div style="overflow-x:auto;margin-bottom:6px;"><table style="width:100%;border-collapse:collapse;min-width:300px;"><thead><tr><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">경찰</th><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">군인</th><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">관공서</th><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">의료</th><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;">기타</th><th style="background:#555;color:#fff;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:10px;font-weight:700;background:rgba(0,0,0,0.3);">합계</th></tr></thead><tbody><tr><td style="border:1px solid var(--border);"><input type="number" id="rel_police" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="rel_army" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="rel_gov" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="rel_med" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid var(--border);"><input type="number" id="rel_etc" value="0" min="0" oninput="rptCalcPpl();rptCalcVeh();" style="width:100%;text-align:center;border:none;font-size:13px;font-weight:700;padding:5px 2px;background:transparent;font-family:var(--mono);color:var(--orange);"/></td><td style="border:1px solid #555;background:#555;color:#fff;font-weight:900;text-align:center;font-size:14px;font-family:var(--mono);" id="veh_rel_total">0</td></tr></tbody></table></div>
-        <div style="font-size:11px;color:var(--ink4);padding:4px 0;">총 장비: <b id="veh_grand_total" style="font-family:var(--mono);">0</b>대 &nbsp;|&nbsp; 총 인원: <b id="ppl_grand_total" style="font-family:var(--mono);">0</b>명</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="card-badge b-green">첨부사진</span><span class="card-title">위치도 · 현장사진</span></div>
-        <div class="grid-2">
-          <div>
-            <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:7px;letter-spacing:0.6px;">&#128506; 위치도</div>
-            <div class="rpt-photo-zone" onclick="document.getElementById('rptMapImg').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');rptHandlePhotoDrop(event,'map')">
-              <input type="file" id="rptMapImg" accept="image/*" onchange="rptHandlePhoto(this,'map')"/>
-              <div class="pz-ico">&#128506;</div><div class="pz-lbl">지도 사진</div>
-              <div style="font-size:10px;color:var(--ink4);margin-top:3px;">탭하거나 드래그해서 올리기</div>
-            </div>
-            <div id="rptMapPreview" style="margin-top:6px;border-radius:var(--r2);overflow:hidden;"></div>
-          </div>
-          <div>
-            <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:7px;letter-spacing:0.6px;">&#128247; 현장사진</div>
-            <div class="rpt-photo-zone" onclick="document.getElementById('rptSceneImg').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');rptHandlePhotoDrop(event,'scene')">
-              <input type="file" id="rptSceneImg" accept="image/*" onchange="rptHandlePhoto(this,'scene')"/>
-              <div class="pz-ico">&#128247;</div><div class="pz-lbl">현장 사진</div>
-              <div style="font-size:10px;color:var(--ink4);margin-top:3px;">탭하거나 드래그해서 올리기</div>
-            </div>
-            <div id="rptScenePreview" style="margin-top:6px;border-radius:var(--r2);overflow:hidden;"></div>
-          </div>
-        </div>
-      </div>
-      <div class="rpt-nav-row">
-        <button class="rpt-nav-prev" onclick="rptGoTo(2)">← 피해현황</button>
-        <button class="rpt-nav-next" onclick="rptGoTo(4)">조치사항 →</button>
-      </div>
-    </div>
-
-    <!-- PAGE 4: 조치사항 -->
-    <div class="rpt-page" id="rptP4">
-      <div class="card">
-        <div class="card-head"><span class="card-badge b-navy">STEP 4</span><span class="card-title">조치사항 타임라인</span></div>
-        <div class="rpt-ai-banner" id="rptP4AiBanner"><span class="rpt-ai-banner-ico">&#9889;</span><span class="rpt-ai-banner-text">AI가 자동 입력했습니다 ? 시간 순서대로 확인하세요.</span></div>
-        <div style="font-size:11px;color:var(--ink4);margin-bottom:10px;line-height:1.6;">&#9998; 시간과 조치 내용을 순서대로 입력하세요.</div>
-        <div id="rptActionList"></div>
-        <button class="rpt-add-btn" onclick="rptAddActionRow()">＋ 조치 추가</button>
-      </div>
-      <div class="card" style="border:1.5px solid var(--navy);background:linear-gradient(135deg,#f0f4ff,#fafbff);">
-        <div class="card-head" style="margin-bottom:10px;padding-bottom:10px;">
-          <span style="font-size:14px;">&#9989;</span><span class="card-title" style="color:var(--navy);">입력 내용 최종 확인</span>
-        </div>
-        <div id="rptSummaryPreview" style="font-size:12px;color:var(--ink2);line-height:2.2;"></div>
-      </div>
-      <div class="rpt-nav-row">
-        <button class="rpt-nav-prev" onclick="rptGoTo(3)">← 동원현황</button>
-        <button class="rpt-nav-next navy" onclick="rptRunGenerate()">&#128196; 공식 보고서 생성</button>
-      </div>
-    </div>
-
-    <!-- PAGE 5: 완성 -->
-    <div class="rpt-page" id="rptP5">
-      <div class="card" id="rptGeneratingCard">
-        <div class="card-head">
-          <span class="card-badge b-navy">생성 중</span>
-          <span class="card-title">공식 보고서 작성 중...</span>
-          <span id="rptTypeBadge" style="margin-left:auto;font-size:11px;font-weight:800;padding:3px 9px;border-radius:100px;background:var(--orange-lt);color:var(--orange);border:1px solid var(--orange-bd);"></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span id="rptGenStatus" style="font-size:12px;color:var(--ink4);font-weight:700;">서산소방서 공식 양식으로 작성 중...</span>
-          <div class="dots" id="rptDots" style="color:var(--navy);"><span></span><span></span><span></span></div>
-        </div>
-        <div class="rpt-prog"><div class="rpt-prog-bar" id="rptProgBar"></div></div>
-      </div>
-
-      <div id="rptOutputCard" style="display:none;">
-        <!-- 완성 헤더 -->
-        <div style="background:linear-gradient(135deg,var(--navy),#2a5298);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(26,58,107,0.25);">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <span style="font-size:22px;">&#128196;</span>
-            <div>
-              <div style="font-size:14px;font-weight:900;color:#fff;" id="rptFinalTitle">서산소방서 발생보고서</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:2px;" id="rptFinalMeta"></div>
-            </div>
-            <div style="margin-left:auto;"><span id="rptTypeBadge2" style="font-size:11px;font-weight:800;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.25);"></span></div>
-          </div>
-          <!-- 출력 버튼 3개 -->
-          <div class="rpt-out-grid" style="grid-template-columns:1fr 1fr 1fr;">
-            <button class="rpt-out-btn pdf" onclick="rptSaveJpg()"><span class="out-ico">&#128190;</span>사진파일 저장</button>
-            <button class="rpt-out-btn copy" onclick="rptShareJpg()"><span class="out-ico">&#128228;</span>사진파일 전파</button>
-            <button class="rpt-out-btn reset" onclick="rptReset()"><span class="out-ico">&#9851;</span>새 보고서</button>
-          </div>
-        </div>
-
-<!-- 미리보기: 우측 rptLiveFrame 패널로 통합됨 -->
-
-        <div class="rpt-msg" id="rptMsg"></div>
-        <div class="info-box" style="margin-top:10px;">
-          &#128190; <b>사진파일 저장</b>: 보고서를 JPG 이미지로 기기에 저장합니다<br>
-          &#128228; <b>사진파일 전파</b>: 카카오톡·문자 등으로 이미지를 바로 전파합니다
-        </div>
-      </div>
-
-      <div class="rpt-nav-row" style="margin-top:4px;">
-        <button class="rpt-nav-prev" style="flex:1;" onclick="rptGoTo(4)">&#8592; 수정하기</button>
-      </div>
-    </div>
-      </div><!-- /rpt-split-input -->
-
-</div>
-
-<!-- 탭: 지도 -->
-<div class="screen" id="tab-map">
-
-  <!-- 출동장소 현황 -->
-  <div id="mapLocCard" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:15px;">&#128205;</span>
-      <span style="font-size:13px;font-weight:900;color:#fff;">현재 출동장소</span>
-    </div>
-    <div style="padding:13px 16px;">
-      <div id="mapLocText" style="font-size:14px;font-weight:700;color:var(--ink4);">출동 탭에서 장소를 입력하세요</div>
-      <div id="mapLocHint" style="font-size:11px;color:var(--ink4);margin-top:4px;">장소 입력 후 아래 지도앱으로 바로 열 수 있습니다</div>
-    </div>
-  </div>
-  <!-- 빠른 주소 검색 -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:14px;box-shadow:var(--shadow);">
-    <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;">&#128269; 주소 직접 검색</div>
-    <div style="display:flex;gap:8px;">
-      <input id="mapSearchInput" placeholder="검색할 주소 입력" style="flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')searchMapAddr()"/>
-      <button onclick="searchMapAddr()" style="padding:9px 14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">검색</button>
-    </div>
-  </div>
-  <div class="sec-lbl">지도 앱 바로열기</div>
-  <a id="mapNaver" href="https://map.naver.com" target="_blank" class="map-app-btn"><div class="map-app-icon" style="background:#03C75A;">N</div><div class="map-app-info"><div class="map-app-name">네이버지도</div><div class="map-app-loc" id="naverLocLabel" style="display:none;"></div></div><div class="map-app-arrow">&#8250;</div></a>
-  <a id="mapKakao" href="https://map.kakao.com" target="_blank" class="map-app-btn"><div class="map-app-icon" style="background:#FEE500;">K</div><div class="map-app-info"><div class="map-app-name">카카오맵</div><div class="map-app-loc" id="kakaoLocLabel" style="display:none;"></div></div><div class="map-app-arrow">&#8250;</div></a>
-  <a id="mapGoogle" href="https://maps.google.com" target="_blank" class="map-app-btn"><div class="map-app-icon" style="background:#4285F4;">G</div><div class="map-app-info"><div class="map-app-name">구글지도</div><div class="map-app-loc" id="googleLocLabel" style="display:none;"></div></div><div class="map-app-arrow">&#8250;</div></a>
-</div>
-
-<!-- 탭: 기상상황 -->
-
-<!-- ===== 탭: 설정 ===== -->
-<div class="screen" id="tab-settings">
-
-  <!-- 잠금 카드 -->
-  <div id="settingsLockCard" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:14px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:18px;">&#9881;</span>
-      <span style="font-size:14px;font-weight:900;color:#fff;">관리자 설정</span>
-      <span style="font-size:9px;color:rgba(255,255,255,0.5);margin-left:auto;">ADMIN SETTINGS</span>
-    </div>
-    <div id="settingsLock" style="padding:28px 20px 24px;text-align:center;">
-      <div style="width:64px;height:64px;background:var(--orange-lt);border:2px solid var(--orange-bd);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">&#128274;</div>
-      <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:4px;">관리자 전용</div>
-      <div style="font-size:12px;color:var(--ink4);margin-bottom:20px;">비밀번호를 입력해야 API 키를 관리할 수 있습니다</div>
-      <input type="password" id="settingsPassword" placeholder="비밀번호 입력"
-        onkeydown="if(event.key==='Enter')checkSettingsPassword()"
-        style="width:100%;font-size:20px;text-align:center;letter-spacing:6px;padding:13px;border:2px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;margin-bottom:10px;transition:border-color .15s;"
-        onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-      <button onclick="checkSettingsPassword()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(232,96,10,0.32);">&#128275; 잠금 해제</button>
-      <div id="lockError" style="display:none;margin-top:12px;font-size:12px;font-weight:700;color:var(--red);padding:10px;background:var(--red-lt);border-radius:var(--r3);border:1px solid rgba(217,48,37,0.2);">&#10060; 비밀번호가 틀렸습니다.</div>
-    </div>
-
-    <!-- 잠금 해제 후 내용 -->
-    <div id="settingsContent" style="display:none;padding:16px;">
-      <div style="background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-        <span style="font-size:16px;">&#128275;</span>
-        <span style="font-size:11px;font-weight:700;color:var(--green);">잠금 해제됨 — API 키는 이 기기에만 저장됩니다</span>
-      </div>
-
-      <!-- Gemini 키 입력 -->
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div style="width:32px;height:32px;background:linear-gradient(135deg,#4285F4,#34A853);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;">G</div>
-          <div>
-            <div style="font-size:13px;font-weight:800;color:var(--ink);">Gemini API 키</div>
-            <div style="font-size:10px;color:var(--ink4);">AI 분석 · 맞춤법 검사</div>
-          </div>
-          <span id="geminiStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
-        </div>
-        <input type="password" id="settingGeminiKey" placeholder="AIzaSy... 새 키 입력"
-          style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;transition:border-color .15s;"
-          onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">&#128279; aistudio.google.com 에서 무료 발급</div>
-      </div>
-
-      <!-- Kakao 키 입력 -->
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <div style="width:32px;height:32px;background:#FEE500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#333;flex-shrink:0;">K</div>
-          <div>
-            <div style="font-size:13px;font-weight:800;color:var(--ink);">Kakao REST API 키</div>
-            <div style="font-size:10px;color:var(--ink4);">지도 검색</div>
-          </div>
-          <span id="kakaoStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
-        </div>
-        <input type="password" id="settingKakaoKey" placeholder="fa62c0... 새 키 입력"
-          style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;transition:border-color .15s;"
-          onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">&#128279; developers.kakao.com 에서 무료 발급</div>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button onclick="saveApiKeys()" style="flex:2;padding:14px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(232,96,10,0.3);">&#128190; 저장</button>
-        <button onclick="clearApiKeys()" style="flex:1;padding:14px;background:var(--red-lt);color:var(--red);border:1.5px solid rgba(217,48,37,0.2);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">&#128465; 삭제</button>
-      </div>
-      <div id="keyStatus" style="display:none;font-size:12px;font-weight:700;padding:10px 13px;border-radius:var(--r3);text-align:center;margin-bottom:10px;"></div>
-      <button onclick="lockSettings()" style="width:100%;padding:10px;background:none;color:var(--ink4);border:1.5px solid var(--border);border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">&#128274; 잠금</button>
-    </div>
-  </div>
-
-  <!-- API 등록 현황 -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,#0D9B6A,#0a7a54);padding:12px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:16px;">&#9989;</span>
-      <span style="font-size:13px;font-weight:900;color:#fff;">API 등록 현황</span>
-    </div>
-    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
-      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
-        <span id="geminiStatus" style="font-size:20px;">&#10060;</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:800;color:var(--ink);">Gemini API</div>
-          <div style="font-size:11px;color:var(--ink4);" id="geminiStatusText">미등록 — AI 분석·맞춤법 불가</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
-        <span id="kakaoStatus" style="font-size:20px;">&#10060;</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:800;color:var(--ink);">Kakao API</div>
-          <div style="font-size:11px;color:var(--ink4);" id="kakaoStatusText">미등록 — 지도 검색 불가</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 앱 정보 -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);">
-    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:10px;">&#128196; 앱 정보</div>
-    <div style="font-size:12px;color:var(--ink2);line-height:2.2;">
-      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">개발</span><span style="font-weight:700;">서산소방서</span></div>
-      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">배포</span><span style="font-weight:700;font-family:var(--mono);font-size:11px;">fire-report-5m3.pages.dev</span></div>
-      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">보안</span><span style="font-size:11px;">API 키는 이 기기에만 저장, 외부 전송 없음</span></div>
-    </div>
-  </div>
-</div>
-
-<nav class="bottom-nav">
-  <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)"><span class="nav-ico">&#128680;</span><span>출동</span></button>
-  <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)"><span class="nav-ico">&#128196;</span><span>동향보고서</span></button>
-  <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)"><span class="nav-ico">&#128506;</span><span>지도</span></button>
-  <button class="nav-btn" id="nav-contacts" onclick="switchTab('contacts',this)"><span class="nav-ico">&#128222;</span><span>연락처</span></button>
-  <button class="nav-btn" id="nav-settings" onclick="switchTab('settings',this)"><span class="nav-ico">&#9881;</span><span>설정</span></button>
-</nav>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// API 키 - localStorage에서 로드
-var KAKAO_REST_KEY = localStorage.getItem('sobang_kakao_key') || '';
-var GEMINI_API_KEY = localStorage.getItem('sobang_gemini_key') || '';
-var GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=';
-
-var FIELDS={
-  '화재':[{id:'fireObject',label:'발화 대상물',ph:'예) 단독주택, 공장'},{id:'fireScale',label:'화재 규모',ph:'예) 소형, 반소'},{id:'fireCasualty',label:'인명 피해',ph:'예) 대피완료'}],
-  '구조':[{id:'rescueType',label:'구조 유형',ph:'예) 교통사고, 수난'},{id:'rescueVictim',label:'요구조자',ph:'예) 1명, 의식 있음'},{id:'rescueEquip',label:'사용 장비',ph:'예) 유압구조기구'},{id:'rescueDone',label:'구조 완료',ph:'예) 구조 완료'}],
-  '구급':[{id:'patientCount',label:'환자 수·연령대',ph:'예) 1명, 40대 남성'},{id:'symptoms',label:'증상·의식',ph:'예) 호흡곤란'},{id:'firstAid',label:'처치 내용',ph:'예) CPR'},{id:'hospital',label:'이송 병원',ph:'예) OO병원'}],
-};
-
-var TEMPLATES={
-  '비상':[
-    {title:'대응 1단계 발령',bCls:'b-orange',bTxt:'1단계',text:'[대응 1단계 발령]\n\n○○ 지역 ○○ 사고 발생으로\n대응 1단계를 발령합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 대상 출동대 : 전 출동대\n▶ 조치 사항 : 즉시 출동 준비 및 대기\n\n<서산소방서 상황실>'},
-    {title:'대응 2단계 발령',bCls:'b-red',bTxt:'2단계',text:'[대응 2단계 발령]\n\n○○ 지역 대형 사고 발생으로\n대응 2단계를 발령합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 대상 : 전 출동대 및 인접 소방서\n▶ 조치 사항 : 즉시 출동 / 추가 인력 확보\n\n<서산소방서 상황실>'},
-    {title:'대응단계 해제',bCls:'b-green',bTxt:'해제',text:'[대응단계 해제]\n\n사고 종료로 대응단계를 해제합니다.\n\n▶ 해제 시각 : ○○시 ○○분\n수고하셨습니다.\n\n<서산소방서 상황실>'}
-  ],
-  '소집':[
-    {title:'비상소집 (전 직원)',bCls:'b-red',bTxt:'긴급',text:'[비상소집 명령]\n\n○○ 상황 발생으로 비상소집을 명합니다.\n\n▶ 대상 : 전 소방공무원\n▶ 집결 : ○○소방서 / ○○시 ○○분까지\n\n<서산소방서 상황실>'},
-    {title:'비상소집 해제',bCls:'b-green',bTxt:'해제',text:'[비상소집 해제]\n\n비상소집을 해제합니다.\n\n▶ 해제 시각 : ○○시 ○○분\n수고하셨습니다.\n\n<서산소방서 상황실>'}
-  ],
-  '기상':[
-    {title:'폭우 출동태세 강화',bCls:'b-blue',bTxt:'폭우',text:'[폭우 대비 출동태세 강화]\n\n기상청 폭우 특보 발령에 따라 출동태세를 강화합니다.\n\n▶ 발령 시각 : ○○시 ○○분\n▶ 수난구조장비 점검 및 출동 준비\n\n<서산소방서 상황실>'},
-    {title:'기상특보 해제',bCls:'b-green',bTxt:'해제',text:'[기상특보 해제]\n\n기상특보가 해제되었습니다.\n\n▶ 해제 시각 : ○○시 ○○분\n수고하셨습니다.\n\n<서산소방서 상황실>'}
-  ],
-  '기타':[
-    {title:'훈련 출동 지령',bCls:'b-yellow',bTxt:'훈련',text:'[훈련 출동 지령]\n\n○○ 훈련을 실시합니다.\n\n▶ 일시 : ○○\n▶ 장소 : ○○\n\n<서산소방서 상황실>'},
-    {title:'일반 공지',bCls:'b-blue',bTxt:'공지',text:'[공지사항]\n\n○○ 내용을 알립니다.\n\n▶ 내용 : ○○\n\n<서산소방서 상황실>'}
-  ],
-};
-
-var ALL_FIELD_IDS=['location','sigName','accNo','fireObject','fireScale','fireCasualty'];
-var curType='화재',curSeq='출동';
-var reports=[],reportCount=0;
-var dispLog=[],dispLogSeq=0;
-var curCat='비상',curTplOrig='';
-var toastTimer=null;
-var deferredInstallPrompt=null;
-
-var rpt={
-  type:'',report:'',data:{},
-  dmgRows:[],actionRows:[],
-  incidentLatLng:null,distTimer:null,
-  mapPhotoURL:null,scenePhotoURL:null,
-  distNote:'',scanImages:[],
-};
-
-/* 지도 함수 */
-var rptKakaoMap=null,rptKakaoMarker=null,rptKakaoIW=null;
-
-function rptToggleLivePreview(){
-  // Legacy - not used in new layout
-}
-
-function rptSwitchTab(tab){
-  var inputEl=document.getElementById('rptSplitInput');
-  var previewEl=document.getElementById('rptSplitPreview');
-  var btnInput=document.getElementById('rptTabInput');
-  var btnPreview=document.getElementById('rptTabPreview');
-  if(tab==='input'){
-    if(inputEl)inputEl.classList.remove('mobile-hide');
-    if(previewEl){previewEl.classList.remove('mobile-show');previewEl.style.display='';}
-    if(btnInput)btnInput.classList.add('on');
-    if(btnPreview)btnPreview.classList.remove('on');
-  }else{
-    if(inputEl)inputEl.classList.add('mobile-hide');
-    if(previewEl){previewEl.classList.add('mobile-show');previewEl.style.display='flex';}
-    if(btnInput)btnInput.classList.remove('on');
-    if(btnPreview)btnPreview.classList.add('on');
-    // 탭 전환 후 약간 대기 (DOM 업데이트) 후 렌더링
-    setTimeout(rptLiveUpdate, 100);
-  }
-}
-var rptLiveTimer=null;
-
-function rptLiveUpdateData(){
-  var dtEl=document.getElementById('rptDt');
-  var dtObj2=dtEl&&dtEl.value?new Date(dtEl.value):new Date();
-  var mo2=dtObj2.getMonth()+1,dd3=dtObj2.getDate();
-  var dayN=['일','월','화','수','목','금','토'];
-  var dtFmt=dtObj2.getFullYear()+'. '+mo2+'. '+dd3+'.('+dayN[dtObj2.getDay()]+') '
-    +String(dtObj2.getHours()).padStart(2,'0')+':'+String(dtObj2.getMinutes()).padStart(2,'0');
-  rpt.data={
-    type:rpt.type||'화재',station:'서산소방서',
-    datetime:dtFmt,
-    location:(document.getElementById('rptAddr')||{}).value||'',
-    callCount:(document.getElementById('rptCallCount')||{}).value||'',
-    manager:(document.getElementById('rptManager')||{}).value||'',
-    staff:(document.getElementById('rptStaff')||{}).value||'',
-    people:(function(){var m=rptGetMobilData();return m.ppl;}()),
-    vehicles:(function(){var m=rptGetMobilData();return m.veh;}()),
-    mobilDetail:(function(){return rptGetMobilData();}()),
-    dead:(document.getElementById('rptDead')||{}).value||'0',
-    injured:(document.getElementById('rptInj')||{}).value||'0',
-    casualty:(document.getElementById('rptCasualty')||{}).value||'없음',
-    propSummary:(document.getElementById('rptPropSummary')||{}).value||'',
-    situation:(document.getElementById('rptSit')||{}).value||'',
-    firstUnit:(document.getElementById('rptFirstUnit')||{}).value||'',
-    firstDist:(document.getElementById('rptFirstDist')||{}).value||'',
-    firstTime:(document.getElementById('rptFirstTime')||{}).value||'',
-    hqDist:(document.getElementById('rptHqDist')||{}).value||'',
-    hqTime:(document.getElementById('rptHqTime')||{}).value||'',
-  };
-}
-
-/* ── scale 계산: 패널 너비 ÷ A4 너비(794px) ── */
-function rptCalcScale(containerEl){
-  var panelW = containerEl ? containerEl.clientWidth : window.innerWidth;
-  var A4_PX = 794; // A4 210mm @ 96dpi
-  var scale = Math.min(1, (panelW - 4) / A4_PX);
-  return Math.round(scale * 1000) / 1000;
-}
-
-/* ── 보고서 HTML에 scale CSS 주입 ── */
-function rptInjectScale(rawHtml, scale){
-  var scaleCss = [
-    '<style>',
-    'html,body{margin:0;padding:0;background:#fff;}',
-    '.page{',
-    '  transform:scale('+scale+');',
-    '  transform-origin:top left;',
-    '  width:'+(100/scale)+'%;',   // 스케일 역수로 컨테이너 넘침 방지
-    '  margin:0;',
-    '  padding:10mm 14mm;',
-    '}',
-    '</style>'
-  ].join('');
-  // </head> 바로 앞에 삽입
-  return rawHtml.replace('</head>', scaleCss + '</head>');
-}
-
-function rptLiveUpdate(){
-  clearTimeout(rptLiveTimer);
-  rptLiveTimer=setTimeout(function(){
-    var frame=document.getElementById('rptLiveFrame');
-    if(!frame)return;
-
-    // 모바일: 미리보기 탭일 때만 렌더링
-    var isMobile=window.innerWidth<=900;
-    var previewEl=document.getElementById('rptSplitPreview');
-    if(isMobile&&(!previewEl||!previewEl.classList.contains('mobile-show')))return;
-
-    rptLiveUpdateData();
-    var rawHtml=rptBuildHTML();
-
-    // scale 계산
-    var scale=rptCalcScale(frame);
-    var scaledHtml=rptInjectScale(rawHtml, scale);
-
-    // 컨테이너 높이 = A4 실제 높이 × scale
-    // (렌더 전 예상치: A4 297mm ? 1123px, 실제는 내용 따라 다름)
-    var estH = Math.round(1123 * scale);
-
-    var existing=frame.querySelector('iframe');
-    var writeToFrame=function(iframe){
-      setTimeout(function(){
-        try{
-          var doc=iframe.contentDocument||iframe.contentWindow.document;
-          doc.open();doc.write(scaledHtml);doc.close();
-          // 실제 높이 측정 후 iframe 높이 조정
-          setTimeout(function(){
-            try{
-              var realH=doc.body.scrollHeight;
-              // scale 적용 후 실제 표시 높이
-              var displayH=Math.round(realH*scale)+16;
-              iframe.style.height=displayH+'px';
-              frame.style.height=displayH+'px';
-            }catch(e){}
-          },350);
-        }catch(e){}
-      },30);
-    };
-
-    if(existing){
-      // 기존 iframe 재사용 (깜빡임 방지)
-      existing.style.height=estH+'px';
-      writeToFrame(existing);
-    }else{
-      var iframe=document.createElement('iframe');
-      iframe.setAttribute('sandbox','allow-same-origin');
-      iframe.style.cssText='width:100%;border:none;display:block;height:'+estH+'px;';
-      frame.innerHTML='';
-      frame.appendChild(iframe);
-      writeToFrame(iframe);
-    }
-  },600);
-}
-function rptInitMap(){
-  if(!window.kakao||!window.kakao.maps||!window.kakaoMapReady)return;
-  var container=document.getElementById('rptMapCanvas');
-  if(!container||rptKakaoMap)return;
-  kakao.maps.load(function(){
-    var opts={center:new kakao.maps.LatLng(36.7844,126.4503),level:4};
-    rptKakaoMap=new kakao.maps.Map(container,opts);
-    rptKakaoMarker=new kakao.maps.Marker({map:rptKakaoMap,position:opts.center});
-    rptKakaoMarker.setVisible(false);
-    rptKakaoIW=new kakao.maps.InfoWindow({zIndex:1});
-  });
-}
-function rptMoveMap(lat,lng,addr){
-  if(!window.kakao||!window.kakaoMapReady)return;
-  if(!rptKakaoMap)rptInitMap();
-  setTimeout(function(){
-    if(!rptKakaoMap)return;
-    var pos=new kakao.maps.LatLng(lat,lng);
-    rptKakaoMap.setCenter(pos);
-    rptKakaoMap.setLevel(3);
-    rptKakaoMarker.setPosition(pos);
-    rptKakaoMarker.setVisible(true);
-    if(rptKakaoIW)rptKakaoIW.close();
-    rptKakaoIW=new kakao.maps.InfoWindow({content:'<div style="padding:4px 8px;font-size:12px;font-weight:700;color:#1a3a6b;white-space:nowrap;">&#128506; '+addr+'</div>',zIndex:1});
+        </div>',zIndex:1});
     rptKakaoIW.open(rptKakaoMap,rptKakaoMarker);
-    document.getElementById('rptMapSection').style.display='block';
+    // rptMapSection removed
   },300);
 }
 
@@ -2433,6 +1897,124 @@ function showKeyStatus(msg, ok) {
   el.style.color = ok ? 'var(--green)' : 'var(--red)';
   setTimeout(function(){ el.style.display='none'; }, 3000);
 }
+
+
+
+<!-- ===== 탭: 지도 ===== -->
+<div class="screen" id="tab-map">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);">
+    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:15px;">&#128205;</span><span style="font-size:13px;font-weight:900;color:#fff;">현재 출동장소</span>
+    </div>
+    <div style="padding:13px 16px;">
+      <div id="mapLocText" style="font-size:14px;font-weight:700;color:var(--ink4);">출동 탭에서 장소를 입력하세요</div>
+      <div id="mapLocHint" style="font-size:11px;color:var(--ink4);margin-top:4px;">장소 입력 후 아래 지도앱으로 바로 열 수 있습니다</div>
+    </div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:14px;box-shadow:var(--shadow);">
+    <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;">&#128269; 주소 직접 검색</div>
+    <div style="display:flex;gap:8px;">
+      <input id="mapSearchInput" placeholder="검색할 주소 입력" style="flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')searchMapAddr()"/>
+      <button onclick="searchMapAddr()" style="padding:9px 14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">검색</button>
+    </div>
+  </div>
+  <div class="sec-lbl">지도 앱 바로열기</div>
+  <a id="mapNaver" href="https://map.naver.com" target="_blank" class="map-app-btn">
+    <div class="map-app-icon" style="background:#03C75A;">N</div>
+    <div class="map-app-info"><div class="map-app-name">네이버지도</div><div class="map-app-loc" id="naverLocLabel" style="display:none;"></div></div>
+    <div class="map-app-arrow">&#8250;</div>
+  </a>
+  <a id="mapKakao" href="https://map.kakao.com" target="_blank" class="map-app-btn">
+    <div class="map-app-icon" style="background:#FEE500;color:#333;">K</div>
+    <div class="map-app-info"><div class="map-app-name">카카오맵</div><div class="map-app-loc" id="kakaoLocLabel" style="display:none;"></div></div>
+    <div class="map-app-arrow">&#8250;</div>
+  </a>
+  <a id="mapGoogle" href="https://maps.google.com" target="_blank" class="map-app-btn">
+    <div class="map-app-icon" style="background:#4285F4;">G</div>
+    <div class="map-app-info"><div class="map-app-name">구글지도</div><div class="map-app-loc" id="googleLocLabel" style="display:none;"></div></div>
+    <div class="map-app-arrow">&#8250;</div>
+  </a>
+</div>
+
+<!-- ===== 탭: 설정 ===== -->
+<div class="screen" id="tab-settings">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:14px 16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:18px;">&#9881;</span>
+      <span style="font-size:14px;font-weight:900;color:#fff;">관리자 설정</span>
+      <span style="font-size:9px;color:rgba(255,255,255,0.5);margin-left:auto;">ADMIN SETTINGS</span>
+    </div>
+    <div id="settingsLock" style="padding:28px 20px 24px;text-align:center;">
+      <div style="width:64px;height:64px;background:var(--orange-lt);border:2px solid var(--orange-bd);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">&#128274;</div>
+      <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:4px;">관리자 전용</div>
+      <div style="font-size:12px;color:var(--ink4);margin-bottom:20px;">비밀번호를 입력해야 API 키를 관리할 수 있습니다</div>
+      <input type="password" id="settingsPassword" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')checkSettingsPassword()" style="width:100%;font-size:20px;text-align:center;letter-spacing:6px;padding:13px;border:2px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;margin-bottom:10px;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+      <button onclick="checkSettingsPassword()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128275; 잠금 해제</button>
+      <div id="lockError" style="display:none;margin-top:12px;font-size:12px;font-weight:700;color:var(--red);padding:10px;background:var(--red-lt);border-radius:var(--r3);">&#10060; 비밀번호가 틀렸습니다.</div>
+    </div>
+    <div id="settingsContent" style="display:none;padding:16px;">
+      <div style="background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:16px;">&#128275;</span><span style="font-size:11px;font-weight:700;color:var(--green);">잠금 해제됨 — API 키는 이 기기에만 저장됩니다</span>
+      </div>
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:32px;height:32px;background:linear-gradient(135deg,#4285F4,#34A853);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;">G</div>
+          <div><div style="font-size:13px;font-weight:800;">Gemini API 키</div><div style="font-size:10px;color:var(--ink4);">AI 분석 · 맞춤법</div></div>
+          <span id="geminiStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
+        </div>
+        <input type="password" id="settingGeminiKey" placeholder="AIzaSy... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">aistudio.google.com 에서 무료 발급</div>
+      </div>
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:32px;height:32px;background:#FEE500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#333;flex-shrink:0;">K</div>
+          <div><div style="font-size:13px;font-weight:800;">Kakao REST API 키</div><div style="font-size:10px;color:var(--ink4);">지도 검색</div></div>
+          <span id="kakaoStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
+        </div>
+        <input type="password" id="settingKakaoKey" placeholder="fa62c0... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">developers.kakao.com 에서 무료 발급</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button onclick="saveApiKeys()" style="flex:2;padding:14px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128190; 저장</button>
+        <button onclick="clearApiKeys()" style="flex:1;padding:14px;background:var(--red-lt);color:var(--red);border:1.5px solid rgba(217,48,37,0.2);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">&#128465; 삭제</button>
+      </div>
+      <div id="keyStatus" style="display:none;font-size:12px;font-weight:700;padding:10px 13px;border-radius:var(--r3);text-align:center;margin-bottom:10px;"></div>
+      <button onclick="lockSettings()" style="width:100%;padding:10px;background:none;color:var(--ink4);border:1.5px solid var(--border);border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">&#128274; 잠금</button>
+    </div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
+    <div style="background:linear-gradient(135deg,#0D9B6A,#0a7a54);padding:12px 16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:16px;">&#9989;</span><span style="font-size:13px;font-weight:900;color:#fff;">API 등록 현황</span>
+    </div>
+    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
+        <span id="geminiStatus" style="font-size:20px;">&#10060;</span>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:800;">Gemini API</div><div style="font-size:11px;color:var(--ink4);" id="geminiStatusText">미등록</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
+        <span id="kakaoStatus" style="font-size:20px;">&#10060;</span>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:800;">Kakao API</div><div style="font-size:11px;color:var(--ink4);" id="kakaoStatusText">미등록</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);">
+    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;">&#128196; 앱 정보</div>
+    <div style="font-size:12px;color:var(--ink2);line-height:2.2;">
+      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">개발</span><span style="font-weight:700;">서산소방서</span></div>
+      <div style="display:flex;gap:6px;"><span style="color:var(--ink4);min-width:40px;">배포</span><span style="font-weight:700;font-family:var(--mono);font-size:11px;">fire-report-5m3.pages.dev</span></div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)"><span class="nav-ico">&#128680;</span><span>출동</span></button>
+  <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)"><span class="nav-ico">&#128196;</span><span>동향보고서</span></button>
+  <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)"><span class="nav-ico">&#128506;</span><span>지도</span></button>
+  <button class="nav-btn" id="nav-contacts" onclick="switchTab('contacts',this)"><span class="nav-ico">&#128222;</span><span>연락처</span></button>
+  <button class="nav-btn" id="nav-settings" onclick="switchTab('settings',this)"><span class="nav-ico">&#9881;</span><span>설정</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
 
 </script>
 </body>
