@@ -2330,23 +2330,33 @@ function showKeyStatus(msg, ok) {
       <div style="background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
         <span style="font-size:16px;">&#128275;</span><span style="font-size:11px;font-weight:700;color:var(--green);">잠금 해제됨 — API 키는 이 기기에만 저장됩니다</span>
       </div>
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
           <div style="width:32px;height:32px;background:linear-gradient(135deg,#4285F4,#34A853);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;">G</div>
-          <div><div style="font-size:13px;font-weight:800;">Gemini API 키</div><div style="font-size:10px;color:var(--ink4);">AI 분석 · 맞춤법</div></div>
-          <span id="geminiStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:800;">Gemini API 키</div>
+            <div style="font-size:11px;color:var(--ink4);">AI 분석 · 맞춤법</div>
+          </div>
+          <span id="geminiStatusBadge" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
         </div>
-        <input type="password" id="settingGeminiKey" placeholder="AIzaSy... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">aistudio.google.com 에서 무료 발급</div>
+        <div style="padding:0 2px;">
+          <input type="password" id="settingGeminiKey" placeholder="AIzaSy... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+          <div style="font-size:11px;color:var(--ink4);margin-top:5px;">aistudio.google.com 에서 무료 발급</div>
+        </div>
       </div>
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);">
           <div style="width:32px;height:32px;background:#FEE500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#333;flex-shrink:0;">K</div>
-          <div><div style="font-size:13px;font-weight:800;">Kakao REST API 키</div><div style="font-size:10px;color:var(--ink4);">지도 검색</div></div>
-          <span id="kakaoStatusBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:800;">Kakao REST API 키</div>
+            <div style="font-size:11px;color:var(--ink4);">지도 검색</div>
+          </div>
+          <span id="kakaoStatusBadge" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--green-lt);color:var(--green);display:none;">등록됨</span>
         </div>
-        <input type="password" id="settingKakaoKey" placeholder="fa62c0... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        <div style="font-size:10px;color:var(--ink4);margin-top:5px;">developers.kakao.com 에서 무료 발급</div>
+        <div style="padding:0 2px;">
+          <input type="password" id="settingKakaoKey" placeholder="fa62c0... 새 키 입력" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--mono);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+          <div style="font-size:11px;color:var(--ink4);margin-top:5px;">developers.kakao.com 에서 무료 발급</div>
+        </div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
         <button onclick="saveApiKeys()" style="flex:2;padding:14px;background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128190; 저장</button>
