@@ -25,7 +25,7 @@
   --yellow:#B45309; --yellow-lt:#FFFBEB;
   --purple:#7C3AED; --purple-lt:#F5F3FF;
   --navy:#1a3a6b;
-  --bg:#F2F3F7; --surface:#FFFFFF; --surface2:#F8F9FB;
+  --bg:#DDE3EF; --surface:#FFFFFF; --surface2:#F8F9FB;
   --border:#E4E7EE; --border2:#CDD2DE;
   --ink:#111827; --ink2:#374151; --ink3:#6B7280; --ink4:#9CA3AF;
   --r:14px; --r2:10px; --r3:7px;
@@ -34,7 +34,7 @@
   --font:'Noto Sans KR',sans-serif;
   --mono:'JetBrains Mono',monospace;
   --nav-h:0px;
-  --hd-h:96px;
+  --hd-h:110px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);-webkit-text-size-adjust:100%;}
@@ -48,7 +48,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .hd-clock{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.22);letter-spacing:0.5px;}
 
 .bottom-nav{position:fixed;top:var(--hd-h);left:0;right:0;z-index:150;height:var(--nav-h);background:rgba(0,0,0,0.18);display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid rgba(255,255,255,0.15);}
-.nav-btn{display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;font-family:var(--font);color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;transition:all 0.15s;padding:0 4px;position:relative;letter-spacing:-0.3px;height:100%;}
+.nav-btn{display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;font-family:var(--font);color:rgba(255,255,255,0.85);font-size:14px;font-weight:800;transition:all 0.15s;padding:0 4px;position:relative;letter-spacing:-0.3px;height:100%;}
 
 .nav-btn.on{color:#fff;background:rgba(255,255,255,0.18);border-radius:6px;}
 
@@ -103,7 +103,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .output-body{padding:14px 16px;font-size:14px;color:var(--ink);white-space:pre-wrap;line-height:1.9;min-height:80px;font-family:var(--font);word-break:break-all;border-bottom:1px solid var(--border);background:var(--surface2);}
 
 .send-area{padding:14px 16px 16px;background:var(--surface);}
-.send-btn{width:100%;padding:15px;font-size:15px;font-weight:900;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);box-shadow:0 4px 18px rgba(232,96,10,0.35);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;letter-spacing:0.3px;margin-bottom:8px;}
+.send-btn{width:100%;padding:12px 15px;font-size:13px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);box-shadow:0 4px 18px rgba(232,96,10,0.35);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;letter-spacing:0.3px;margin-bottom:8px;}
 .send-btn:active{transform:scale(0.97);}
 .send-btn.done{background:var(--green);box-shadow:0 4px 18px rgba(13,155,106,0.3);}
 .copy-only-btn{width:100%;padding:11px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
@@ -487,7 +487,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="hd-title" style="font-size:17px;letter-spacing:-0.5px;color:#fff;font-weight:900;">상황보고</div>
     <div style="margin-left:auto;"><div class="hd-clock" id="clock">00:00:00</div></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);width:100%;height:40px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.15);">
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);width:100%;height:52px;background:rgba(0,0,0,0.22);border-top:1px solid rgba(255,255,255,0.15);">
     <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)">출동</button>
     <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)">동향보고서</button>
     <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)">지도</button>
@@ -562,7 +562,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     </div>
     <div style="padding:14px 16px 16px;">
       <textarea id="reportContent" rows="3" placeholder="현장 상황을 입력하세요&#10;예) 4층 창문에서 화염 및 연기 발생 확인" style="width:100%;font-size:14px;padding:12px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.7;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--border)';this.style.background='var(--surface2)'"></textarea>
-      <button onclick="addReport()" style="width:100%;margin-top:10px;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(232,96,10,0.35);transition:all 0.2s;letter-spacing:0.3px;">
+      <button onclick="addReport()" style="width:100%;margin-top:10px;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(232,96,10,0.35);transition:all 0.2s;letter-spacing:0.3px;">
         <span>＋</span> 상황 추가
       </button>
     </div>
@@ -598,7 +598,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="spell-wrap">
       <button class="spell-toggle" onclick="toggleSpell()" id="spellToggleBtn">&#10003; 전파 전 맞춤법 검사</button>
       <div id="spellSection" style="display:none;margin-top:10px;">
-        <textarea id="spellInput" rows="4" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.7;" placeholder="보고문이 자동 입력됩니다..."></textarea>
+        <textarea id="spellInput" rows="7" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.7;" placeholder="보고문이 자동 입력됩니다..."></textarea>
         <div style="display:flex;gap:8px;margin-top:6px;">
           <button id="spellBtn" onclick="runSpell()" style="flex:2;padding:10px;font-size:13px;font-weight:800;background:var(--green);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#10003; 검사 시작</button>
           <button onclick="loadReportToSpell()" style="flex:1;padding:10px;font-size:12px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#8635; 다시 불러오기</button>
