@@ -1352,6 +1352,7 @@ function switchTab(name,btn){
   document.getElementById('tab-'+name).classList.add('on');
   if(btn)btn.classList.add('on');
   if(name==='map')updateMapLinks();
+  if(name==='settings')updateKeyStatus();
   if(name!=='settings'){var lk=document.getElementById('settingsLock');var sc=document.getElementById('settingsContent');if(lk)lk.style.display='block';if(sc)sc.style.display='none';}
   if(name==='report'){updateMapLinks();rptAutoFill();setTimeout(rptLiveUpdate,600);}
   window.scrollTo({top:0,behavior:'smooth'});
@@ -2210,7 +2211,6 @@ var SETTINGS_PW_HASH = localStorage.getItem('sobang_pw_hash') || '';
 var SETTINGS_DEFAULT_PW = '119119'; // 기본 비밀번호
 
 function hashStr(str) {
-  // 간단한 해시 (보안 목적이 아닌 평문 노출 방지용)
   var hash = 0;
   for (var i = 0; i < str.length; i++) {
     var ch = str.charCodeAt(i);
@@ -2219,6 +2219,14 @@ function hashStr(str) {
   }
   return String(hash);
 }
+// 비밀번호 초기화 (최초 1회)
+(function(){
+  if(!localStorage.getItem('sobang_pw_hash')){
+    var h = 0, s = '119119';
+    for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);h=((h<<5)-h)+c;h=h&h;}
+    localStorage.setItem('sobang_pw_hash', String(h));
+  }
+})();
 
 function checkSettingsPassword() {
   var pw = document.getElementById('settingsPassword').value;
@@ -2292,6 +2300,9 @@ function clearApiKeys() {
 function updateKeyStatus() {
   var gk = localStorage.getItem('sobang_gemini_key') || '';
   var kk = localStorage.getItem('sobang_kakao_key') || '';
+  // 전역 변수도 동기화
+  GEMINI_API_KEY = gk;
+  KAKAO_REST_KEY = kk;
   var gIcon = document.getElementById('geminiStatus');
   var kIcon = document.getElementById('kakaoStatus');
   var gText = document.getElementById('geminiStatusText');
@@ -2300,6 +2311,9 @@ function updateKeyStatus() {
   if(kIcon) kIcon.textContent = kk ? '✅' : '❌';
   if(gText) gText.textContent = gk ? '등록됨 — AI 분석·맞춤법 검사 사용 가능' : '미등록 — AI 분석·맞춤법 검사 불가';
   if(kText) kText.textContent = kk ? '등록됨 — 지도 검색 사용 가능' : '미등록 — 기본 지도앱 사용 가능';
+  // 상단 배너 업데이트
+  var banner = document.getElementById('noKeyBanner');
+  if(banner) banner.style.display = (!gk) ? 'flex' : 'none';
 }
 
 function showKeyStatus(msg, ok) {
