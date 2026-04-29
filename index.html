@@ -941,6 +941,8 @@ function rptGetMobilData(){rptCalcPpl();var vr=rptCalcVeh();var pd={fire:gn('ppl
 var APP_LOCK_KEY='sobang_app_lock_pw';
 var APP_SESSION_KEY='sobang_session';
 
+function hashStr(str){var hash=0;for(var i=0;i<str.length;i++){var ch=str.charCodeAt(i);hash=((hash<<5)-hash)+ch;hash=hash&hash;}return String(hash);}
+
 function checkAppLock(){
   var pw=document.getElementById('appLockInput').value;
   if(!pw)return;
