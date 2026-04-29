@@ -511,23 +511,11 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:11px;color:var(--ink4);">AI 분석 기능 사용을 위해 설정 탭에서 키를 등록하세요 →</div>
     </div>
   </div>
-  <!-- 출동 유형 선택 -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:11px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:15px;">📌</span>
-      <span style="font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.3px;">출동 유형 선택</span>
-    </div>
-    <div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-      <button id="typeBtn-fire" onclick="setDispatchType('화재',this)" style="padding:14px 8px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;">
-        <span style="font-size:26px;">🔥</span>화재
-      </button>
-      <button id="typeBtn-rescue" onclick="setDispatchType('구조',this)" style="padding:14px 8px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;">
-        <span style="font-size:26px;">🛠</span>구조
-      </button>
-      <button id="typeBtn-ems" onclick="setDispatchType('구급',this)" style="padding:14px 8px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;">
-        <span style="font-size:26px;">🚑</span>구급
-      </button>
-    </div>
+   <!-- 출동 유형 선택 -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="typeBtn-fire" onclick="setDispatchType('화재',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">🔥 화재</button>
+    <button id="typeBtn-rescue" onclick="setDispatchType('구조',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">🛠 구조</button>
+    <button id="typeBtn-ems" onclick="setDispatchType('구급',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">🚑 구급</button>
   </div>
 
   <!-- 출동 기본정보 (리디자인) -->
