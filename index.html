@@ -1014,7 +1014,8 @@ function setSeq(seq,btn){curSeq=seq;document.querySelectorAll('.seq-btn').forEac
 function renderOutput(){
   var loc=gv('location'),sig=gv('sigName'),dong=extractDong(loc),lines=[];
   var obj=gv('fireObject'),scl=gv('fireScale'),cas=gv('fireCasualty');
-  var t=dong&&obj?dong+' '+obj+'화재':dong?dong+' 화재':obj?obj+' 화재':'화재';
+  var typeLabel=curDispatchType||'화재';
+  var t=dong&&obj?dong+' '+obj+typeLabel:dong?dong+' '+typeLabel:obj?obj+' '+typeLabel:typeLabel;
   lines.push('['+t+']('+curSeq+')');
   var parts=[];
   if(loc)parts.push(loc);
