@@ -2117,14 +2117,23 @@ function loadApiKeys() {
   GEMINI_API_KEY = gk;
   KAKAO_REST_KEY = kk;
   updateKeyStatus();
-  // 키 없으면 배너 표시
-var banner = document.getElementById('noKeyBanner');
+  var banner = document.getElementById('noKeyBanner');
   if(banner) banner.style.display = 'none';
   // 입력창 마스킹 표시
   var gi = document.getElementById('settingGeminiKey');
   var ki = document.getElementById('settingKakaoKey');
   if(gi && gk) gi.placeholder = '●●●●●●●●●●●● (등록됨)';
   if(ki && kk) ki.placeholder = '●●●●●●●●●●●● (등록됨)';
+  // API 키 없으면 공지 배너 자동 경고
+  var noticeBanner = document.getElementById('noticeBanner');
+  var noticeTitle = document.getElementById('noticeTitle');
+  var noticeMsg = document.getElementById('noticeMsg');
+  var savedStatus = localStorage.getItem('sobang_service_status') || 'resume';
+  if(!gk && savedStatus === 'resume') {
+    if(noticeBanner) { noticeBanner.style.display='flex'; noticeBanner.style.background='var(--yellow-lt)'; noticeBanner.style.borderColor='rgba(180,83,9,0.3)'; }
+    if(noticeTitle) { noticeTitle.style.color='var(--yellow)'; noticeTitle.textContent='⚠ AI 기능 사용 불가'; }
+    if(noticeMsg) { noticeMsg.textContent='Gemini API 키가 등록되지 않아 AI 자동분석·맞춤법 검사를 사용할 수 없습니다. 설정 탭에서 키를 등록해 주세요.'; }
+  }
 }
 
 function saveApiKeys() {
