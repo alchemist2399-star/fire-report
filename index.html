@@ -2099,6 +2099,24 @@ function showKeyStatus(msg, ok) {
           <button onclick="setServiceStatus('stop')" style="flex:1;padding:10px;font-size:12px;font-weight:800;background:var(--red-lt);color:var(--red);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#9940; 중단</button>
           <button onclick="setServiceStatus('resume')" style="flex:1;padding:10px;font-size:12px;font-weight:800;background:var(--green-lt);color:var(--green);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#9989; 재개</button>
         </div>
+        <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:10px;">🔑 비밀번호 변경</div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">현재 비밀번호</div>
+          <input type="password" id="pwCurrent" placeholder="현재 비밀번호" style="width:100%;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">새 비밀번호</div>
+          <input type="password" id="pwNew" placeholder="새 비밀번호" style="width:100%;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:4px;">새 비밀번호 확인</div>
+          <input type="password" id="pwConfirm" placeholder="새 비밀번호 재입력" style="width:100%;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <button onclick="changePw()" style="width:100%;padding:11px;font-size:13px;font-weight:800;background:var(--navy);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);">🔑 비밀번호 변경</button>
+        <div id="pwChangeMsg" style="display:none;margin-top:8px;font-size:12px;font-weight:700;text-align:center;padding:8px;border-radius:var(--r3);"></div>
+      </div>
+
         <div id="serviceStatusBadge" style="font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);">● 현재 정상 운영 중</div>
       </div>
       <button onclick="lockSettings()" style="width:100%;padding:10px;background:none;color:var(--ink4);border:1.5px solid var(--border);border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">🔒 잠금</button>
