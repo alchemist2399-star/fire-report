@@ -769,9 +769,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
         
 
-    <div class="rpt-divider"><span>또는</span></div>
-      <button class="btn-big btn-big-gray" style="margin-top:0;" onclick="rptSkipScan()">&#9998; 사진 없이 직접 입력하기</button>
-    </div>
+    <!-- PAGE 0: AI 스캔 -->
+    <div class="rpt-page on" id="rptP0">
       <div style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.25);border-radius:var(--r2);padding:11px 14px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;">
         <span style="font-size:20px;flex-shrink:0;">🤖</span>
         <div>
@@ -781,7 +780,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
       <div class="rpt-scan-hero">
         <div style="display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;background:var(--orange);border-radius:20px;margin-bottom:14px;box-shadow:0 6px 20px rgba(232,96,10,0.4);">
-          <span style="font-size:32px;">&#128247;</span>
+          <span style="font-size:32px;">📷</span>
         </div>
         <div style="font-size:20px;font-weight:900;color:var(--ink);letter-spacing:-0.5px;margin-bottom:6px;">AI 자동 분석</div>
         <div style="font-size:12px;color:var(--ink4);line-height:1.8;">P119 화면 · 건축물대장 사진을 올리면<br>보고서 내용을 자동으로 입력해 드립니다</div>
@@ -790,14 +789,13 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
              ondragover="event.preventDefault();this.classList.add('drag-over')"
              ondragleave="this.classList.remove('drag-over')"
              ondrop="event.preventDefault();this.classList.remove('drag-over');rptHandleScanUpload({files:event.dataTransfer.files})">
-          <input type="file" id="rptScan0Input" accept="image/*" multiple onchange="rptHandleScanUpload(this)"/>
-          <div class="rpt-drop-zone-ico">&#128247;</div>
+          <input type="file" id="rptScan0Input" accept="image/*" multiple onchange="rptHandleScanUpload(this);"/>
+          <div class="rpt-drop-zone-ico">📷</div>
           <div class="rpt-drop-zone-label">사진을 탭하거나 드래그</div>
-          <div class="rpt-drop-zone-hint">JPG · PNG · 여러 장 동시 가능</div>
+          <div class="rpt-drop-zone-hint">JPG · PNG · 여러 장 동시 가능 · 업로드 즉시 AI 분석 시작</div>
         </div>
         <div id="rptScan0Previews" style="display:none;">
           <div class="rpt-thumb-row" id="rptScan0ThumbRow"></div>
-          <button class="rpt-ai-btn" id="rptScan0Btn" onclick="rptRunScanAI()">&#9889; AI 자동 분석 시작</button>
         </div>
         <div class="rpt-scan-progress" id="rptScan0Status">
           <div style="display:flex;align-items:center;gap:8px;">
@@ -808,21 +806,21 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         </div>
       </div>
       <div class="rpt-scan-done" id="rptScan0Done">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:20px;">&#10003;</span><span style="font-size:13px;font-weight:800;color:var(--green);">AI 분석 완료!</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:20px;">✅</span><span style="font-size:13px;font-weight:800;color:var(--green);">AI 분석 완료!</span></div>
         <div id="rptScan0Summary" style="font-size:12px;color:var(--ink2);line-height:2.2;margin-bottom:14px;"></div>
-        <button onclick="rptGoTo(1)" style="width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(13,155,106,0.35);">? 자동입력 내용 확인하기 →</button>
+        <button onclick="rptGoTo(1)" style="width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(13,155,106,0.35);">✅ 자동입력 내용 확인하기 →</button>
       </div>
-      <div id="rptScan0ErrBox" style="display:none;margin-top:12px;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:12px 14px;align-items:flex-start;gap:10px;">
-        <span style="font-size:20px;flex-shrink:0;">&#9888;</span>
-        <div><div style="font-size:12px;font-weight:800;color:var(--red);margin-bottom:4px;">분석에 실패했습니다</div><span style="font-size:12px;color:var(--ink2);line-height:1.6;"></span>
-          <div style="margin-top:10px;display:flex;gap:8px;">
-            <button onclick="document.getElementById('rptScan0Input').click()" style="flex:1;padding:9px;font-size:12px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r3);cursor:pointer;font-family:var(--font);">&#128247; 다시 업로드</button>
-            <button onclick="rptSkipScan()" style="flex:1;padding:9px;font-size:12px;font-weight:800;background:var(--surface);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r3);cursor:pointer;font-family:var(--font);">&#9998; 직접 입력</button>
+      <div id="rptScan0ErrBox" style="display:none;margin-top:12px;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.25);border-radius:var(--r2);padding:12px 14px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="font-size:20px;flex-shrink:0;">⚠️</span>
+          <div><div style="font-size:12px;font-weight:800;color:var(--red);margin-bottom:4px;">분석에 실패했습니다</div>
+            <span style="font-size:12px;color:var(--ink2);line-height:1.6;"></span>
+            <div style="margin-top:10px;">
+              <button onclick="document.getElementById('rptScan0Input').click()" style="width:100%;padding:9px;font-size:12px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r3);cursor:pointer;font-family:var(--font);">📷 다시 업로드</button>
+            </div>
           </div>
         </div>
       </div>
-      <div class="rpt-divider"><span>또는</span></div>
-      <button class="btn-big btn-big-gray" style="margin-top:0;" onclick="rptSkipScan()">&#9998; 사진 없이 직접 입력하기</button>
     </div>
 
     <!-- PAGE 1: 기본정보 -->
