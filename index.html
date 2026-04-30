@@ -1056,51 +1056,6 @@ function setDispatchType(type,btn){
     btn.style.transform='translateY(-2px)';
   }
   renderOutput();
-}  function rptUpdatePreview(){
-  clearTimeout(rptPreviewTimer);
-  rptPreviewTimer=setTimeout(function(){
-    var pw=document.getElementById('rptPreviewWrap');
-    if(!pw||pw.style.display==='none')return;
-    rptRefreshPreviewFrame();
-  },600);
-}
-function rptRefreshPreviewFrame(){
-  // 현재 입력값으로 data 구성
-  var dtEl=document.getElementById('rptDt');
-  var dtObj2=dtEl&&dtEl.value?new Date(dtEl.value):new Date();
-  var yy2=String(dtObj2.getFullYear()).slice(2),mo2=dtObj2.getMonth()+1,dd3=dtObj2.getDate();
-  var dayN=['일','월','화','수','목','금','토'];
-  var dtFormatted2=dtObj2.getFullYear()+'. '+mo2+'. '+dd3+'.('+dayN[dtObj2.getDay()]+') '
-    +String(dtObj2.getHours()).padStart(2,'0')+':'+String(dtObj2.getMinutes()).padStart(2,'0');
-  rpt.data={
-    type:rpt.type||'화재',station:'서산소방서',
-    datetime:dtFormatted2,
-    location:(document.getElementById('rptAddr')||{}).value||'',
-    callCount:(document.getElementById('rptCallCount')||{}).value||'',
-    manager:(document.getElementById('rptManager')||{}).value||'',
-    staff:(document.getElementById('rptStaff')||{}).value||'',
-    people:(function(){var m=rptGetMobilData();return m.ppl;}()),
-    vehicles:(function(){var m=rptGetMobilData();return m.veh;}()),
-    mobilDetail:(function(){return rptGetMobilData();}()),
-    dead:(document.getElementById('rptDead')||{}).value||'0',
-    injured:(document.getElementById('rptInj')||{}).value||'0',
-    casualty:(document.getElementById('rptCasualty')||{}).value||'없음',
-    propSummary:(document.getElementById('rptPropSummary')||{}).value||'',
-    situation:(document.getElementById('rptSit')||{}).value||'',
-  };
-  var html2=rptBuildHTML();
-  var pw=document.getElementById('rptPreviewWrap');
-  if(!pw)return;
-  var iframes=pw.querySelectorAll('iframe');
-  iframes.forEach(function(f){f.remove();});
-  var iframe=document.createElement('iframe');
-  iframe.style.cssText='width:100%;height:640px;border:none;display:block;';
-  iframe.setAttribute('sandbox','allow-same-origin');
-  document.getElementById('rptPreviewContent').appendChild(iframe);
-  var doc=iframe.contentDocument||iframe.contentWindow.document;
-  doc.open();doc.write(html2);doc.close();
-  setTimeout(function(){try{var h=doc.body.scrollHeight;if(h>200)iframe.style.height=h+'px';}catch(e){}},400);
-}
 
 
 function gn(id){var e=document.getElementById(id);return e?parseInt(e.value)||0:0;}
