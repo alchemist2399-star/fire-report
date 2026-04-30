@@ -1410,6 +1410,7 @@ function rptHandleScanUpload(input){
 }
 
 async function rptRunScanAI(){
+  if(!GEMINI_API_KEY){showToast('⚠️ Gemini API 키가 없어요. 설정 탭에서 등록해 주세요.');return;}
   if(!rpt.scanImages||!rpt.scanImages.length){showToast('사진을 먼저 업로드해주세요.');return;}
   var btn=document.getElementById('rptScan0Btn'),statusDiv=document.getElementById('rptScan0Status'),msgEl=document.getElementById('rptScan0Msg'),bar=document.getElementById('rptScan0Bar'),doneDiv=document.getElementById('rptScan0Done'),summaryEl=document.getElementById('rptScan0Summary'),errBox=document.getElementById('rptScan0ErrBox');
   btn.disabled=true;btn.innerHTML='<div class="dots"><span></span><span></span><span></span></div>&nbsp;분석 중...';
