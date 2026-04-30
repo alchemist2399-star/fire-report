@@ -1963,7 +1963,7 @@ function rptGeocode(addr){
   // removed
     }
     rptShowDist(parseFloat(docs[0].y),parseFloat(docs[0].x));
-  }).catch(function(){document.getElementById('rptDistRows').innerHTML='<div style="font-size:11px;color:var(--ink4);">? 조회 실패</div>';});
+  }).catch(function(){console.log('주소 조회 실패');});
 }
 
 function rptShowDist(lat,lng){
