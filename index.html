@@ -1391,7 +1391,7 @@ function rptAutoFill(){
   var dtEl=document.getElementById('rptDt');if(dtEl&&!dtEl.value){var now=new Date();dtEl.value=new Date(now-now.getTimezoneOffset()*60000).toISOString().slice(0,16);}
 }
 function rptSetSteps(n){for(var i=0;i<=5;i++){var el=document.getElementById('rptS'+i);if(!el)continue;el.className='rpt-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}}
-function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n===4)rptBuildSummaryPreview();if(n>=1&&n<=4)rptLiveUpdate();window.scrollTo({top:0,behavior:'smooth'});}
+function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n>=1&&n<=4)rptLiveUpdate();window.scrollTo({top:0,behavior:'smooth'});}
 function rptBuildSummaryPreview(){}
 function rptSelType(btn,type){document.querySelectorAll('.rpt-type-btn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');rpt.type=type;showToast('? '+type+' 선택됨');rptLiveUpdate();}
 function rptSkipScan(){rptGoTo(1);}
