@@ -1931,7 +1931,7 @@ function rptHandlePhotoDrop(event,type){
 function rptClearPhoto(type){
   if(type==='map'){rpt.mapPhotoURL=null;var el=document.getElementById('rptMapPreview');if(el)el.innerHTML='';}
   else{rpt.scenePhotoURL=null;var el=document.getElementById('rptScenePreview');if(el)el.innerHTML='';}
-  rptLiveUpdate();showToast('사진이 삭제됐습니다.');
+  showToast('사진이 삭제됐습니다.');
 }
 function rptHandlePhoto(input,type){
   var file=input.files[0];if(!file)return;
