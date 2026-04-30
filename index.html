@@ -946,9 +946,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <div><div style="font-size:10px;font-weight:700;color:var(--ink4);margin-bottom:4px;">관공서</div><input type="number" id="rel_gov" value="0" min="0" oninput="rptCalcVeh();rptLiveUpdate()" style="width:100%;font-size:13px;padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;"/></div>
           <div><div style="font-size:10px;font-weight:700;color:var(--ink4);margin-bottom:4px;">기타</div><input type="number" id="rel_etc" value="0" min="0" oninput="rptCalcVeh();rptLiveUpdate()" style="width:100%;font-size:13px;padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;"/></div>
         </div>
-        <div style="background:var(--navy);border-radius:var(--r2);padding:9px 10px;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:9px;color:rgba(255,255,255,0.7);font-weight:800;">총 장비</div>
-          <div id="veh_grand_total" style="font-size:18px;font-weight:900;color:#fff;font-family:var(--mono);">0</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div></div>
+          <div style="background:var(--navy);border-radius:var(--r2);padding:9px 10px;display:flex;flex-direction:column;justify-content:center;"><div style="font-size:9px;color:rgba(255,255,255,0.7);font-weight:800;">총 장비</div><div id="veh_grand_total" style="font-size:18px;font-weight:900;color:#fff;font-family:var(--mono);">0</div></div>
         </div>
       </div>
       <div class="rpt-nav-row">
