@@ -1921,7 +1921,7 @@ function rptRenderActionInput(){
   rpt.actionRows.forEach(function(r){var div=document.createElement('div');div.className='rpt-action-row';div.innerHTML='<input class="rpt-action-time" value="'+escH(r.time)+'" placeholder="12:07" oninput="rptActionUp(\''+r.id+'\',\'time\',this.value)"/><input class="rpt-action-text" value="'+escH(r.text)+'" placeholder="조치 내용" oninput="rptActionUp(\''+r.id+'\',\'text\',this.value)"/><button class="rpt-del-btn" onclick="rptActionDel(\''+r.id+'\')">×</button>';list.appendChild(div);});
 }
 function rptActionUp(id,key,val){var r=rpt.actionRows.find(function(x){return String(x.id)===String(id);});if(r)r[key]=val;}
-function rptActionDel(id){rpt.actionRows=rpt.actionRows.filter(function(x){return String(x.id)!==String(id);});rptRenderActionInput();rptLiveUpdate();}
+function rptActionDel(id){rpt.actionRows=rpt.actionRows.filter(function(x){return String(x.id)!==String(id);});rptRenderActionInput();}
 
 function rptHandlePhotoDrop(event,type){
   var files=event.dataTransfer.files;
