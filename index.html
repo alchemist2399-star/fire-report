@@ -1970,7 +1970,7 @@ function rptGeocode(addr){
     var docs=data.documents;
     if(!docs||!docs.length){
       return fetch('https://dapi.kakao.com/v2/local/search/keyword.json?query='+encodeURIComponent(addr),{headers:{'Authorization':'KakaoAK '+KAKAO_REST_KEY}})
-  // removed
+        .then(function(r){return r.json();}).then(function(kd){var kd2=(kd.documents||[]);if(kd2.length)rptShowDist(parseFloat(kd2[0].y),parseFloat(kd2[0].x));});
     }
     rptShowDist(parseFloat(docs[0].y),parseFloat(docs[0].x));
   }).catch(function(){console.log('주소 조회 실패');});
