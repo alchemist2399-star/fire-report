@@ -1911,7 +1911,21 @@ function rptReset(){
 function rptAddDmgRow(fl,st,sz,us,nt){var id=Date.now()+Math.random();rpt.dmgRows.push({id:id,floor:fl||'',struct:st||'',size:sz||'',use:us||'',note:nt||''});rptRenderDmgInput();}
 function rptRenderDmgInput(){
   var body=document.getElementById('rptDmgBody');body.innerHTML='';
-  rpt.dmgRows.forEach(function(r){var tr=document.createElement('tr');tr.innerHTML='<td><input value="'+escH(r.floor)+'" placeholder="1층" oninput="rptDmgUp(\''+r.id+'\',\'floor\',this.value)"/></td><td><input value="'+escH(r.struct)+'" placeholder="철골" oninput="rptDmgUp(\''+r.id+'\',\'struct\',this.value)"/></td><td><input value="'+escH(r.size)+'" placeholder="393㎡" oninput="rptDmgUp(\''+r.id+'\',\'size\',this.value)"/></td><td><input value="'+escH(r.use)+'" placeholder="체육관" oninput="rptDmgUp(\''+r.id+'\',\'use\',this.value)"/></td><td><input value="'+escH(r.note)+'" placeholder="화재" oninput="rptDmgUp(\''+r.id+'\',\'note\',this.value)"/></td><td><button class="rpt-del-btn" onclick="rptDmgDel(\''+r.id+'\')">×</button></td>';body.appendChild(tr);});
+  rpt.dmgRows.forEach(function(r){var tr=document.createElement('tr');tr.innerHTML='<td><input value="'+escH(r.floor)+'" placeholder="1층" oninput="rptDmgUp(\''+r.id+'\',\'floor\',this.value)"/></td><td><input value="'+escH(r.struct)+'" placeholder="철골" oninput="rptDmgUp(\''+r.id+'\',\'struct\',this.value)"/></td><td><input value="'+escH(r.size)+'" placeholder="393" type="text" inputmode="numeric" oninput="rptDmgSizeInput(this,\''+r.id+'\')" onblur="rptDmgSizeBlur(this,\''+r.id+'\')"/></td><td><input value="'+escH(r.use)+'" placeholder="체육관" oninput="rptDmgUp(\''+r.id+'\',\'use\',this.value)"/></td><td><input value="'+escH(r.note)+'" placeholder="화재" oninput="rptDmgUp(\''+r.id+'\',\'note\',this.value)"/></td><td><button class="rpt-del-btn" onclick="rptDmgDel(\''+r.id+'\')">×</button></td>';
+  var sizeInput=tr.querySelectorAll('td')[2].querySelector('input');
+  var rawSize=r.size?r.size.replace('㎡','').trim():'';
+  sizeInput.value=r.size||'';
+  body.appendChild(tr);});
+}
+function rptDmgSizeInput(el,id){
+  var raw=el.value.replace(/[^0-9.]/g,'');
+  el.value=raw;
+  rptDmgUp(id,'size',raw?raw+'㎡':'');
+}
+function rptDmgSizeBlur(el,id){
+  var raw=el.value.replace(/[^0-9.]/g,'');
+  if(raw){el.value=raw+'㎡';rptDmgUp(id,'size',raw+'㎡');}
+  else{el.value='';rptDmgUp(id,'size','');}
 }
 function rptDmgUp(id,key,val){var r=rpt.dmgRows.find(function(x){return String(x.id)===String(id);});if(r)r[key]=val;}
 function rptDmgDel(id){rpt.dmgRows=rpt.dmgRows.filter(function(x){return String(x.id)!==String(id);});rptRenderDmgInput();}
