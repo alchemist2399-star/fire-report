@@ -1103,16 +1103,6 @@ function rptRefreshPreviewFrame(){
 }
 
 
-/* 창 크기 변경 시 미리보기 scale 재계산 */
-var rptResizeTimer=null;
-window.addEventListener('resize',function(){
-  clearTimeout(rptResizeTimer);
-  rptResizeTimer=setTimeout(function(){
-    var frame=document.getElementById('rptLiveFrame');
-    if(!frame||!frame.querySelector('iframe'))return;
-    rptLiveUpdate();
-  },300);
-});
 function gn(id){var e=document.getElementById(id);return e?parseInt(e.value)||0:0;}
 function sv(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function rptCalcPpl(){var t=gn('ppl_fire')+gn('ppl_police')+gn('ppl_army')+gn('ppl_gov')+gn('ppl_med')+gn('ppl_forest')+gn('ppl_etc');sv('ppl_total',t);sv('ppl_grand_total',t);return t;}
@@ -1806,15 +1796,6 @@ function rptLiveUpdate(){
 
 function rptInitMap(){}
 
-function rptShowPreview(){
-  // 우측 패널이 있으면 스크롤, 없으면 rptLiveUpdate
-  var previewEl=document.getElementById('rptSplitPreview');
-  if(previewEl){
-    previewEl.scrollIntoView({behavior:'smooth',block:'start'});
-    rptLiveUpdate();
-    showToast('우측 미리보기 패널을 확인하세요');
-  }
-}
 
 function rptDownload(fmt){
   if(fmt==='pdf'){
