@@ -1969,7 +1969,6 @@ function rptGeocode(addr){
 function rptShowDist(lat,lng){
   rpt.incidentLatLng={lat:lat,lng:lng};
   var _addr=(document.getElementById('rptAddr')||{}).value||'현장';
-  rptMoveMap(lat,lng,_addr);
   var kl=document.getElementById('rptMapKakaoLink');
   if(kl){kl.href='https://map.kakao.com/link/map/'+encodeURIComponent(_addr)+','+lat+','+lng;}
   var ms=document.getElementById('rptMapSection');
