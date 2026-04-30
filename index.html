@@ -2179,6 +2179,7 @@ function setServiceStatus(mode){
 function loadServiceStatus(){
   var gk=localStorage.getItem('sobang_gemini_key')||'';
   var status=localStorage.getItem('sobang_service_status')||'resume';
+  if(status==='resume'&&!gk){status='nokey';}
   var title=localStorage.getItem('sobang_notice_title')||'';
   var msg=localStorage.getItem('sobang_notice_msg')||'';
   var banner=document.getElementById('noticeBanner');
@@ -2195,7 +2196,7 @@ function loadServiceStatus(){
     if(nt){nt.style.color='var(--blue)';nt.textContent=title||'공지사항';}
     if(nm){nm.textContent=msg||'';}
     if(badge){badge.style.background='var(--blue-lt)';badge.style.color='var(--blue)';badge.textContent='● 공지 표시 중';}
-  } else if(!gk) {
+  } else if(status==='nokey') {
     if(banner){banner.style.display='flex';banner.style.background='var(--yellow-lt)';banner.style.borderColor='rgba(180,83,9,0.3)';}
     if(nt){nt.style.color='var(--yellow)';nt.textContent='⚠ AI 기능 사용 불가';}
     if(nm){nm.textContent='Gemini API 키 미등록 — AI 자동분석·맞춤법 검사를 사용할 수 없습니다. 설정 탭에서 등록해 주세요.';}
