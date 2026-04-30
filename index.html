@@ -2137,7 +2137,7 @@ function setServiceStatus(mode){
   var nm=document.getElementById('noticeMsg');
   var badge=document.getElementById('serviceStatusBadge');
   var gk=localStorage.getItem('sobang_gemini_key')||'';
-  if(status==='stop'){
+  if(mode==='stop'){
     if(banner){banner.style.display='flex';banner.style.background='var(--red-lt)';banner.style.borderColor='rgba(217,48,37,0.3)';}
     if(nt){nt.style.color='var(--red)';nt.textContent=title||'⚠ 서비스 사용 중단';}
     if(nm){nm.textContent=msg||'현재 시스템 점검 중입니다. 잠시 후 다시 이용해 주세요.';}
