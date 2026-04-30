@@ -1512,6 +1512,9 @@ async function rptRunScanAI(){
 /* ★ 공식 보고서 생성 */
 async function rptRunGenerate(){
   if(!GEMINI_API_KEY){showToast('⚠️ Gemini API 키가 없어요. 설정 탭에서 등록해 주세요.');return;}
+  if(!rpt.type){showToast('⚠️ 재난 유형을 선택해 주세요. (STEP 1)');return;}
+  var addr=document.getElementById('rptAddr').value.trim();
+  if(!addr){showToast('⚠️ 발생장소를 입력해 주세요. (STEP 1)');return;}
   rptGoTo(5);
   var badge=document.getElementById('rptTypeBadge');if(badge)badge.textContent=rpt.type;
   var dt=document.getElementById('rptDt').value;
