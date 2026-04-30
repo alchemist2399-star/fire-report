@@ -1196,7 +1196,7 @@ function renderOutput(){
   if(sp&&sp.style.display!=='none'){var si=document.getElementById('spellInput');if(si)si.value=lines.join('\n').trimEnd();var rw=document.getElementById('spellResultWrap');if(rw)rw.style.display='none';}
 }
 function checkShareSupport(){if(!navigator.share){var b=document.getElementById('sendBtn');if(b)b.style.display='none';var w=document.getElementById('noShareWrap');if(w)w.style.display='block';}}
-function sendReport(){var text=document.getElementById('outputBox').textContent;var btn=document.getElementById('sendBtn');if(!navigator.share){copyOnly(text,btn,'&#128228; 전파하기');return;}navigator.share({title:'',text:text}).then(function(){btn.textContent='? 전파 완료!';btn.classList.add('done');setTimeout(function(){btn.innerHTML='&#128228; 전파하기';btn.classList.remove('done');},2500);}).catch(function(err){if(err.name!=='AbortError')showToast('공유에 실패했습니다.');});}
+function sendReport(){var text=document.getElementById('outputBox').textContent;var btn=document.getElementById('sendBtn');if(!navigator.share){copyOnly(text,btn,'&#128228; 전파하기');addDispLog(text);return;}navigator.share({title:'',text:text}).then(function(){btn.textContent='✅ 전파 완료!';btn.classList.add('done');addDispLog(text);setTimeout(function(){btn.innerHTML='&#128228; 전파하기';btn.classList.remove('done');},2500);}).catch(function(err){if(err.name!=='AbortError')showToast('공유에 실패했습니다.');});}
 function copyOnly(text,btn,resetLabel){function ok(){var orig=btn.textContent;btn.textContent='? 복사됐습니다!';btn.classList.add('done');setTimeout(function(){btn.innerHTML=resetLabel||orig;btn.classList.remove('done');},2500);}if(navigator.clipboard){navigator.clipboard.writeText(text).then(ok);}else{var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);ok();}}
 function copyOnlyText(){var text=document.getElementById('outputBox').textContent;var btn=document.getElementById('copyOnlyBtn');copyOnly(text,btn,'&#128203; 텍스트만 복사');}
 function toggleSpell(){
@@ -1521,6 +1521,7 @@ async function rptRunScanAI(){
 
 /* ★ 공식 보고서 생성 */
 async function rptRunGenerate(){
+  if(!GEMINI_API_KEY){showToast('⚠️ Gemini API 키가 없어요. 설정 탭에서 등록해 주세요.');return;}
   rptGoTo(5);
   var badge=document.getElementById('rptTypeBadge');if(badge)badge.textContent=rpt.type;
   var dt=document.getElementById('rptDt').value;
