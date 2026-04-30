@@ -2035,8 +2035,6 @@ function lockSettings() {
   document.getElementById('lockError').style.display = 'none';
 }
 
-// 탭 전환 시 자동 잠금
-var _origSwitchTab = switchTab;
 
 function loadApiKeys() {
   var gk = localStorage.getItem('sobang_gemini_key') || '';
