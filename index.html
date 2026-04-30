@@ -1611,10 +1611,22 @@ async function rptRunGenerate(){
       rptLiveUpdate();
     }
   }catch(e){
-    clearInterval(pint);
+    clearInterval(pint);pb.style.width='0%';
     document.getElementById('rptDots').style.display='none';
-    if(genStatusEl)genStatusEl.textContent='오류 발생';
-    showToast('보고서 생성 실패: '+e.message);
+    var msg=e.message||'';
+    var userMsg='보고서 생성 실패';
+    if(msg.indexOf('429')!==-1)userMsg='API 사용량 한도 초과 — 잠시 후 다시 시도해 주세요.';
+    else if(msg.indexOf('401')!==-1||msg.indexOf('API_KEY')!==-1)userMsg='API 키 오류 — 설정 탭에서 키를 확인해 주세요.';
+    else if(msg.indexOf('503')!==-1||msg.indexOf('overloaded')!==-1)userMsg='AI 서버 과부하 — 잠시 후 다시 시도해 주세요.';
+    if(genStatusEl)genStatusEl.textContent='⚠ '+userMsg;
+    var oc=document.getElementById('rptOutputCard');if(oc)oc.style.display='none';
+    showToast('⚠ '+userMsg);
+    var retryBtn=document.createElement('button');
+    retryBtn.style.cssText='width:100%;margin-top:12px;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);';
+    retryBtn.textContent='🔄 다시 생성하기';
+    retryBtn.onclick=function(){retryBtn.remove();rptRunGenerate();};
+    var pgEl=document.querySelector('#rptP5 .rpt-prog');
+    if(pgEl&&pgEl.parentNode)pgEl.parentNode.insertBefore(retryBtn,pgEl.nextSibling);
     console.error('[rptRunGenerate]',e);
   }
 }
