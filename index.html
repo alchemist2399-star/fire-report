@@ -1964,7 +1964,7 @@ function rptOnAddrInput(){
   rptLiveUpdate();
 }
 function rptGeocode(addr){
-  
+  if(!KAKAO_REST_KEY||!addr)return;
   fetch('https://dapi.kakao.com/v2/local/search/address.json?query='+encodeURIComponent(addr),{headers:{'Authorization':'KakaoAK '+KAKAO_REST_KEY}})
   .then(function(r){return r.json();}).then(function(data){
     var docs=data.documents;
