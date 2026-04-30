@@ -1328,7 +1328,11 @@ function addContact(type){var card=document.getElementById(type+'AddCard');if(ca
 function cancelContact(type){var card=document.getElementById(type+'AddCard');if(card)card.style.display='none';['Name','Tel','Memo'].forEach(function(f){var e=document.getElementById(type+f);if(e)e.value='';});}
 function saveContact(type){
   var name=((document.getElementById(type+'Name')||{}).value||'').trim(),tel=((document.getElementById(type+'Tel')||{}).value||'').trim(),memo=((document.getElementById(type+'Memo')||{}).value||'').trim();
-  if(!name){showToast('이름을 입력해 주세요.');return;}if(!tel){showToast('전화번호를 입력해 주세요.');return;}
+  if(!name){showToast('이름을 입력해 주세요.');return;}
+  if(!tel){showToast('전화번호를 입력해 주세요.');return;}
+  var telClean=tel.replace(/[^0-9\-+]/g,'');
+  if(telClean.length<7){showToast('올바른 전화번호를 입력해 주세요.');return;}
+  tel=telClean;
   var arr=loadContacts(type);arr.push({id:Date.now(),name:name,tel:tel,memo:memo});
   saveContacts(type,arr);cancelContact(type);renderContactList(type);showToast('연락처가 저장됐습니다.');
 }
