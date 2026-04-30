@@ -1032,7 +1032,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <script>
 /* 실시간 미리보기 */
-var reports=[],reportCount=0,curSeq='출동',curType='화재'; var dispLog=[],dispLogSeq=0,toastTimer=null,deferredInstallPrompt=null; var GEMINI_API_KEY='',KAKAO_REST_KEY=''; var GEMINI_URL='https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-1.5-flash:generateContent?key='; var ALL_FIELD_IDS=['accNo','location','fireObject','fireScale','fireCasualty','sigName']; var rpt={type:'',report:'',data:{},dmgRows:[],actionRows:[],mapPhotoURL:null,scenePhotoURL:null,distNote:'',scanImages:[],distTimer:null}; var rptKakaoMap=null,rptKakaoMarker=null,rptKakaoIW=null; var curCat='',curTplOrig='',TEMPLATES={};
+var reports=[],reportCount=0,curSeq='출동',curType='화재'; var dispLog=[],dispLogSeq=0,toastTimer=null,deferredInstallPrompt=null; var GEMINI_API_KEY='',KAKAO_REST_KEY=''; var GEMINI_URL='https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash:generateContent?key='; var ALL_FIELD_IDS=['accNo','location','fireObject','fireScale','fireCasualty','sigName']; var rpt={type:'',report:'',data:{},dmgRows:[],actionRows:[],mapPhotoURL:null,scenePhotoURL:null,distNote:'',scanImages:[],distTimer:null}; var rptKakaoMap=null,rptKakaoMarker=null,rptKakaoIW=null; var curCat='',curTplOrig='',TEMPLATES={};
 var curDispatchType='화재';
 function setDispatchType(type,btn){
   curDispatchType=type;
