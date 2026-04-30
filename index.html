@@ -2207,6 +2207,98 @@ function loadServiceStatus(){
     if(nm){nm.textContent='정상 운영 중입니다.';}
   }
 }
+/* ── API 키 내보내기/가져오기 ── */
+function simpleEncrypt(text, password) {
+  var result = '';
+  for (var i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ password.charCodeAt(i % password.length));
+  }
+  return btoa(unescape(encodeURIComponent(result)));
+}
+function simpleDecrypt(encoded, password) {
+  try {
+    var text = decodeURIComponent(escape(atob(encoded)));
+    var result = '';
+    for (var i = 0; i < text.length; i++) {
+      result += String.fromCharCode(text.charCodeAt(i) ^ password.charCodeAt(i % password.length));
+    }
+    return result;
+  } catch(e) { return null; }
+}
+function exportApiKey() {
+  var gk = localStorage.getItem('sobang_gemini_key') || '';
+  var kk = localStorage.getItem('sobang_kakao_key') || '';
+  if (!gk) { showToast('등록된 API 키가 없습니다.'); return; }
+  var pw = localStorage.getItem('sobang_pw_hash') || hashStr('119119');
+  var payload = JSON.stringify({ g: gk, k: kk, t: Date.now() });
+  var encrypted = simpleEncrypt(payload, pw);
+  var exportEl = document.getElementById('exportText');
+  var resultEl = document.getElementById('exportResult');
+  if (exportEl) exportEl.textContent = encrypted;
+  if (resultEl) resultEl.style.display = 'block';
+  showToast('✅ 암호화 문자열이 생성됐습니다!');
+}
+function shareExportKey() {
+  var text = (document.getElementById('exportText') || {}).textContent || '';
+  if (!text) { showToast('먼저 생성 버튼을 눌러주세요.'); return; }
+  var shareText = '[소방 상황보고 앱] API 키 등록 문자열\n\n' + text + '\n\n※ 비밀번호는 별도로 전달드립니다.';
+  if (navigator.share) {
+    navigator.share({ title: '소방 상황보고 API 키', text: shareText })
+      .then(function() { showToast('✅ 전송 완료!'); })
+      .catch(function(e) { if (e.name !== 'AbortError') copyExportKey(); });
+  } else {
+    copyExportKey();
+  }
+}
+function copyExportKey() {
+  var text = (document.getElementById('exportText') || {}).textContent || '';
+  if (!text) { showToast('먼저 생성 버튼을 눌러주세요.'); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { showToast('📋 복사됐습니다. 카카오톡에 붙여넣기 하세요!'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast('📋 복사됐습니다!');
+  }
+}
+function importApiKey() {
+  var text = ((document.getElementById('importText') || {}).value || '').trim();
+  var pw = ((document.getElementById('importPw') || {}).value || '').trim();
+  var statusEl = document.getElementById('importStatus');
+  if (!text) { showImportStatus('암호화 문자열을 붙여넣어 주세요.', false); return; }
+  if (!pw) { showImportStatus('비밀번호를 입력해 주세요.', false); return; }
+  var pwHash = hashStr(pw);
+  var decrypted = simpleDecrypt(text, pwHash);
+  if (!decrypted) { showImportStatus('❌ 복호화 실패. 문자열이나 비밀번호를 확인해주세요.', false); return; }
+  try {
+    var parsed = JSON.parse(decrypted);
+    if (!parsed.g) { showImportStatus('❌ 유효하지 않은 문자열입니다.', false); return; }
+    localStorage.setItem('sobang_gemini_key', parsed.g);
+    if (parsed.k) localStorage.setItem('sobang_kakao_key', parsed.k);
+    GEMINI_API_KEY = parsed.g;
+    if (parsed.k) KAKAO_REST_KEY = parsed.k;
+    updateKeyStatus();
+    loadServiceStatus();
+    document.getElementById('importText').value = '';
+    document.getElementById('importPw').value = '';
+    showImportStatus('✅ API 키가 성공적으로 등록됐습니다! 이제 AI 기능을 사용할 수 있어요.', true);
+    showToast('✅ API 키 등록 완료!');
+  } catch(e) {
+    showImportStatus('❌ 복호화 실패. 비밀번호를 다시 확인해주세요.', false);
+  }
+}
+function showImportStatus(msg, ok) {
+  var el = document.getElementById('importStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = ok ? 'var(--green-lt)' : 'var(--red-lt)';
+  el.style.color = ok ? 'var(--green)' : 'var(--red)';
+  el.style.border = ok ? '1px solid rgba(13,155,106,0.2)' : '1px solid rgba(217,48,37,0.2)';
+  if (ok) setTimeout(function() { el.style.display = 'none'; }, 4000);
+}
+
 function showKeyStatus(msg, ok) {
   var el = document.getElementById('keyStatus');
   if(!el) return;
