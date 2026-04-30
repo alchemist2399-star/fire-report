@@ -1510,7 +1510,7 @@ async function rptRunScanAI(){
       statusDiv.style.display='none';doneDiv.style.display='block';
       setTimeout(function(){doneDiv.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
     }else{throw new Error('AI 응답 파싱 실패');}
-  }catch(e){clearInterval(pint);statusDiv.style.display='none';bar.style.width='0%';btn.disabled=false;btn.innerHTML='&#9889; 다시 분석';doneDiv.style.display='none';if(errBox){errBox.style.display='block';var errSpan=errBox.querySelector('span');if(errSpan)errSpan.textContent=e.message&&e.message.length>80?e.message.substring(0,80)+'…':e.message||'알 수 없는 오류';}showToast('? '+(e.message||'분석 실패').substring(0,40));console.error('[rptRunScanAI]',e);}
+  }catch(e){clearInterval(pint);statusDiv.style.display='none';bar.style.width='0%';doneDiv.style.display='none';if(errBox){errBox.style.display='block';var errSpan=errBox.querySelector('span');if(errSpan)errSpan.textContent=e.message&&e.message.length>80?e.message.substring(0,80)+'…':e.message||'알 수 없는 오류';}showToast('? '+(e.message||'분석 실패').substring(0,40));console.error('[rptRunScanAI]',e);}
 }
 
 /* ★ 공식 보고서 생성 */
