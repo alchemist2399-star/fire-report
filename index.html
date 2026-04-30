@@ -977,9 +977,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
             </div>
             <div>
               <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-bottom:4px;">현장사진</div>
-              <div class="rpt-photo-zone" onclick="document.getElementById('rptSceneInput').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');rptHandlePhotoDrop(event,'scene')">
-                <input type="file" id="rptSceneInput" accept="image/*" onchange="rptHandlePhoto(this,'scene')"/>
-                <div class="pz-ico">📸</div><div class="pz-lbl">탭하여 업로드</div>
+              <div class="rpt-photo-zone" onclick="document.getElementById('rptSceneInput').click()" ondragenter="event.preventDefault();event.stopPropagation();this.classList.add('drag-over')" ondragover="event.preventDefault();event.stopPropagation();this.classList.add('drag-over')" ondragleave="event.stopPropagation();this.classList.remove('drag-over')" ondrop="event.preventDefault();event.stopPropagation();this.classList.remove('drag-over');rptHandlePhotoDrop(event,'scene')">
+                <input type="file" id="rptSceneInput" accept="image/*" onchange="rptHandlePhoto(this,'scene')" style="pointer-events:none;"/>
+                <div class="pz-ico">📸</div><div class="pz-lbl">탭하여 업로드<br><span style="font-size:10px;color:var(--ink4);">또는 드래그</span></div>
               </div>
               <div id="rptScenePreview" style="margin-top:6px;"></div>
             </div>
