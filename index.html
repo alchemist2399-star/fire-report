@@ -1912,10 +1912,11 @@ function rptRenderDmgInput(){
   rpt.dmgRows.forEach(function(r){var tr=document.createElement('tr');tr.innerHTML='<td><input value="'+escH(r.floor)+'" placeholder="1층" oninput="rptDmgUp(\''+r.id+'\',\'floor\',this.value)"/></td><td><input value="'+escH(r.struct)+'" placeholder="철골" oninput="rptDmgUp(\''+r.id+'\',\'struct\',this.value)"/></td><td><input value="'+escH(r.size)+'" placeholder="393㎡" oninput="rptDmgUp(\''+r.id+'\',\'size\',this.value)"/></td><td><input value="'+escH(r.use)+'" placeholder="체육관" oninput="rptDmgUp(\''+r.id+'\',\'use\',this.value)"/></td><td><input value="'+escH(r.note)+'" placeholder="화재" oninput="rptDmgUp(\''+r.id+'\',\'note\',this.value)"/></td><td><button class="rpt-del-btn" onclick="rptDmgDel(\''+r.id+'\')">×</button></td>';body.appendChild(tr);});
 }
 function rptDmgUp(id,key,val){var r=rpt.dmgRows.find(function(x){return String(x.id)===String(id);});if(r)r[key]=val;}
-function rptDmgDel(id){rpt.dmgRows=rpt.dmgRows.filter(function(x){return String(x.id)!==String(id);});rptRenderDmgInput();rptLiveUpdate();}
+function rptDmgUp(id,key,val){var r=rpt.dmgRows.find(function(x){return String(x.id)===String(id);});if(r)r[key]=val;}
+function rptDmgDel(id){rpt.dmgRows=rpt.dmgRows.filter(function(x){return String(x.id)!==String(id);});rptRenderDmgInput();}
 
 /* 조치사항 */
-function rptAddActionRow(time,text){var id=Date.now()+Math.random();rpt.actionRows.push({id:id,time:time||'',text:text||''});rptRenderActionInput();rptLiveUpdate();}
+function rptAddActionRow(time,text){var id=Date.now()+Math.random();rpt.actionRows.push({id:id,time:time||'',text:text||''});rptRenderActionInput();}
 function rptRenderActionInput(){
   var list=document.getElementById('rptActionList');list.innerHTML='';
   rpt.actionRows.forEach(function(r){var div=document.createElement('div');div.className='rpt-action-row';div.innerHTML='<input class="rpt-action-time" value="'+escH(r.time)+'" placeholder="12:07" oninput="rptActionUp(\''+r.id+'\',\'time\',this.value)"/><input class="rpt-action-text" value="'+escH(r.text)+'" placeholder="조치 내용" oninput="rptActionUp(\''+r.id+'\',\'text\',this.value)"/><button class="rpt-del-btn" onclick="rptActionDel(\''+r.id+'\')">×</button>';list.appendChild(div);});
