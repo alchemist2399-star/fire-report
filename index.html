@@ -1383,6 +1383,7 @@ function rptAutoFill(){
 }
 function rptSetSteps(n){for(var i=0;i<=5;i++){var el=document.getElementById('rptS'+i);if(!el)continue;el.className='rpt-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}}
 function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n===4)rptBuildSummaryPreview();window.scrollTo({top:0,behavior:'smooth'});}
+function rptBuildSummaryPreview(){
   var el=document.getElementById('rptSummaryPreview');if(!el)return;
   var rows=[],type=rpt.type||'미선택',dt=document.getElementById('rptDt').value,dtStr=dt?new Date(dt).toLocaleString('ko-KR'):'미입력',addr=(document.getElementById('rptAddr')||{}).value||'미입력',ppl=(function(){var m=rptGetMobilData();return m.ppl;}())||'미입력',veh=(function(){var m=rptGetMobilData();return m.veh;}())||'미입력',dead=(document.getElementById('rptDead')||{}).value||'0',inj=(document.getElementById('rptInj')||{}).value||'0';
   rows.push('<div style="display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);"><span style="font-size:11px;font-weight:800;color:var(--ink4);min-width:72px;flex-shrink:0;">유형</span><span style="font-size:12px;color:var(--ink);font-weight:700;">'+escH(type)+'</span></div>');
