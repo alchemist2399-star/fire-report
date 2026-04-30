@@ -1101,6 +1101,8 @@ function init(){
   loadApiKeys();
   loadServiceStatus();
   renderFixedContacts();renderContactList('dispatch');renderContactList('agency');
+  var fireBtn=document.getElementById('typeBtn-fire');
+  if(fireBtn)setDispatchType('화재',fireBtn);
 }
 function initPWA(){
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstallPrompt=e;if(localStorage.getItem('pwa_dismissed')!=='1')document.getElementById('installBanner').classList.add('show');});
