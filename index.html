@@ -1110,7 +1110,7 @@ function initPWA(){
 }
 function doInstall(){if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();deferredInstallPrompt.userChoice.then(function(r){if(r.outcome==='accepted')document.getElementById('installBanner').classList.remove('show');deferredInstallPrompt=null;});}
 function dismissInstall(){document.getElementById('installBanner').classList.remove('show');localStorage.setItem('pwa_dismissed','1');}
-function startClock(){function tick(){var n=new Date();document.getElementById('clock').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}tick();setInterval(tick,1000);}
+function startClock(){function tick(){var n=new Date();document.getElementById('clock').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}tick();setInterval(tick,1000);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')tick();});}
 function pad(n){return String(n).padStart(2,'0');}
 function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
@@ -1391,7 +1391,7 @@ function rptAutoFill(){
   var dtEl=document.getElementById('rptDt');if(dtEl&&!dtEl.value){var now=new Date();dtEl.value=new Date(now-now.getTimezoneOffset()*60000).toISOString().slice(0,16);}
 }
 function rptSetSteps(n){for(var i=0;i<=5;i++){var el=document.getElementById('rptS'+i);if(!el)continue;el.className='rpt-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}}
-function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n===4)rptBuildSummaryPreview();window.scrollTo({top:0,behavior:'smooth'});}
+function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n===4)rptBuildSummaryPreview();if(n>=1&&n<=4)rptLiveUpdate();window.scrollTo({top:0,behavior:'smooth'});}
 function rptBuildSummaryPreview(){
   var el=document.getElementById('rptSummaryPreview');if(!el)return;
   var rows=[],type=rpt.type||'미선택',dt=document.getElementById('rptDt').value,dtStr=dt?new Date(dt).toLocaleString('ko-KR'):'미입력',addr=(document.getElementById('rptAddr')||{}).value||'미입력',ppl=(function(){var m=rptGetMobilData();return m.ppl;}())||'미입력',veh=(function(){var m=rptGetMobilData();return m.veh;}())||'미입력',dead=(document.getElementById('rptDead')||{}).value||'0',inj=(document.getElementById('rptInj')||{}).value||'0';
