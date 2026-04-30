@@ -2308,6 +2308,76 @@ function showKeyStatus(msg, ok) {
         <button onclick="clearApiKeys()" style="flex:1;padding:14px;background:var(--red-lt);color:var(--red);border:1.5px solid rgba(217,48,37,0.2);border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">&#128465; 삭제</button>
       </div>
       <div id="keyStatus" style="display:none;font-size:12px;font-weight:700;padding:10px 13px;border-radius:var(--r3);text-align:center;margin-bottom:10px;"></div>
+
+      <!-- ── API 키 공유 ── -->
+      <div style="background:linear-gradient(135deg,#eff3fa,#e8eef8);border:1.5px solid rgba(26,58,107,0.2);border-radius:var(--r2);overflow:hidden;margin-bottom:10px;">
+        <div style="background:var(--navy);padding:11px 14px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:16px;">🔐</span>
+          <span style="font-size:13px;font-weight:900;color:#fff;">API 키 공유</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.5);margin-left:auto;">SHARE KEY</span>
+        </div>
+
+        <!-- 내보내기 -->
+        <div style="padding:14px;border-bottom:1px solid rgba(26,58,107,0.1);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="width:28px;height:28px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📤</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--navy);">내보내기 (관리자용)</div>
+              <div style="font-size:11px;color:var(--ink4);">API 키를 암호화해서 다른 기기에 전달</div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:11px 13px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:800;color:var(--orange);margin-bottom:6px;">📋 사용 방법</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:2.0;">
+              <div>① 아래 버튼을 눌러 암호화 문자열 생성</div>
+              <div>② 생성된 문자열을 카카오톡·문자로 전송</div>
+              <div>③ 앱 비밀번호는 <b>따로</b> 전달 (보안상 중요!)</div>
+            </div>
+          </div>
+          <button onclick="exportApiKey()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--navy),#2a5298);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:7px;">🔐 암호화 문자열 생성 및 전송</button>
+          <div id="exportResult" style="display:none;margin-top:10px;">
+            <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:5px;">생성된 암호화 문자열</div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;font-size:11px;font-family:var(--mono);color:var(--ink2);word-break:break-all;line-height:1.7;" id="exportText"></div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button onclick="shareExportKey()" style="flex:2;padding:11px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;">📨 카카오톡·문자로 전송</button>
+              <button onclick="copyExportKey()" style="flex:1;padding:11px;background:var(--surface);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">📋 복사</button>
+            </div>
+            <div style="margin-top:8px;background:#fff8ec;border:1px solid rgba(180,83,9,0.2);border-radius:var(--r3);padding:9px 12px;display:flex;gap:8px;align-items:flex-start;">
+              <span style="font-size:14px;flex-shrink:0;">⚠️</span>
+              <div style="font-size:11px;color:var(--yellow);font-weight:700;line-height:1.7;">앱 비밀번호는 이 문자열과 <u>별도로</u> 전달하세요.<br>함께 보내면 보안이 취약해집니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 가져오기 -->
+        <div style="padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="width:28px;height:28px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📥</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--navy);">가져오기 (사용자용)</div>
+              <div style="font-size:11px;color:var(--ink4);">관리자에게 받은 문자열로 API 키 등록</div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:11px 13px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:800;color:var(--green);margin-bottom:6px;">📋 사용 방법</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:2.0;">
+              <div>① 관리자에게 받은 문자열을 아래에 붙여넣기</div>
+              <div>② 관리자에게 따로 받은 비밀번호 입력</div>
+              <div>③ 등록 버튼 클릭 → AI 기능 즉시 사용 가능!</div>
+            </div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">① 암호화 문자열 붙여넣기</div>
+            <textarea id="importText" rows="3" placeholder="관리자에게 받은 문자열을 여기에 붙여넣으세요&#10;예) U2FsdGVkX1+abc123..." style="width:100%;font-size:12px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--mono);outline:none;resize:none;line-height:1.7;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">② 비밀번호 입력</div>
+            <input type="password" id="importPw" placeholder="관리자에게 받은 비밀번호 입력" style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+          <button onclick="importApiKey()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--green),#0a7a54);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:7px;">✅ API 키 등록하기</button>
+          <div id="importStatus" style="display:none;margin-top:8px;font-size:12px;font-weight:700;padding:10px 13px;border-radius:var(--r3);text-align:center;"></div>
+        </div>
+      </div>
       <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px;">
         <div style="font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:10px;">📢 공지 / 서비스 제어</div>
         <div style="margin-bottom:8px;">
