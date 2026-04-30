@@ -1399,7 +1399,7 @@ function rptSetSteps(n){for(var i=0;i<=5;i++){var el=document.getElementById('rp
 function rptGoTo(n){document.querySelectorAll('.rpt-page').forEach(function(p){p.classList.remove('on');});var pg=document.getElementById('rptP'+n);if(pg)pg.classList.add('on');rptSetSteps(n);if(n>=1&&n<=4)rptLiveUpdate();window.scrollTo({top:0,behavior:'smooth'});}
 function rptBuildSummaryPreview(){}
 function rptSelType(btn,type){document.querySelectorAll('.rpt-type-btn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');rpt.type=type;showToast('? '+type+' 선택됨');rptLiveUpdate();}
-function rptSkipScan(){rptGoTo(1);}
+function rptApplyAiBadges(parsed){   var fieldMap={     rptDt:'datetime',rptCallCount:'callCount',rptAddr:'location',     rptManager:'manager',rptStaff:'staff',rptSit:'situation',     rptCasualty:'casualty',rptPropSummary:'propSummary',     rptDead:'dead',rptInj:'injured',     ppl_fire:'ppl_fire',ppl_police:'ppl_police',ppl_army:'ppl_army',     ppl_gov:'ppl_gov',ppl_med:'ppl_med',ppl_forest:'ppl_forest',ppl_etc:'ppl_etc',     veh_cmd:'veh_cmd',veh_pump:'veh_pump',veh_tank:'veh_tank',     veh_rescue:'veh_rescue',veh_ems:'veh_ems',veh_chem:'veh_chem',     veh_ladder:'veh_ladder',veh_etc:'veh_etc',     rel_police:'rel_police',rel_army:'rel_army',rel_gov:'rel_gov',rel_etc:'rel_etc'   };   Object.keys(fieldMap).forEach(function(elId){     var pKey=fieldMap[elId];     var el=document.getElementById(elId);     if(!el)return;     var wrap=el.parentElement;     if(!wrap)return;     // 기존 배지 제거     var old=wrap.querySelector('.ai-badge');if(old)old.remove();     var badge=document.createElement('div');     var val=parsed[pKey];     var hasVal=(val!==null&&val!==undefined&&val!==''&&val!==0);     // 숫자 0은 AI가 채운 것으로 간주 안 함     var isNumeric=(typeof val==='number');     if(hasVal&&!(isNumeric&&val===0)){       badge.className='ai-badge ai';       badge.textContent='🤖 AI추출';       wrap.classList.add('ai-filled');       wrap.classList.remove('manual-fill');     }else{       badge.className='ai-badge manual';       badge.textContent='✏️ 직접입력';       wrap.classList.remove('ai-filled');       wrap.classList.add('manual-fill');     }     wrap.insertBefore(badge,el);   }); }
 
 function rptHandleScanUpload(input){
   var files=Array.from(input.files);if(!files.length)return;
@@ -1408,7 +1408,7 @@ function rptHandleScanUpload(input){
   var loaded=0;
   files.forEach(function(file){
     var reader=new FileReader();
-    reader.onload=function(e){var b64=e.target.result.split(',')[1];rpt.scanImages.push({b64:b64,type:file.type,url:e.target.result});var img=document.createElement('img');img.src=e.target.result;img.style.cssText='width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--navy);';thumbRow.appendChild(img);loaded++;if(loaded===files.length)document.getElementById('rptScan0Previews').style.display='block';};
+    reader.onload=function(e){var b64=e.target.result.split(',')[1];rpt.scanImages.push({b64:b64,type:file.type,url:e.target.result});var img=document.createElement('img');img.src=e.target.result;img.style.cssText='width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--navy);';thumbRow.appendChild(img);loaded++;if(loaded===files.length){document.getElementById('rptScan0Previews').style.display='block';rptRunScanAI();}};
     reader.readAsDataURL(file);
   });
 }
@@ -1506,7 +1506,7 @@ async function rptRunScanAI(){
       }
       if(parsed.buildingUse)summary.push('건물: '+parsed.buildingUse+(parsed.buildingFloors?' '+parsed.buildingFloors+'층':''));
       if(parsed.floorData&&Array.isArray(parsed.floorData)&&parsed.floorData.length){rpt.dmgRows=[];parsed.floorData.forEach(function(f){if(f)rptAddDmgRow(f.floor,f.struct,f.size,f.use,f.note);});if(rpt.dmgRows.length)summary.push('층별: '+rpt.dmgRows.length+'개');}
-      ['rptP1AiBanner','rptP2AiBanner','rptP3AiBanner','rptP4AiBanner'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('show');});
+      ['rptP1AiBanner','rptP2AiBanner','rptP3AiBanner','rptP4AiBanner'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('show');});       rptApplyAiBadges(parsed);       rptApplyAiBadges(parsed);       rptApplyAiBadges(parsed);       rptApplyAiBadges(parsed);       rptApplyAiBadges(parsed);       rptApplyAiBadges(parsed);
       summaryEl.innerHTML=summary.length?summary.map(function(s){var parts2=s.split(': ');var ico=parts2[0]||'';var val=parts2.slice(1).join(': ').trim();return '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;flex-shrink:0;">'+ico.split(' ')[0]+'</span><span style="font-size:11px;font-weight:800;color:var(--ink4);min-width:50px;flex-shrink:0;">'+ico.split(' ').slice(1).join(' ')+'</span><span style="font-size:12px;color:var(--ink2);font-weight:600;">'+escH(val)+'</span></div>';}).join(''):'<div style="font-size:12px;color:var(--ink4);">이미지에서 읽을 수 있는 정보가 적습니다.</div>';
       statusDiv.style.display='none';doneDiv.style.display='block';btn.disabled=false;btn.innerHTML='&#9889; 다시 분석';
       setTimeout(function(){doneDiv.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
