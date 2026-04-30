@@ -1942,7 +1942,16 @@ function rptActionDel(id){rpt.actionRows=rpt.actionRows.filter(function(x){retur
 function rptHandlePhotoDrop(event,type){
   var files=event.dataTransfer.files;
   if(!files||!files.length)return;
-  rptHandlePhoto({files:files},type);
+  var file=files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var url=e.target.result;
+    var previewId=type==='map'?'rptMapPreview':'rptScenePreview';
+    var el=document.getElementById(previewId);
+    if(el)el.innerHTML='<div style="position:relative;"><img src="'+url+'" style="width:100%;border-radius:var(--r2);border:1px solid var(--border);"/><button onclick="rptClearPhoto(\''+type+'\')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button></div>';
+    if(type==='map')rpt.mapPhotoURL=url;else rpt.scenePhotoURL=url;
+  };
+  reader.readAsDataURL(file);
 }
 function rptClearPhoto(type){
   if(type==='map'){rpt.mapPhotoURL=null;var el=document.getElementById('rptMapPreview');if(el)el.innerHTML='';}
