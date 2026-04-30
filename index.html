@@ -1979,13 +1979,20 @@ function rptShowDist(lat,lng){
 function showToast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},2400);}
 
 // 카카오 SDK 로드 완료 후 init 실행
-if(window.kakao && window.kakao.maps && typeof kakao.maps.load==='function'){
-  kakao.maps.load(function(){
-    window.kakaoMapReady = true;
+function _startApp(){
+  if(window.kakao && window.kakao.maps && typeof kakao.maps.load==='function'){
+    kakao.maps.load(function(){
+      window.kakaoMapReady = true;
+      initAppLock();
+    });
+  } else {
     initAppLock();
-  });
+  }
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', _startApp);
 } else {
-  initAppLock();
+  _startApp();
 }
 
 /* ═══════════════════════════════════════
