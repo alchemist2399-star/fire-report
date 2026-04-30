@@ -2177,6 +2177,7 @@ function setServiceStatus(mode){
   }
 }
 function loadServiceStatus(){
+  var gk=localStorage.getItem('sobang_gemini_key')||'';
   var status=localStorage.getItem('sobang_service_status')||'resume';
   var title=localStorage.getItem('sobang_notice_title')||'';
   var msg=localStorage.getItem('sobang_notice_msg')||'';
