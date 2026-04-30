@@ -1950,9 +1950,8 @@ function rptHandlePhoto(input,type){
 function rptOnAddrInput(){
   clearTimeout(rpt.distTimer);
   var addr=(document.getElementById('rptAddr')||{}).value||'';
-  // removed
   rpt.distTimer=setTimeout(function(){rptGeocode(addr.trim());},700);
-  rptUpdatePreview();
+  rptLiveUpdate();
 }
 function rptGeocode(addr){
   
