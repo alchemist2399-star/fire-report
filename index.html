@@ -558,48 +558,31 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <!-- 지도 탭 -->
 <div id="tab-map" class="screen">
   <div class="card">
-    <div class="card-head"><span class="card-badge b-blue">현재 위치</span><span class="card-title">GPS 위치 정보</span></div>
-    <div class="loc-status-box no-loc" id="locStatusBox">
-      <span style="font-size:24px;">📍</span>
-      <div class="loc-status-text" id="locStatusText">위치 정보 없음<br><span style="font-weight:400;font-size:11px;">아래 버튼으로 위치를 가져오세요</span></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="getLocation()">📡 현재 위치 가져오기</button>
-    <button class="btn" style="width:100%;" onclick="refreshLocation()">🔄 위치 새로고침</button>
-  </div>
-
-  <div class="card">
     <div class="card-head"><span class="card-badge b-orange">지도 앱으로 열기</span><span class="card-title">외부 지도 앱</span></div>
-    <button class="map-app-btn" id="kakaoMapBtn" onclick="openKakaoMap()">
-      <div class="map-app-icon" style="background:#FEE500;">🗺️</div>
-      <div class="map-app-info">
-        <div class="map-app-name">카카오맵</div>
-        <div class="map-app-loc" id="kakaoMapLoc">위치 미설정</div>
+    <button class="map-app-btn" id="kakaoMapBtn" onclick="openKakaoMap()" style="padding:18px 16px;margin-bottom:10px;">
+      <div class="map-app-icon" style="background:#FEE500;width:48px;height:48px;border-radius:12px;font-size:26px;">🗺️</div>
+      <div class="map-app-info" style="margin-left:4px;">
+        <div class="map-app-name" style="font-size:16px;font-weight:900;">카카오맵</div>
+        <div class="map-app-loc" id="kakaoMapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
       </div>
-      <div class="map-app-arrow">›</div>
+      <div class="map-app-arrow" style="font-size:24px;">›</div>
     </button>
-    <button class="map-app-btn" onclick="openNaverMap()">
-      <div class="map-app-icon" style="background:#03C75A;">🧭</div>
-      <div class="map-app-info">
-        <div class="map-app-name">네이버 지도</div>
-        <div class="map-app-loc" id="naverMapLoc">위치 미설정</div>
+    <button class="map-app-btn" onclick="openNaverMap()" style="padding:18px 16px;margin-bottom:10px;">
+      <div class="map-app-icon" style="background:#03C75A;width:48px;height:48px;border-radius:12px;font-size:26px;">🧭</div>
+      <div class="map-app-info" style="margin-left:4px;">
+        <div class="map-app-name" style="font-size:16px;font-weight:900;">네이버 지도</div>
+        <div class="map-app-loc" id="naverMapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
       </div>
-      <div class="map-app-arrow">›</div>
+      <div class="map-app-arrow" style="font-size:24px;">›</div>
     </button>
-    <button class="map-app-btn" onclick="openTmap()">
-      <div class="map-app-icon" style="background:#E30C16;">🚗</div>
-      <div class="map-app-info">
-        <div class="map-app-name">T맵</div>
-        <div class="map-app-loc" id="tmapLoc">위치 미설정</div>
+    <button class="map-app-btn" onclick="openTmap()" style="padding:18px 16px;margin-bottom:0;">
+      <div class="map-app-icon" style="background:#E30C16;width:48px;height:48px;border-radius:12px;font-size:26px;">🚗</div>
+      <div class="map-app-info" style="margin-left:4px;">
+        <div class="map-app-name" style="font-size:16px;font-weight:900;">T맵</div>
+        <div class="map-app-loc" id="tmapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
       </div>
-      <div class="map-app-arrow">›</div>
+      <div class="map-app-arrow" style="font-size:24px;">›</div>
     </button>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-navy">카카오맵 미리보기</span></div>
-    <div id="kakaoMapContainer" style="width:100%;height:300px;border-radius:var(--r2);overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center;">
-      <div style="text-align:center;color:var(--ink4);font-size:13px;">📍 위치를 가져오면 지도가 표시됩니다</div>
-    </div>
   </div>
 </div>
 
