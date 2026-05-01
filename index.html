@@ -588,60 +588,72 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- 연락처 탭 -->
 <div id="tab-contacts" class="screen">
-  <div class="top-bar">
-    <div style="font-size:13px;font-weight:800;color:var(--ink2);">📞 비상 연락처</div>
-    <button class="reset-btn" onclick="showAddContact()">+ 추가</button>
+
+  <!-- 탭 세그먼트 -->
+  <div class="seg-ctrl seg-ctrl-2" style="margin-bottom:14px;">
+    <button class="seg-btn on" id="ctSegDispatch" onclick="switchContactTab('dispatch')">🚒 출동대</button>
+    <button class="seg-btn" id="ctSegAgency" onclick="switchContactTab('agency')">🏛 유관기관</button>
   </div>
-  
+
   <!-- 연락처 추가 폼 -->
   <div id="addContactForm" style="display:none;" class="card">
-    <div class="card-head"><span class="card-badge b-orange">새 연락처</span></div>
-    <input type="text" id="newContactName" placeholder="이름" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:8px;"/>
+    <div class="card-head"><span class="card-badge b-orange" id="addContactBadge">출동대 연락처 추가</span></div>
+    <input type="text" id="newContactName" placeholder="이름 / 직책" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:8px;"/>
     <input type="tel" id="newContactTel" placeholder="전화번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
-    <input type="text" id="newContactMemo" placeholder="메모 (선택)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
+    <input type="text" id="newContactMemo" placeholder="메모 (부서, 차량번호 등)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
     <div class="btn-row">
       <button class="btn btn-primary" style="flex:1;" onclick="saveNewContact()">저장</button>
       <button class="btn" onclick="hideAddContact()">취소</button>
     </div>
   </div>
 
-  <!-- 기본 비상연락처 -->
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-red">긴급</span><span class="card-title">긴급 전화</span></div>
-    <div class="contact-item">
-      <div class="contact-avatar">🚒</div>
-      <div class="contact-info">
-        <div class="contact-name">서산소방서 상황실</div>
-        <div class="contact-tel">041-669-0119</div>
-      </div>
-      <div class="contact-actions">
-        <a class="contact-call" href="tel:0416690119">📞</a>
-      </div>
+  <!-- 출동대 패널 -->
+  <div id="ctPanelDispatch">
+    <div class="top-bar">
+      <div style="font-size:13px;font-weight:800;color:var(--ink2);">🚒 출동대 연락처</div>
+      <button class="reset-btn" onclick="showAddContact('dispatch')">+ 추가</button>
     </div>
-    <div class="contact-item">
-      <div class="contact-avatar">🚑</div>
-      <div class="contact-info">
-        <div class="contact-name">119 구급상황관리센터</div>
-        <div class="contact-tel">119</div>
-      </div>
-      <div class="contact-actions">
-        <a class="contact-call" href="tel:119">📞</a>
-      </div>
-    </div>
-    <div class="contact-item">
-      <div class="contact-avatar">🏥</div>
-      <div class="contact-info">
-        <div class="contact-name">충남 소방본부</div>
-        <div class="contact-tel">041-635-0119</div>
-      </div>
-      <div class="contact-actions">
-        <a class="contact-call" href="tel:0416350119">📞</a>
-      </div>
+    <div id="dispatchContactsList">
+      <div class="empty">📭 출동대 연락처가 없습니다</div>
     </div>
   </div>
 
-  <!-- 사용자 연락처 목록 -->
-  <div id="userContactsList"></div>
+  <!-- 유관기관 패널 -->
+  <div id="ctPanelAgency" style="display:none;">
+    <div class="top-bar">
+      <div style="font-size:13px;font-weight:800;color:var(--ink2);">🏛 유관기관 연락처</div>
+      <button class="reset-btn" onclick="showAddContact('agency')">+ 추가</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-red">기본</span><span class="card-title">기본 유관기관</span></div>
+      <div class="contact-item">
+        <div class="contact-avatar">🚒</div>
+        <div class="contact-info">
+          <div class="contact-name">서산소방서 상황실</div>
+          <div class="contact-tel">041-669-0119</div>
+        </div>
+        <div class="contact-actions"><a class="contact-call" href="tel:0416690119">📞</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-avatar">🚑</div>
+        <div class="contact-info">
+          <div class="contact-name">119 구급상황관리센터</div>
+          <div class="contact-tel">119</div>
+        </div>
+        <div class="contact-actions"><a class="contact-call" href="tel:119">📞</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-avatar">🏥</div>
+        <div class="contact-info">
+          <div class="contact-name">충남 소방본부</div>
+          <div class="contact-tel">041-635-0119</div>
+        </div>
+        <div class="contact-actions"><a class="contact-call" href="tel:0416350119">📞</a></div>
+      </div>
+    </div>
+    <div id="agencyContactsList"></div>
+  </div>
+
 </div>
 
 <!-- 설정 탭 -->
@@ -1505,41 +1517,92 @@ function openTmap(){
 // ============================================================
 // 연락처 기능
 // ============================================================
+// ── 현재 연락처 탭 ('dispatch' | 'agency') ──
+let currentContactTab = 'dispatch';
+
+function switchContactTab(tab){
+  currentContactTab = tab;
+  document.getElementById('ctPanelDispatch').style.display = tab==='dispatch' ? 'block' : 'none';
+  document.getElementById('ctPanelAgency').style.display  = tab==='agency'   ? 'block' : 'none';
+  document.getElementById('ctSegDispatch').classList.toggle('on', tab==='dispatch');
+  document.getElementById('ctSegAgency').classList.toggle('on', tab==='agency');
+  // 폼 열려있으면 닫기
+  hideAddContact();
+}
+
 function loadUserContacts(){
   userContacts = JSON.parse(localStorage.getItem('userContacts') || '[]');
   renderUserContacts();
 }
 
 function renderUserContacts(){
-  const wrap = document.getElementById('userContactsList');
-  if(!wrap) return;
-  if(!userContacts.length){ wrap.innerHTML = ''; return; }
-  wrap.innerHTML = `<div class="card"><div class="card-head"><span class="card-badge b-blue">추가됨</span><span class="card-title">내 연락처</span></div>` +
-    userContacts.map((c,i) => `
-      <div class="contact-item">
-        <div class="contact-avatar">👤</div>
-        <div class="contact-info">
-          <div class="contact-name">${c.name}</div>
-          <div class="contact-tel">${c.tel}</div>
-          ${c.memo ? `<div class="contact-memo">${c.memo}</div>` : ''}
-        </div>
-        <div class="contact-actions">
-          <a class="contact-call" href="tel:${c.tel.replace(/[^0-9]/g,'')}">📞</a>
-          <button class="contact-del" onclick="deleteContact(${i})">🗑</button>
-        </div>
-      </div>`).join('') +
-    `</div>`;
+  const dispatchList = document.getElementById('dispatchContactsList');
+  const agencyList   = document.getElementById('agencyContactsList');
+  if(!dispatchList || !agencyList) return;
+
+  const dispatch = userContacts.filter(c => c.group === 'dispatch');
+  const agency   = userContacts.filter(c => c.group === 'agency');
+
+  // 출동대
+  if(!dispatch.length){
+    dispatchList.innerHTML = '<div class="empty">📭 출동대 연락처가 없습니다</div>';
+  } else {
+    dispatchList.innerHTML = '<div class="card">' +
+      dispatch.map((c) => {
+        const i = userContacts.indexOf(c);
+        return `<div class="contact-item">
+          <div class="contact-avatar">🚒</div>
+          <div class="contact-info">
+            <div class="contact-name">${c.name}</div>
+            <div class="contact-tel">${c.tel}</div>
+            ${c.memo ? `<div class="contact-memo">${c.memo}</div>` : ''}
+          </div>
+          <div class="contact-actions">
+            <a class="contact-call" href="tel:${c.tel.replace(/[^0-9]/g,'')}">📞</a>
+            <button class="contact-del" onclick="deleteContact(${i})">🗑</button>
+          </div>
+        </div>`;
+      }).join('') + '</div>';
+  }
+
+  // 유관기관 (사용자 추가분만)
+  if(!agency.length){
+    agencyList.innerHTML = '';
+  } else {
+    agencyList.innerHTML = '<div class="card"><div class="card-head"><span class="card-badge b-blue">추가됨</span><span class="card-title">추가 유관기관</span></div>' +
+      agency.map((c) => {
+        const i = userContacts.indexOf(c);
+        return `<div class="contact-item">
+          <div class="contact-avatar">🏛</div>
+          <div class="contact-info">
+            <div class="contact-name">${c.name}</div>
+            <div class="contact-tel">${c.tel}</div>
+            ${c.memo ? `<div class="contact-memo">${c.memo}</div>` : ''}
+          </div>
+          <div class="contact-actions">
+            <a class="contact-call" href="tel:${c.tel.replace(/[^0-9]/g,'')}">📞</a>
+            <button class="contact-del" onclick="deleteContact(${i})">🗑</button>
+          </div>
+        </div>`;
+      }).join('') + '</div>';
+  }
 }
 
-function showAddContact(){ const f=document.getElementById('addContactForm'); if(f)f.style.display='block'; }
+function showAddContact(group){
+  currentContactTab = group || currentContactTab;
+  const badge = document.getElementById('addContactBadge');
+  if(badge) badge.textContent = currentContactTab==='dispatch' ? '출동대 연락처 추가' : '유관기관 연락처 추가';
+  const f = document.getElementById('addContactForm');
+  if(f) f.style.display='block';
+}
 function hideAddContact(){ const f=document.getElementById('addContactForm'); if(f)f.style.display='none'; }
 
 function saveNewContact(){
   const name = document.getElementById('newContactName')?.value.trim();
-  const tel = document.getElementById('newContactTel')?.value.trim();
+  const tel  = document.getElementById('newContactTel')?.value.trim();
   const memo = document.getElementById('newContactMemo')?.value.trim();
   if(!name || !tel){ showToast('⚠️ 이름과 전화번호를 입력하세요'); return; }
-  userContacts.push({ name, tel, memo });
+  userContacts.push({ name, tel, memo, group: currentContactTab });
   localStorage.setItem('userContacts', JSON.stringify(userContacts));
   renderUserContacts();
   hideAddContact();
