@@ -32,9 +32,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .nav-btn::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2.5px;border-radius:3px 3px 0 0;background:rgba(255,255,255,0.9);transition:width 0.18s;}
 .nav-btn.on::after{width:60%;max-width:50px;}
 .screen{display:none;padding:14px 14px 16px;animation:fadeUp .2s ease both;}
-@media(min-width:901px){#tab-more{padding:14px 20px 20px;max-width:1600px;margin:0 auto;}.rpt-split-preview{width:500px;}.rpt-preview-body{overflow-y:auto;overflow-x:hidden;}}
-@media(min-width:1200px){.rpt-split-preview{width:560px;}}
-@media(min-width:1400px){.rpt-split-preview{width:620px;}}
+
+
+
 .screen.on{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
@@ -265,27 +265,27 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.rpt-split-wrap{display:flex;gap:16px;align-items:flex-start;}
-.rpt-split-input{flex:1;min-width:0;}
-.rpt-split-preview{width:420px;flex-shrink:0;position:sticky;top:calc(var(--hd-h) + 8px);max-height:calc(100vh - var(--hd-h) - 80px);display:flex;flex-direction:column;border:1.5px solid var(--navy);border-radius:var(--r);overflow:hidden;box-shadow:0 4px 20px rgba(26,58,107,0.15);background:var(--surface);}
-.rpt-preview-header{background:var(--navy);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
-.rpt-preview-body{flex:1;overflow-y:auto;overflow-x:hidden;background:#fff;min-height:400px;position:relative;}
-.rpt-mobile-tabs{display:none;grid-template-columns:1fr 1fr;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:12px;}
-.rpt-tab-btn{padding:10px 6px;border:none;border-radius:var(--r3);background:transparent;font-family:var(--font);font-size:13px;font-weight:700;color:var(--ink4);cursor:pointer;transition:all 0.15s;}
-.rpt-tab-btn.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+
+
+
+
+
+
+
+
 @media(max-width:900px){
-  .rpt-mobile-tabs{display:grid;}
-  .rpt-split-wrap{display:block;}
-  .rpt-split-preview{display:none;position:static;width:100%;max-height:none;margin-top:0;border-radius:0;border:none;box-shadow:none;}
-  .rpt-split-preview.mobile-show{display:flex;flex-direction:column;min-height:calc(100vh - 200px);}
+  
+  
+  
+
   .rpt-split-input.mobile-hide{display:none;}
-  .rpt-preview-body{min-height:unset;flex:1;overflow-y:auto;overflow-x:hidden;}
-  .rpt-mobile-tabs{position:sticky;top:var(--hd-h);z-index:50;background:var(--bg);border-radius:0;border-left:none;border-right:none;border-top:none;padding:6px 14px;margin-left:-14px;margin-right:-14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+  
+  
 }
 @media(min-width:901px){
-  .rpt-mobile-tabs{display:none !important;}
-  .rpt-split-preview{display:flex !important;}
-  .rpt-split-input{display:block !important;}
+  
+  
+  
 }
 </style>
 </head>
@@ -450,216 +450,92 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 </div>
 
+
 <!-- 보고서 탭 -->
 <div id="tab-report" class="screen">
-  <div class="rpt-mobile-tabs" id="rptMobileTabs">
-    <button class="rpt-tab-btn on" id="rptTabInput" onclick="switchRptMobileTab('input')">✏️ 입력</button>
-    <button class="rpt-tab-btn" id="rptTabPreview" onclick="switchRptMobileTab('preview')">👁 미리보기</button>
-  </div>
-  <div class="rpt-split-wrap">
-    <!-- 입력 영역 -->
-    <div class="rpt-split-input" id="rptSplitInput">
-      <!-- 단계 표시 -->
-      <div class="rpt-step-bar" id="rptStepBar">
-        <div class="rpt-step active" id="rptStep0"><div class="rpt-step-num">1</div><div class="rpt-step-label">스캔·유형</div></div>
-        <div class="rpt-step-line"></div>
-        <div class="rpt-step" id="rptStep1"><div class="rpt-step-num">2</div><div class="rpt-step-label">기본정보</div></div>
-        <div class="rpt-step-line"></div>
-        <div class="rpt-step" id="rptStep2"><div class="rpt-step-num">3</div><div class="rpt-step-label">피해현황</div></div>
-        <div class="rpt-step-line"></div>
-        <div class="rpt-step" id="rptStep3"><div class="rpt-step-num">4</div><div class="rpt-step-label">대응조치</div></div>
-        <div class="rpt-step-line"></div>
-        <div class="rpt-step" id="rptStep4"><div class="rpt-step-num">5</div><div class="rpt-step-label">AI생성</div></div>
-        <div class="rpt-step-line"></div>
-        <div class="rpt-step" id="rptStep5"><div class="rpt-step-num">6</div><div class="rpt-step-label">출력</div></div>
-      </div>
 
-      <!-- PAGE 0: AI 스캔 + 보고서 유형 -->
-      <div class="rpt-page on" id="rptPage0">
-        <div class="rpt-scan-hero" style="background:linear-gradient(135deg,var(--navy),#2a5298);border:none;">
-          <span class="rpt-scan-hero-ico">🤖</span>
-          <div class="rpt-scan-hero-title" style="color:#fff;">AI 현장사진 스캔</div>
-          <p class="rpt-scan-hero-sub">사진을 올리면 AI가 현장을 분석하여<br>보고서를 자동으로 완성합니다</p>
-          <label class="rpt-drop-zone" id="rptDropZone">
-            <input type="file" id="rptFileInput" accept="image/*" multiple onchange="handleRptFiles(this.files)"/>
-            <div class="rpt-drop-zone-ico">📷</div>
-            <div class="rpt-drop-zone-label">사진 선택 또는 드래그</div>
-            <div class="rpt-drop-zone-hint">JPG·PNG·WEBP 지원 · 최대 10장</div>
-          </label>
-          <div class="rpt-thumb-row" id="rptThumbRow"></div>
-          <button class="rpt-ai-btn" id="rptAiBtn" onclick="rptRunScanAI()" disabled>
-            <span class="dots"><span></span><span></span><span></span></span> AI 분석 시작
-          </button>
-          <div class="rpt-scan-progress" id="rptScanProgress">
-            <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptScanStatus">분석 중...</div>
-            <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptScanBar"></div></div>
-          </div>
-          <div class="rpt-scan-done" id="rptScanDone">
-            <div style="font-size:13px;font-weight:800;color:var(--green);">✅ AI 분석 완료 — 보고서가 자동 입력됐습니다!</div>
-          </div>
-        </div>
-        <div class="rpt-divider"><span>또는 직접 입력</span></div>
-        <div style="margin-bottom:12px;">
-          <div class="sec-lbl">보고서 유형 선택</div>
-          <div class="rpt-type-grid">
-            <button class="rpt-type-btn sel" onclick="selectRptType(this,'fire')" data-type="fire"><span class="ico">🔥</span>화재</button>
-            <button class="rpt-type-btn" onclick="selectRptType(this,'rescue')" data-type="rescue"><span class="ico">🚑</span>구조</button>
-            <button class="rpt-type-btn" onclick="selectRptType(this,'ems')" data-type="ems"><span class="ico">🏥</span>구급</button>
-            <button class="rpt-type-btn" onclick="selectRptType(this,'hazmat')" data-type="hazmat"><span class="ico">☣️</span>위험물</button>
-            <button class="rpt-type-btn" onclick="selectRptType(this,'misc')" data-type="misc"><span class="ico">⚡</span>기타</button>
-            <button class="rpt-type-btn" onclick="selectRptType(this,'training')" data-type="training"><span class="ico">🎓</span>훈련</button>
-          </div>
-        </div>
-        <div class="rpt-ai-banner" id="rptAiBanner">
-          <span class="rpt-ai-banner-ico">🤖</span>
-          <span class="rpt-ai-banner-text">AI가 사진에서 정보를 추출했습니다. 아래에서 내용을 확인·수정하세요.</span>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-next" onclick="rptGoPage(1)">다음 단계 →</button>
-        </div>
+  <!-- PAGE 0: AI 스캔 -->
+  <div class="rpt-page on" id="rptPage0">
+    <div class="rpt-scan-hero" style="background:linear-gradient(135deg,var(--navy),#2a5298);border:none;">
+      <span class="rpt-scan-hero-ico">🤖</span>
+      <div class="rpt-scan-hero-title" style="color:#fff;">AI 현장사진 스캔</div>
+      <p class="rpt-scan-hero-sub">사진을 올리면 AI가 현장을 분석하여<br>보고서를 자동으로 완성합니다</p>
+      <label class="rpt-drop-zone" id="rptDropZone">
+        <input type="file" id="rptFileInput" accept="image/*" multiple onchange="handleRptFiles(this.files)"/>
+        <div class="rpt-drop-zone-ico">📷</div>
+        <div class="rpt-drop-zone-label">사진 선택 또는 드래그</div>
+        <div class="rpt-drop-zone-hint">JPG·PNG·WEBP 지원 · 최대 10장</div>
+      </label>
+      <div class="rpt-thumb-row" id="rptThumbRow"></div>
+      <button class="rpt-ai-btn" id="rptAiBtn" onclick="rptRunScanAI()" disabled>
+        <span class="dots"><span></span><span></span><span></span></span> AI 분석 시작
+      </button>
+      <div class="rpt-scan-progress" id="rptScanProgress">
+        <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptScanStatus">분석 중...</div>
+        <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptScanBar"></div></div>
       </div>
-
-      <!-- PAGE 1: 기본 정보 -->
-      <div class="rpt-page" id="rptPage1">
-        <div class="card">
-          <div class="card-head"><span class="card-badge b-orange">STEP 2</span><span class="card-title">기본 정보</span></div>
-          <div class="rpt-prog"><div class="rpt-prog-bar" style="width:20%"></div></div>
-          <div class="sec-lbl">신고 접수 시각</div>
-          <input type="datetime-local" id="rpt_receiveTime" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-          <div class="sec-lbl">출동 시각</div>
-          <input type="datetime-local" id="rpt_dispatchTime" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-          <div class="sec-lbl">현장 도착 시각</div>
-          <input type="datetime-local" id="rpt_arrivalTime" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-          <div class="sec-lbl">사고 주소</div>
-          <input type="text" id="rpt_address" placeholder="충남 서산시 ..." style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-          <div class="sec-lbl">사고 개요</div>
-          <textarea id="rpt_summary" rows="4" placeholder="사고 발생 상황을 간략히 입력..." style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.8;margin-bottom:12px;"></textarea>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-prev" onclick="rptGoPage(0)">← 이전</button>
-          <button class="rpt-nav-next" onclick="rptGoPage(2)">다음 →</button>
-        </div>
-      </div>
-
-      <!-- PAGE 2: 피해 현황 -->
-      <div class="rpt-page" id="rptPage2">
-        <div class="card">
-          <div class="card-head"><span class="card-badge b-red">STEP 3</span><span class="card-title">피해 현황</span></div>
-          <div class="rpt-prog"><div class="rpt-prog-bar" style="width:40%"></div></div>
-          <div class="sec-lbl">인명 피해</div>
-          <table class="rpt-dmg-table">
-            <thead><tr><th>구분</th><th>사망</th><th>중상</th><th>경상</th><th>실종</th><th>계</th></tr></thead>
-            <tbody>
-              <tr><td style="text-align:center;font-size:11px;font-weight:800;background:#f0f4ff;color:var(--navy);">민간인</td>
-                <td><input type="number" id="dmg_civ_dead" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_civ_heavy" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_civ_light" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_civ_missing" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_civ_total" value="0" readonly style="background:#f8f9fb;color:var(--orange);font-weight:800;"/></td></tr>
-              <tr><td style="text-align:center;font-size:11px;font-weight:800;background:#f0f4ff;color:var(--navy);">소방관</td>
-                <td><input type="number" id="dmg_ff_dead" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_ff_heavy" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_ff_light" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_ff_missing" value="0" min="0" oninput="calcDmg()"/></td>
-                <td><input type="number" id="dmg_ff_total" value="0" readonly style="background:#f8f9fb;color:var(--orange);font-weight:800;"/></td></tr>
-            </tbody>
-          </table>
-          <div class="sec-lbl" style="margin-top:14px;">재산 피해 (만원)</div>
-          <input type="number" id="rpt_propertyDmg" placeholder="0" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-          <div class="sec-lbl">피해 건물/시설</div>
-          <input type="text" id="rpt_dmgBuilding" placeholder="건물명, 구조, 면적 등" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-prev" onclick="rptGoPage(1)">← 이전</button>
-          <button class="rpt-nav-next" onclick="rptGoPage(3)">다음 →</button>
-        </div>
-      </div>
-
-      <!-- PAGE 3: 대응 조치 -->
-      <div class="rpt-page" id="rptPage3">
-        <div class="card">
-          <div class="card-head"><span class="card-badge b-blue">STEP 4</span><span class="card-title">대응 조치</span></div>
-          <div class="rpt-prog"><div class="rpt-prog-bar" style="width:60%"></div></div>
-          <div class="sec-lbl">투입 자원</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-            <div><div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">차량 (대)</div><input type="number" id="rpt_vehicles" value="0" min="0" style="width:100%;font-size:14px;padding:9px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;"/></div>
-            <div><div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">인원 (명)</div><input type="number" id="rpt_personnel" value="0" min="0" style="width:100%;font-size:14px;padding:9px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;"/></div>
-          </div>
-          <div class="sec-lbl">조치 사항 (시간순)</div>
-          <div id="rptActionList"></div>
-          <button class="rpt-add-btn" onclick="addRptAction()">+ 조치 추가</button>
-          <div class="sec-lbl" style="margin-top:12px;">현장 사진 첨부</div>
-          <label class="rpt-photo-zone" id="rptPhotoZone">
-            <input type="file" id="rptPhotoInput" accept="image/*" multiple onchange="handleRptPhotos(this.files)"/>
-            <div class="pz-ico">📷</div>
-            <div class="pz-lbl">탭하여 사진 추가</div>
-          </label>
-          <div class="rpt-thumb-row" id="rptPhotoThumbRow" style="margin-top:10px;"></div>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-prev" onclick="rptGoPage(2)">← 이전</button>
-          <button class="rpt-nav-next" onclick="rptGoPage(4)">다음 →</button>
-        </div>
-      </div>
-
-      <!-- PAGE 4: AI 보고서 생성 -->
-      <div class="rpt-page" id="rptPage4">
-        <div class="card">
-          <div class="card-head"><span class="card-badge b-green">STEP 5</span><span class="card-title">AI 공식보고서 생성</span></div>
-          <div class="rpt-prog"><div class="rpt-prog-bar" style="width:80%"></div></div>
-          <div class="info-box">✏️ 입력한 정보를 바탕으로 AI가 공식 보고서를 작성합니다. 생성 후 자유롭게 수정할 수 있습니다.</div>
-          <button class="rpt-ai-btn" id="rptGenBtn" onclick="rptGenerateReport()" style="margin-top:0;">
-            🤖 AI 보고서 생성
-          </button>
-          <div class="rpt-scan-progress" id="rptGenProgress" style="margin-top:12px;">
-            <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptGenStatus">생성 중...</div>
-            <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptGenBar"></div></div>
-          </div>
-          <div class="rpt-result-wrap" id="rptResultWrap" style="display:none;">
-            <div class="rpt-result-head">
-              <span class="rpt-result-head-label">AI 생성 초안</span>
-              <button onclick="copyRptResult()" style="font-size:11px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">📋 복사</button>
-            </div>
-            <div class="rpt-result-body" id="rptResultBody" contenteditable="true"></div>
-          </div>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-prev" onclick="rptGoPage(3)">← 이전</button>
-          <button class="rpt-nav-next" onclick="rptGoPage(5)">출력 →</button>
-        </div>
-      </div>
-
-      <!-- PAGE 5: 출력 -->
-      <div class="rpt-page" id="rptPage5">
-        <div class="card">
-          <div class="card-head"><span class="card-badge b-navy">STEP 6</span><span class="card-title">출력 및 공유</span></div>
-          <div class="rpt-prog"><div class="rpt-prog-bar" style="width:100%"></div></div>
-          <div class="info-box">📄 보고서를 PDF로 저장하거나 공유하세요.</div>
-          <div class="rpt-out-grid">
-            <button class="rpt-out-btn pdf" onclick="rptExportPDF()"><span class="out-ico">📄</span>PDF 저장</button>
-            <button class="rpt-out-btn share" onclick="rptShareReport()"><span class="out-ico">📤</span>공유하기</button>
-            <button class="rpt-out-btn copy" onclick="copyRptResult()"><span class="out-ico">📋</span>텍스트 복사</button>
-            <button class="rpt-out-btn reset" onclick="rptReset()"><span class="out-ico">🔄</span>초기화</button>
-          </div>
-          <div id="rptMsg" class="rpt-msg"></div>
-        </div>
-        <div class="rpt-nav-row">
-          <button class="rpt-nav-prev" onclick="rptGoPage(4)">← 이전</button>
-        </div>
+      <div class="rpt-scan-done" id="rptScanDone">
+        <div style="font-size:13px;font-weight:800;color:var(--green);">✅ AI 분석 완료 — 보고서가 자동 입력됐습니다!</div>
       </div>
     </div>
 
-    <!-- 미리보기 영역 -->
-    <div class="rpt-split-preview" id="rptSplitPreview">
-      <div class="rpt-preview-header">
-        <span>📋 미리보기</span>
-        <button onclick="rptExportPDF()" style="font-size:11px;color:rgba(255,255,255,0.8);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">PDF ↓</button>
-      </div>
-      <div class="rpt-preview-body" id="rptPreviewBody">
-        <div style="padding:20px;font-size:12px;color:var(--ink4);text-align:center;margin-top:40px;">정보를 입력하면<br>미리보기가 표시됩니다</div>
+    <div style="margin-top:16px;">
+      <div class="sec-lbl">보고서 유형 선택</div>
+      <div class="rpt-type-grid">
+        <button class="rpt-type-btn sel" onclick="selectRptType(this,'fire')" data-type="fire"><span class="ico">🔥</span>화재</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'rescue')" data-type="rescue"><span class="ico">🚑</span>구조</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'ems')" data-type="ems"><span class="ico">🏥</span>구급</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'hazmat')" data-type="hazmat"><span class="ico">☣️</span>위험물</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'misc')" data-type="misc"><span class="ico">⚡</span>기타</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'training')" data-type="training"><span class="ico">🎓</span>훈련</button>
       </div>
     </div>
+
+    <div class="rpt-ai-banner" id="rptAiBanner">
+      <span class="rpt-ai-banner-ico">🤖</span>
+      <span class="rpt-ai-banner-text">AI가 사진에서 정보를 추출했습니다. 아래에서 결과를 확인하세요.</span>
+    </div>
+
+    <div class="rpt-nav-row" style="margin-top:16px;">
+      <button class="rpt-nav-next" onclick="rptGoPage(1)">AI 보고서 생성 →</button>
+    </div>
   </div>
+
+  <!-- PAGE 1: AI 보고서 생성 + 출력 -->
+  <div class="rpt-page" id="rptPage1">
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-green">AI 생성</span><span class="card-title">공식 상황보고서</span></div>
+      <button class="rpt-ai-btn" id="rptGenBtn" onclick="rptGenerateReport()" style="margin-top:0;">
+        🤖 AI 보고서 생성
+      </button>
+      <div class="rpt-scan-progress" id="rptGenProgress" style="margin-top:12px;">
+        <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptGenStatus">생성 중...</div>
+        <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptGenBar"></div></div>
+      </div>
+      <div class="rpt-result-wrap" id="rptResultWrap" style="display:none;margin-top:12px;">
+        <div class="rpt-result-head">
+          <span class="rpt-result-head-label">AI 생성 초안</span>
+          <button onclick="copyRptResult()" style="font-size:11px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">📋 복사</button>
+        </div>
+        <div class="rpt-result-body" id="rptResultBody" contenteditable="true"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <div class="rpt-out-grid">
+        <button class="rpt-out-btn pdf" onclick="rptExportPDF()"><span class="out-ico">📄</span>PDF 저장</button>
+        <button class="rpt-out-btn share" onclick="rptShareReport()"><span class="out-ico">📤</span>공유하기</button>
+        <button class="rpt-out-btn copy" onclick="copyRptResult()"><span class="out-ico">📋</span>텍스트 복사</button>
+        <button class="rpt-out-btn reset" onclick="rptReset()"><span class="out-ico">🔄</span>초기화</button>
+      </div>
+      <div id="rptMsg" class="rpt-msg"></div>
+    </div>
+
+    <div class="rpt-nav-row">
+      <button class="rpt-nav-prev" onclick="rptGoPage(0)">← 뒤로</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- 지도 탭 -->
@@ -1402,7 +1278,7 @@ async function rptGenerateReport(){
     if(progBar) progBar.style.width='100%';
     if(resultBody) resultBody.textContent = text;
     if(resultWrap) resultWrap.style.display='block';
-    updateRptPreview(text);
+    // preview removed
     showToast('✅ 보고서 생성 완료');
   } catch(e){
     clearInterval(pint);
@@ -1414,11 +1290,6 @@ async function rptGenerateReport(){
   }
 }
 
-function updateRptPreview(text){
-  const preview = document.getElementById('rptPreviewBody');
-  if(!preview) return;
-  preview.innerHTML = `<div style="padding:16px;font-size:12px;line-height:2.0;white-space:pre-wrap;word-break:break-all;font-family:var(--mono);color:#333;">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
-}
 
 function copyRptResult(){
   const body = document.getElementById('rptResultBody');
@@ -1470,11 +1341,6 @@ function rptReset(){
 // 보고서 페이지 이동
 function rptGoPage(page){
   document.querySelectorAll('.rpt-page').forEach((p,i) => p.classList.toggle('on', i===page));
-  document.querySelectorAll('[id^="rptStep"]').forEach((s,i) => {
-    s.classList.remove('active','done');
-    if(i < page) s.classList.add('done');
-    else if(i === page) s.classList.add('active');
-  });
   rptCurrentPage = page;
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1536,13 +1402,6 @@ function calcDmg(){
   });
 }
 
-function switchRptMobileTab(tab){
-  const input=document.getElementById('rptSplitInput');
-  const preview=document.getElementById('rptSplitPreview');
-  const btnInput=document.getElementById('rptTabInput');
-  const btnPreview=document.getElementById('rptTabPreview');
-  if(tab==='input'){
-    if(input){ input.classList.remove('mobile-hide'); input.classList.remove('mobile-show'); }
     if(preview){ preview.classList.remove('mobile-show'); preview.classList.add('mobile-hide'); }
     if(btnInput) btnInput.classList.add('on');
     if(btnPreview) btnPreview.classList.remove('on');
