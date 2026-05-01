@@ -633,6 +633,30 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- 설정 탭 -->
 <div id="tab-settings" class="screen">
+
+  <!-- 설정 잠금 오버레이 -->
+  <div id="settingsLock" style="position:absolute;inset:0;z-index:100;background:var(--bg);padding:40px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;">
+    <div style="width:100%;max-width:360px;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="width:64px;height:64px;background:var(--orange);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;">🔐</div>
+        <div style="font-size:18px;font-weight:900;color:var(--ink);margin-bottom:6px;">설정 잠금</div>
+        <div style="font-size:13px;color:var(--ink4);">비밀번호를 입력하면 설정을 변경할 수 있습니다</div>
+      </div>
+      <input type="password" id="settingsLockInput" placeholder="비밀번호 입력"
+        onkeydown="if(event.key==='Enter')checkSettingsLock()"
+        style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
+      <button onclick="checkSettingsLock()"
+        style="width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(232,96,10,0.3);">
+        🔓 확인
+      </button>
+      <div id="settingsLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:var(--red);text-align:center;background:var(--red-lt);padding:8px;border-radius:var(--r3);">
+        ❌ 비밀번호가 틀렸습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 설정 실제 내용 (잠금 해제 후 표시) -->
+  <div id="settingsContent" style="display:none;">
   <div class="card">
     <div class="card-head"><span class="card-badge b-red">보안</span><span class="card-title">앱 잠금</span></div>
     <div class="sec-lbl">현재 비밀번호</div>
@@ -662,6 +686,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">
     소방 상황보고 시스템 v2.5<br>서산소방서
   </div>
+  </div><!-- /settingsContent -->
 </div>
 
 <!-- Toast -->
@@ -699,7 +724,7 @@ updateClock();
 // 앱 잠금
 // ============================================================
 function initAppLock(){
-  const pw = localStorage.getItem('appLockPw') || '119119';
+  const pw = localStorage.getItem('appLockPw') || '0261';
   const screen = document.getElementById('appLockScreen');
   if(!screen) return;
   screen.style.display = 'flex';
@@ -714,8 +739,26 @@ function initAppLock(){
   });
 }
 
+function checkSettingsLock(){
+  const pw = '2399';
+  const input = document.getElementById('settingsLockInput');
+  const err = document.getElementById('settingsLockError');
+  const lock = document.getElementById('settingsLock');
+  const content = document.getElementById('settingsContent');
+  if(!input) return;
+  if(input.value === pw){
+    if(lock) lock.style.display = 'none';
+    if(content) content.style.display = 'block';
+    if(err) err.style.display = 'none';
+  } else {
+    if(err) err.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+
 function checkAppLock(){
-  const pw = localStorage.getItem('appLockPw') || '119119';
+  const pw = localStorage.getItem('appLockPw') || '0261';
   const input = document.getElementById('appLockInput');
   const err = document.getElementById('appLockError');
   const screen = document.getElementById('appLockScreen');
@@ -741,6 +784,17 @@ function switchTab(tab, btnEl){
   const btn = btnEl || document.getElementById('nav-'+tab);
   if(btn) btn.classList.add('on');
   if(tab === 'map') initMap();
+  // 설정 탭 진입 시 항상 잠금 초기화
+  if(tab === 'settings'){
+    const lock = document.getElementById('settingsLock');
+    const content = document.getElementById('settingsContent');
+    const input = document.getElementById('settingsLockInput');
+    const err = document.getElementById('settingsLockError');
+    if(lock) lock.style.display = 'flex';
+    if(content) content.style.display = 'none';
+    if(input){ input.value = ''; setTimeout(()=>input.focus(), 100); }
+    if(err) err.style.display = 'none';
+  }
 }
 
 // ============================================================
@@ -774,7 +828,7 @@ function changePw(){
   const cur = document.getElementById('cfg_currentPw').value;
   const nw = document.getElementById('cfg_newPw').value;
   const conf = document.getElementById('cfg_confirmPw').value;
-  const stored = localStorage.getItem('appLockPw') || '119119';
+  const stored = localStorage.getItem('appLockPw') || '0261';
   const msg = document.getElementById('pwMsg');
   if(cur !== stored){ msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 현재 비밀번호가 틀렸습니다.</div>'; return; }
   if(nw.length < 4){ msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 비밀번호는 4자리 이상이어야 합니다.</div>'; return; }
@@ -788,7 +842,7 @@ function changePw(){
 
 function clearAllData(){
   if(!confirm('정말 모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
-  const pw = localStorage.getItem('appLockPw') || '119119';
+  const pw = localStorage.getItem('appLockPw') || '0261';
   localStorage.clear();
   localStorage.setItem('appLockPw', pw);
   showToast('🗑️ 초기화됐습니다');
