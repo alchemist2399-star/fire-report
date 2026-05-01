@@ -6,301 +6,125 @@
 <title>소방 상황보고 시스템</title>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="소방보고"/>
 <meta name="theme-color" content="#E8600A"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
-<script>window.kakaoMapReady=false;window.addEventListener('load',function(){if(window.kakao&&window.kakao.maps&&typeof kakao.maps.load==='function'){kakao.maps.load(function(){window.kakaoMapReady=true;if(typeof initAppLock==='function')initAppLock();});}else{if(typeof initAppLock==='function')initAppLock();}});</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=2c57bb4ee021dd50fe2789c690227428&libraries=services&autoload=false"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<script>window.kakaoMapReady=false;window.addEventListener('load',function(){if(typeof initAppLock==='function')initAppLock();});</script>
 <style>
-:root{--orange:#E8600A;--orange-lt:#FFF3EC;--orange-md:#FFE0CC;--orange-bd:rgba(232,96,10,0.2);--red:#D93025;--red-lt:#FFF0EF;--blue:#1A6EE8;--blue-lt:#EFF5FF;--green:#0D9B6A;--green-lt:#EDFAF4;--yellow:#B45309;--yellow-lt:#FFFBEB;--purple:#7C3AED;--purple-lt:#F5F3FF;--navy:#1a3a6b;--bg:#DDE3EF;--surface:#FFFFFF;--surface2:#F8F9FB;--border:#E4E7EE;--border2:#CDD2DE;--ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;--r:14px;--r2:10px;--r3:7px;--shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);--shadow-o:0 2px 8px rgba(232,96,10,0.18),0 8px 24px rgba(232,96,10,0.12);--font:'Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;--nav-h:0px;--hd-h:96px;}
+:root{--orange:#E8600A;--orange-lt:#FFF3EC;--orange-md:#FFE0CC;--orange-bd:rgba(232,96,10,0.2);--red:#D93025;--red-lt:#FFF0EF;--blue:#1A6EE8;--blue-lt:#EFF5FF;--green:#0D9B6A;--green-lt:#EDFAF4;--purple:#7C3AED;--purple-lt:#F5F3FF;--navy:#1a3a6b;--bg:#DDE3EF;--surface:#FFF;--surface2:#F8F9FB;--border:#E4E7EE;--border2:#CDD2DE;--ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;--r:14px;--r2:10px;--r3:7px;--shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);--font:'Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;--hd-h:96px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html{background:var(--bg);-webkit-text-size-adjust:100%;}
+html{background:var(--bg);}
 body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:100vh;padding-bottom:16px;padding-top:var(--hd-h);}
-.hd{background:var(--orange);padding:0 16px;height:var(--hd-h);display:flex;align-items:center;gap:10px;position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:0 2px 12px rgba(232,96,10,0.28);}
-.hd-emblem{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.hd-info{flex:1;}
-.hd-title{font-size:14px;font-weight:900;color:#fff;letter-spacing:-0.3px;line-height:1.1;}
-.hd-sub{font-size:9px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-top:1px;font-weight:600;}
-.hd-clock{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.22);letter-spacing:0.5px;}
-.bottom-nav{position:fixed;top:var(--hd-h);left:0;right:0;z-index:150;height:var(--nav-h);background:rgba(0,0,0,0.18);display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid rgba(255,255,255,0.15);}
-.nav-btn{display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;font-family:var(--font);color:rgba(255,255,255,0.85);font-size:12px;font-weight:800;transition:all 0.15s;padding:0 4px;position:relative;letter-spacing:-0.3px;height:100%;}
-.nav-btn.on{color:#fff;background:rgba(255,255,255,0.18);border-radius:6px;}
-.nav-btn::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2.5px;border-radius:3px 3px 0 0;background:rgba(255,255,255,0.9);transition:width 0.18s;}
-.nav-btn.on::after{width:60%;max-width:50px;}
-.screen{display:none;padding:14px 14px 16px;animation:fadeUp .2s ease both;}
-
-
-
-.screen.on{display:block;}
+.hd{background:var(--orange);position:fixed;top:0;left:0;right:0;z-index:200;height:var(--hd-h);display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(232,96,10,0.28);}
+.hd-row1{display:flex;align-items:center;gap:10px;padding:0 16px;height:56px;}
+.hd-clock{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.22);}
+.hd-row2{display:grid;grid-template-columns:repeat(5,1fr);height:40px;background:rgba(0,0,0,0.25);border-top:1px solid rgba(255,255,255,0.18);}
+.nav-btn{display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;font-family:var(--font);color:rgba(255,255,255,0.85);font-size:12px;font-weight:800;transition:all 0.15s;position:relative;height:100%;}
+.nav-btn.on{color:#fff;background:rgba(255,255,255,0.18);}
+.nav-btn.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60%;max-width:50px;height:2.5px;border-radius:3px 3px 0 0;background:rgba(255,255,255,0.9);}
+.screen{display:none;padding:14px;}
+.screen.on{display:block;animation:fadeUp .2s ease both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
 .card-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-.card-badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;letter-spacing:0.4px;}
+.card-badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;}
 .b-orange{background:var(--orange-lt);color:var(--orange);border:1px solid var(--orange-bd);}
 .b-blue{background:var(--blue-lt);color:var(--blue);border:1px solid rgba(26,110,232,0.2);}
 .b-green{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.2);}
 .b-red{background:var(--red-lt);color:var(--red);border:1px solid rgba(217,48,37,0.2);}
-.b-yellow{background:var(--yellow-lt);color:var(--yellow);border:1px solid rgba(180,83,9,0.2);}
 .b-purple{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(124,58,237,0.2);}
-.b-navy{background:#eff3fa;color:var(--navy);border:1px solid rgba(26,58,107,0.2);}
 .card-title{font-size:13px;font-weight:700;color:var(--ink2);}
-.sec-lbl{font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.sec-lbl{font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:8px;}
 .seq-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 .seq-btn{padding:7px 13px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);transition:all 0.15s;}
-.seq-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(232,96,10,0.3);}
+.seq-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;}
 .seq-btn.seq-final{border-color:var(--purple);color:var(--purple);}
-.seq-btn.seq-final.on{background:var(--purple);color:#fff;border-color:var(--purple);box-shadow:0 2px 8px rgba(124,58,237,0.3);}
-.seq-btn:active{transform:scale(0.94);}
+.seq-btn.seq-final.on{background:var(--purple);color:#fff;border-color:var(--purple);}
 .output-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);}
 .output-head{background:linear-gradient(135deg,var(--navy),#2a5298);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
-.output-head-label{font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.3px;}
-.mac-dots{display:flex;gap:5px;}
-.mac-dot{width:8px;height:8px;border-radius:50%;}
+.output-head-label{font-size:13px;font-weight:900;color:#fff;}
 .output-body{padding:14px 16px;font-size:14px;color:var(--ink);white-space:pre-wrap;line-height:1.9;min-height:80px;font-family:var(--font);word-break:break-all;border-bottom:1px solid var(--border);background:var(--surface2);}
-.send-area{padding:14px 16px 16px;background:var(--surface);}
-.send-btn{width:100%;padding:12px 15px;font-size:13px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);box-shadow:0 4px 18px rgba(232,96,10,0.35);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;letter-spacing:0.3px;margin-bottom:8px;}
-.send-btn:active{transform:scale(0.97);}
-.send-btn.done{background:var(--green);box-shadow:0 4px 18px rgba(13,155,106,0.3);}
-.copy-only-btn{width:100%;padding:11px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
-.copy-only-btn:active{transform:scale(0.97);}
-.copy-only-btn.done{background:var(--green-lt);color:var(--green);border-color:rgba(13,155,106,0.3);}
-.spell-wrap{border-top:1px solid var(--border);padding:12px 14px 14px;background:var(--surface);}
-.spell-toggle{width:100%;padding:10px;font-size:12px;font-weight:800;background:var(--green-lt);color:var(--green);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;}
-.spell-toggle:active{transform:scale(0.98);}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all 0.15s;}
-.btn:active{transform:scale(0.96);}
-.btn-primary{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 3px 10px rgba(232,96,10,0.25);}
-.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.send-area{padding:14px 16px 16px;}
+.send-btn{width:100%;padding:12px 15px;font-size:13px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);box-shadow:0 4px 18px rgba(232,96,10,0.35);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;}
+.copy-only-btn{width:100%;padding:11px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;}
+.spell-wrap{border-top:1px solid var(--border);padding:12px 14px 14px;}
+.spell-toggle{width:100%;padding:10px;font-size:12px;font-weight:800;background:var(--green-lt);color:var(--green);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.btn-primary{background:var(--orange);color:#fff;border-color:var(--orange);}
 .btn-row{display:flex;gap:8px;margin-top:12px;}
-.btn-big{width:100%;padding:14px;font-size:14px;font-weight:900;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.16s;margin-top:4px;}
-.btn-big:active{transform:scale(0.97);}
-.btn-big-orange{background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);}
-.btn-big-gray{background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);}
-.reset-btn{padding:6px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.reset-btn:active{opacity:0.6;}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.stat-row{display:grid;gap:8px;margin-bottom:14px;}
-.stat-row-2{grid-template-columns:repeat(2,1fr);}
-.stat-row-4{grid-template-columns:repeat(4,1fr);}
-.stat-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px;box-shadow:var(--shadow);}
-.stat-chip-label{font-size:9px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:4px;}
-.stat-chip-val{font-size:20px;font-weight:900;color:var(--ink);font-family:var(--mono);}
-.stat-chip-val.orange{color:var(--orange);}
-.stat-chip-val.green{color:var(--green);}
-.stat-chip-val.blue{color:var(--blue);}
-.stat-chip-val.red{color:var(--red);}
-.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);}
-.hist-head{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;}
-.hist-detail{display:none;border-top:1px solid var(--border);background:var(--surface2);padding:12px 13px;}
-.hist-detail.open{display:block;}
 .contact-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
-.contact-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;}
 .contact-info{flex:1;min-width:0;}
 .contact-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;}
 .contact-tel{font-size:13px;color:var(--blue);font-family:var(--mono);font-weight:600;}
 .contact-memo{font-size:11px;color:var(--ink4);margin-top:2px;}
 .contact-actions{display:flex;gap:6px;flex-shrink:0;}
-.contact-call{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;border:none;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(13,155,106,0.3);text-decoration:none;}
+.contact-call{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;border:none;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .contact-del{width:38px;height:38px;border-radius:50%;background:var(--surface2);color:var(--ink4);border:1.5px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .seg-ctrl{display:grid;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:14px;}
 .seg-ctrl-2{grid-template-columns:1fr 1fr;}
-.seg-ctrl-3{grid-template-columns:1fr 1fr 1fr;}
-.seg-btn{padding:9px 6px;border:none;border-radius:var(--r3);background:transparent;font-family:var(--font);font-size:13px;font-weight:700;color:var(--ink4);cursor:pointer;transition:all 0.15s;}
+.seg-btn{padding:9px 6px;border:none;border-radius:var(--r3);background:transparent;font-family:var(--font);font-size:13px;font-weight:700;color:var(--ink4);cursor:pointer;}
 .seg-btn.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
-.tpl-cats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.tpl-cat{padding:7px 14px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all 0.15s;box-shadow:var(--shadow);}
-.tpl-cat.on{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);}
-.tpl-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;transition:all 0.15s;margin-bottom:7px;}
-.tpl-item:active{border-color:var(--orange);background:var(--orange-lt);}
-.tpl-item-text{font-size:13px;color:var(--ink2);font-weight:600;flex:1;}
-.tpl-item-badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;flex-shrink:0;}
-.tpl-edit-area{width:100%;font-size:13px;padding:12px 14px;border:1.5px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--mono);outline:none;resize:none;line-height:2.0;word-break:break-all;margin-bottom:10px;}
-.tpl-edit-area:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,96,10,0.1);}
-.tpl-btn-row{display:flex;gap:8px;}
-.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.more-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow);text-decoration:none;}
-.more-card:active{transform:scale(0.97);}
-.more-card .ico{font-size:32px;}
-.more-card .lbl{font-size:13px;font-weight:800;color:var(--ink2);text-align:center;}
-.more-card .sub{font-size:11px;color:var(--ink4);text-align:center;line-height:1.4;}
-.sub-screen{display:none;}
-.sub-screen.on{display:block;}
-.sub-back{display:flex;align-items:center;gap:8px;padding:0 0 12px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;font-family:var(--font);}
-.sub-back:active{opacity:0.6;}
-.map-app-btn{display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;text-decoration:none;transition:all 0.16s;cursor:pointer;margin-bottom:10px;width:100%;box-shadow:var(--shadow);}
-.map-app-btn:active{transform:scale(0.98);}
-.map-app-btn.active-loc{border-color:var(--orange);background:var(--orange-lt);}
-.map-app-icon{width:36px;height:36px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.map-app-info{flex:1;min-width:0;}
-.map-app-name{font-size:13px;font-weight:800;color:var(--ink);}
-.map-app-loc{font-size:11px;color:var(--orange);font-weight:700;margin-top:2px;}
-.map-app-arrow{font-size:18px;color:var(--ink4);flex-shrink:0;}
-.loc-status-box{border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.loc-status-box.has-loc{background:var(--orange-lt);border:1.5px solid var(--orange-bd);}
-.loc-status-box.no-loc{background:var(--surface2);border:1.5px solid var(--border);}
-.loc-status-text{flex:1;font-size:12px;font-weight:700;line-height:1.5;}
-.loc-status-box.has-loc .loc-status-text{color:var(--orange);}
-.loc-status-box.no-loc .loc-status-text{color:var(--ink4);}
-.rpt-step-bar{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow);}
-.rpt-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative;}
-.rpt-step-num{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;background:var(--surface2);color:var(--ink4);transition:all .25s;}
-.rpt-step-label{font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:0.3px;transition:color .25s;}
-.rpt-step.active .rpt-step-num{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(232,96,10,0.35);}
-.rpt-step.active .rpt-step-label{color:var(--orange);font-weight:800;}
-.rpt-step.done .rpt-step-num{background:var(--green);border-color:var(--green);color:#fff;}
-.rpt-step.done .rpt-step-label{color:var(--green);}
-.rpt-step-line{flex:0 0 20px;height:2px;background:var(--border);border-radius:1px;margin-bottom:12px;transition:background .25s;}
-.rpt-step.done + .rpt-step-line{background:var(--green);}
-.rpt-scan-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px 20px 24px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:var(--shadow);}
-.rpt-scan-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(232,96,10,0.07) 0%,transparent 70%);pointer-events:none;}
-.rpt-scan-hero::after{content:'';position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(232,96,10,0.04) 0%,transparent 70%);pointer-events:none;}
-.rpt-drop-zone{border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:28px 16px;text-align:center;cursor:pointer;background:var(--orange-lt);transition:all .2s;margin-top:20px;position:relative;z-index:1;}
-.rpt-drop-zone:hover,.rpt-drop-zone.drag-over{border-color:var(--orange);background:var(--orange-md);transform:translateY(-1px);box-shadow:0 4px 16px rgba(232,96,10,0.15);}
-.rpt-drop-zone input{display:none;}
-.rpt-drop-zone-ico{font-size:28px;margin-bottom:8px;}
-.rpt-drop-zone-label{font-size:14px;font-weight:800;color:var(--orange);margin-bottom:4px;}
-.rpt-drop-zone-hint{font-size:11px;color:var(--ink4);}
-.rpt-thumb-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.rpt-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.4);flex-shrink:0;}
-.rpt-ai-btn{width:100%;padding:14px;background:var(--orange);border:none;border-radius:var(--r2);color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;margin-top:14px;box-shadow:0 4px 16px rgba(232,96,10,0.3);}
-.rpt-ai-btn:hover{background:#d45508;}
-.rpt-ai-btn:active{transform:scale(0.98);}
-.rpt-ai-btn:disabled{opacity:.5;cursor:not-allowed;}
-.rpt-scan-progress{background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r2);padding:14px 16px;margin-top:14px;display:none;}
+.rpt-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.rpt-type-btn{padding:13px 6px 11px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);color:var(--ink3);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:var(--shadow);}
+.rpt-type-btn .ico{font-size:22px;line-height:1;}
+.rpt-type-btn.sel{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);}
+.rpt-drop-zone{border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:24px 16px;text-align:center;cursor:pointer;background:var(--orange-lt);margin-bottom:12px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.rpt-thumb-row{display:flex;gap:8px;flex-wrap:wrap;}
+.rpt-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;border:2px solid var(--border);}
+.rpt-ai-btn{width:100%;padding:13px;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:#fff;box-shadow:0 4px 16px rgba(26,58,107,0.25);}
+.rpt-ai-btn:disabled{opacity:0.45;cursor:not-allowed;}
+.rpt-scan-progress{background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r2);padding:14px;display:none;}
 .rpt-scan-progress-bar-wrap{height:4px;background:var(--orange-md);border-radius:100px;margin-top:10px;overflow:hidden;}
 .rpt-scan-progress-bar{height:100%;background:var(--orange);border-radius:100px;width:0%;transition:width .3s;}
-.rpt-scan-done{background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);padding:12px 14px;margin-top:12px;display:none;}
-.rpt-divider{display:flex;align-items:center;gap:12px;margin:14px 0;}
-.rpt-divider::before,.rpt-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.rpt-divider span{font-size:11px;font-weight:700;color:var(--ink4);}
-.rpt-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
-.rpt-type-btn{padding:13px 6px 11px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);color:var(--ink3);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.16s;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:var(--shadow);}
-.rpt-type-btn .ico{font-size:22px;line-height:1;}
-.rpt-type-btn.sel{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);box-shadow:var(--shadow-o);transform:translateY(-1px);}
-.rpt-ai-banner{display:none;background:linear-gradient(90deg,var(--green-lt),#d0faf0);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);padding:10px 13px;margin-bottom:12px;flex-direction:row;align-items:center;gap:9px;}
-.rpt-ai-banner.show{display:flex;}
-.rpt-ai-banner-ico{font-size:18px;flex-shrink:0;}
-.rpt-ai-banner-text{font-size:11px;font-weight:700;color:var(--green);}
-.rpt-dist-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:4px;font-size:12px;transition:all .15s;}
-.rpt-dist-row.nearest{border-color:var(--orange);background:var(--orange-lt);}
-.rpt-dist-star{font-size:10px;font-weight:800;color:var(--orange);background:var(--orange-md);padding:2px 6px;border-radius:3px;flex-shrink:0;}
-.rpt-dist-name{font-weight:800;color:var(--navy);flex:1;}
-.rpt-dist-km{font-weight:700;color:var(--ink2);font-family:var(--mono);}
-.rpt-dist-min{font-size:11px;color:var(--green);font-weight:700;font-family:var(--mono);}
-.rpt-dmg-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
-.rpt-dmg-table th{background:var(--navy);color:rgba(255,255,255,0.9);font-weight:800;padding:7px 4px;border:1px solid rgba(255,255,255,0.1);text-align:center;font-size:10px;letter-spacing:0.3px;}
-.rpt-dmg-table td{padding:2px;border:1px solid var(--border);}
-.rpt-dmg-table td input{width:100%;border:none;background:transparent;font-size:11px;padding:4px 5px;color:var(--ink);font-family:var(--font);outline:none;text-align:center;}
-.rpt-dmg-table td input:focus{background:var(--blue-lt);}
-.rpt-dmg-table tr:nth-child(even) td{background:#fafbfd;}
-.rpt-action-row{display:flex;gap:6px;margin-bottom:6px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:6px 8px;transition:border-color .15s;}
-.rpt-action-row:focus-within{border-color:var(--orange-bd);}
-.rpt-action-time{width:64px;font-size:12px;padding:5px 4px;border:none;border-radius:4px;font-family:var(--mono);background:transparent;color:var(--orange);flex-shrink:0;text-align:center;font-weight:700;outline:none;}
-.rpt-action-text{flex:1;font-size:13px;padding:5px 6px;border:none;border-radius:4px;font-family:var(--font);background:transparent;color:var(--ink);outline:none;}
-.rpt-add-btn{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);border:1px solid rgba(26,110,232,0.2);border-radius:var(--r3);padding:7px 14px;cursor:pointer;font-family:var(--font);margin-top:8px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
-.rpt-add-btn:active{transform:scale(0.97);}
-.rpt-del-btn{width:22px;height:22px;border-radius:50%;background:var(--red-lt);border:1px solid rgba(217,48,37,0.2);color:var(--red);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);flex-shrink:0;transition:all .15s;}
-.rpt-del-btn:active{background:var(--red);color:#fff;}
+.rpt-scan-done{background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);padding:12px 14px;display:none;}
 .rpt-page{display:none;}
 .rpt-page.on{display:block;animation:fadeUp .2s ease both;}
-.rpt-prog{height:5px;border-radius:100px;background:var(--border);overflow:hidden;margin:10px 0 4px;}
-.rpt-prog-bar{height:100%;background:linear-gradient(90deg,var(--orange),#ff8c42);border-radius:100px;width:0%;transition:width .35s;}
-.rpt-result-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-top:10px;}
+.rpt-result-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
 .rpt-result-head{background:var(--navy);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
-.rpt-result-head-label{font-size:10px;font-weight:800;color:rgba(255,255,255,0.7);letter-spacing:0.8px;}
+.rpt-result-head-label{font-size:10px;font-weight:800;color:rgba(255,255,255,0.7);}
 .rpt-result-body{padding:14px;font-size:13px;color:var(--ink);white-space:pre-wrap;line-height:2.0;max-height:360px;overflow-y:auto;font-family:var(--mono);word-break:break-all;}
-.official-report-preview{border:1.5px solid var(--navy);border-radius:var(--r);overflow:hidden;margin-top:10px;background:var(--surface);box-shadow:0 4px 20px rgba(26,58,107,0.15);}
-.official-report-preview .orph{background:var(--navy);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
-.official-report-preview .orph-label{font-size:10px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:0.8px;}
-.preview-frame{width:100%;border:none;background:var(--surface);}
 .rpt-out-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
-.rpt-out-btn{padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--ink2);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);}
+.rpt-out-btn{padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);}
 .rpt-out-btn .out-ico{font-size:20px;}
-.rpt-out-btn:active{transform:scale(0.97);}
 .rpt-out-btn.pdf{border-color:var(--orange-bd);color:var(--orange);background:var(--orange-lt);}
 .rpt-out-btn.share{border-color:rgba(26,110,232,0.3);color:var(--blue);background:var(--blue-lt);}
-.rpt-out-btn.rtf{border-color:rgba(26,58,107,0.25);color:var(--navy);background:#eff3fa;}
 .rpt-out-btn.copy{border-color:rgba(13,155,106,0.3);color:var(--green);background:var(--green-lt);}
 .rpt-out-btn.reset{color:var(--ink3);}
-.rpt-out-btn.preview{border-color:rgba(124,58,237,0.3);color:var(--purple);background:var(--purple-lt);}
 .rpt-msg{font-size:12px;padding:9px 13px;border-radius:var(--r3);margin-top:8px;display:none;font-weight:700;}
-.rpt-msg.ok{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.2);}
-.rpt-msg.fail{background:var(--red-lt);color:var(--red);border:1px solid rgba(217,48,37,0.2);}
+.rpt-msg.ok{background:var(--green-lt);color:var(--green);}
+.rpt-msg.fail{background:var(--red-lt);color:var(--red);}
 .rpt-nav-row{display:flex;gap:8px;margin-top:4px;}
-.rpt-nav-prev{flex:1;padding:13px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;box-sizing:border-box;height:52px;}
-.rpt-nav-next{flex:1;padding:13px;font-size:13px;font-weight:900;background:var(--orange);color:#fff;border:1.5px solid transparent;border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 16px rgba(232,96,10,0.3);transition:all .16s;box-sizing:border-box;height:52px;}
-.rpt-nav-next.navy{background:linear-gradient(135deg,var(--navy),#2a5298);border-color:transparent;box-shadow:0 4px 16px rgba(26,58,107,0.28);}
-.rpt-nav-prev:active,.rpt-nav-next:active{transform:scale(0.97);}
-.rpt-photo-zone{border:2px dashed var(--border);border-radius:var(--r2);padding:16px 10px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.rpt-photo-zone:hover{border-color:var(--orange-bd);background:var(--orange-lt);}
-.rpt-photo-zone input{display:none;}
-.rpt-drop-zone.drag-over,.rpt-photo-zone.drag-over{border-color:var(--orange)!important;background:var(--orange-lt)!important;}
-.rpt-photo-zone .pz-ico{font-size:22px;margin-bottom:4px;}
-.rpt-photo-zone .pz-lbl{font-size:11px;font-weight:700;color:var(--ink3);}
-.ai-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:100px;margin-bottom:4px;}
-.ai-badge.ai{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);}
-.ai-badge.manual{background:var(--orange-lt);color:var(--orange);border:1px solid var(--orange-bd);}
-.ai-filled input,.ai-filled textarea,.ai-filled select{border-color:var(--green)!important;background:#f0fdf8!important;}
-.manual-fill input,.manual-fill textarea{border-color:var(--orange-bd)!important;background:var(--orange-lt)!important;}
+.rpt-nav-prev{flex:1;padding:13px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;height:52px;}
+.rpt-nav-next{flex:1;padding:13px;font-size:15px;font-weight:900;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;height:52px;}
+.map-app-btn{display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;cursor:pointer;margin-bottom:10px;width:100%;box-shadow:var(--shadow);}
+.map-app-btn.active-loc{border-color:var(--orange);background:var(--orange-lt);}
+.map-app-info{flex:1;min-width:0;}
+.map-app-name{font-size:17px;font-weight:900;color:var(--ink);}
+.map-app-loc{font-size:12px;color:var(--ink4);margin-top:4px;}
 .info-box{font-size:11px;color:var(--ink4);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 11px;margin-bottom:8px;line-height:1.7;}
 .empty{text-align:center;padding:28px 16px;color:var(--ink4);font-size:13px;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;transition:transform 0.25s,opacity 0.2s;opacity:0;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.25);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;transition:transform 0.25s,opacity 0.2s;opacity:0;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.install-banner{display:none;background:var(--orange);padding:10px 14px;align-items:center;gap:10px;}
-.install-banner.show{display:flex;}
-.install-banner-text{flex:1;font-size:13px;font-weight:700;color:#fff;line-height:1.4;}
-.install-banner-text span{display:block;font-size:11px;font-weight:400;opacity:0.85;margin-top:1px;}
-.install-btn{padding:7px 14px;border-radius:100px;background:#fff;color:var(--orange);font-size:12px;font-weight:900;border:none;cursor:pointer;font-family:var(--font);flex-shrink:0;}
-.install-dismiss{font-size:20px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;flex-shrink:0;line-height:1;padding:0 2px;}
-.auto-lock-btn{padding:11px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
+.reset-btn{padding:6px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.auto-lock-btn{padding:11px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;}
 .auto-lock-btn.on{border-color:var(--purple);background:var(--purple-lt);color:var(--purple);}
-.b-purple{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(124,58,237,0.2);}
 .dots{display:inline-flex;gap:4px;}
 .dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
 .dots span:nth-child(2){animation-delay:.15s;}
 .dots span:nth-child(3){animation-delay:.3s;}
 @keyframes bop{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
 ::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-
-
-
-
-
-
-
-
-@media(max-width:900px){
-  
-  
-  
-
-  .rpt-split-input.mobile-hide{display:none;}
-  
-  
-}
-@media(min-width:901px){
-  
-  
-  
-}
 </style>
 </head>
 <body>
-
-<header class="hd" style="flex-direction:column;padding:0;height:var(--hd-h);">
-  <div style="display:flex;align-items:center;gap:10px;padding:0 16px;height:56px;width:100%;flex-shrink:0;">
-    <div class="hd-emblem">&#128680;</div>
-    <div class="hd-title" style="font-size:17px;letter-spacing:-0.5px;color:#fff;font-weight:900;">상황보고</div>
+<header class="hd">
+  <div class="hd-row1">
+    <div style="width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;">&#128680;</div>
+    <div style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px;">상황보고</div>
     <div style="margin-left:auto;"><div class="hd-clock" id="clock">00:00:00</div></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);width:100%;height:40px;background:rgba(0,0,0,0.25);border-top:1px solid rgba(255,255,255,0.18);">
+  <div class="hd-row2">
     <button class="nav-btn on" id="nav-dispatch" onclick="switchTab('dispatch',this)">출동</button>
     <button class="nav-btn" id="nav-report" onclick="switchTab('report',this)">보고서</button>
     <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)">지도</button>
@@ -309,12 +133,12 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 </header>
 
-<!-- 앱 진입 잠금 화면 -->
+<!-- 앱 진입 잠금 -->
 <div id="appLockScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#E8600A;z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
   <div style="width:100%;max-width:380px;">
     <div style="text-align:center;margin-bottom:32px;">
       <div style="width:72px;height:72px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;">&#128680;</div>
-      <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;">소방 상황보고</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;">소방 상황보고</div>
     </div>
     <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:24px;">
       <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:12px;text-align:center;">&#128274; 비밀번호를 입력하세요</div>
@@ -322,111 +146,86 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <button onclick="checkAppLock()" style="width:100%;padding:15px;background:#fff;color:var(--orange);border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128275; 입장</button>
       <div id="appLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:#fff;text-align:center;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">&#10060; 비밀번호가 틀렸습니다.</div>
     </div>
-    <div style="text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.5);">허가된 인원만 접근 가능합니다</div>
   </div>
 </div>
 
-<div class="install-banner" id="installBanner">
-  <div class="install-banner-text">&#128241; 홈화면에 앱으로 설치하기<span>브라우저 없이 바로 실행됩니다</span></div>
-  <button class="install-btn" onclick="doInstall()">설치</button>
-  <button class="install-dismiss" onclick="dismissInstall()">&#10005;</button>
-</div>
-
-<!-- 탭1: 출동 -->
+<!-- 출동 탭 -->
 <div class="screen on" id="tab-dispatch">
   <div id="noticeBanner" style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.25);border-radius:var(--r2);padding:11px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-    <span style="font-size:20px;" id="noticeIcon">📢</span>
+    <span style="font-size:20px;">&#128226;</span>
     <div style="flex:1;">
       <div style="font-size:12px;font-weight:800;color:var(--blue);" id="noticeTitle">서산소방서 상황보고 시스템</div>
       <div style="font-size:11px;color:var(--ink4);margin-top:2px;" id="noticeMsg">정상 운영 중입니다.</div>
     </div>
-    <button onclick="document.getElementById('noticeBanner').style.display='none'" style="font-size:18px;color:var(--ink4);background:none;border:none;cursor:pointer;flex-shrink:0;line-height:1;">&#10005;</button>
+    <button onclick="document.getElementById('noticeBanner').style.display='none'" style="font-size:18px;color:var(--ink4);background:none;border:none;cursor:pointer;">&#10005;</button>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:12px;">
-    <button id="typeBtn-fire" onclick="setDispatchType('화재',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128293; 화재</button>
-    <button id="typeBtn-rescue" onclick="setDispatchType('구조',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128296; 구조</button>
-    <button id="typeBtn-ems" onclick="setDispatchType('구급',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128657; 구급</button>
+    <button id="typeBtn-fire" onclick="setDispatchType('fire',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128293; 화재</button>
+    <button id="typeBtn-rescue" onclick="setDispatchType('rescue',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128296; 구조</button>
+    <button id="typeBtn-ems" onclick="setDispatchType('ems',this)" style="flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);">&#128657; 구급</button>
   </div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,var(--navy),#2a5298);padding:12px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:16px;">&#128680;</span>
-      <span style="font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.3px;">출동 기본정보</span>
-      <button onclick="clearAll()" style="margin-left:auto;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">&#8635; 초기화</button>
+  <div style="background:linear-gradient(135deg,var(--navy),#2a5298);border-radius:var(--r);margin-bottom:12px;box-shadow:0 4px 16px rgba(26,58,107,0.2);overflow:hidden;">
+    <div style="padding:11px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">&#128680;</span><span style="font-size:13px;font-weight:900;color:#fff;">출동 기본정보</span></div>
+      <button onclick="resetDispatch()" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">&#8635; 초기화</button>
     </div>
-    <div style="padding:14px 16px 16px;">
-      <div style="margin-bottom:10px;">
-        <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128203; 접수번호</div>
-        <input id="accNo" placeholder="예) 2026-화재-0042" style="width:100%;font-size:14px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-      </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">&#128205; 출동 장소 <span style="background:var(--orange);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;margin-left:3px;">필수</span></div>
-        <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:13px;font-weight:400;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-        <div>
-          <div style="font-size:10px;font-weight:800;color:var(--orange);letter-spacing:0.8px;margin-bottom:5px;">&#128293; 발화 대상물 <span style="background:var(--orange);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;margin-left:3px;">필수</span></div>
-          <input id="fireObject" placeholder="단독주택, 공장" oninput="renderOutput()" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128200; 화재 규모</div>
-          <input id="fireScale" placeholder="소형, 반소" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
-        </div>
-      </div>
+    <div style="background:var(--surface);padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128203; 접수번호</div>
+      <input id="receiptNo" placeholder="예） 2026-화재-0042" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:11px;color:var(--orange);">&#128205;</span><span style="font-size:11px;font-weight:700;color:var(--ink4);">출동 장소</span><span style="font-size:9px;font-weight:800;padding:2px 6px;background:var(--orange-lt);color:var(--orange);border-radius:3px;">필수</span></div>
+      <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:10px;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div>
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128100; 인명 피해</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><span style="font-size:10px;">&#128293;</span><span style="font-size:11px;font-weight:700;color:var(--ink4);">발화 대상물</span><span style="font-size:9px;font-weight:800;padding:2px 6px;background:var(--orange-lt);color:var(--orange);border-radius:3px;">필수</span></div>
+          <input id="fireObject" placeholder="단독주택, 공장" oninput="renderOutput()" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128196; 화재 규모</div>
+          <input id="fireScale" placeholder="소형, 반소" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128100; 인명 피해</div>
           <input id="fireCasualty" placeholder="대피완료, 없음" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:5px;">&#128228; 발송자</div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128248; 발송자</div>
           <input id="sigName" placeholder="서산소방서 상황실" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
       </div>
     </div>
   </div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);">
-    <div style="background:linear-gradient(135deg,#B84A00,var(--orange));padding:12px 16px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:16px;">&#128221;</span>
-      <span style="font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.3px;">상황 내용 추가</span>
-      <button onclick="document.getElementById('reportContent').value='';document.getElementById('reportList').innerHTML='';document.getElementById('reportListCard').style.display='none';reports=[];reportCount=0;renderOutput();" style="margin-left:auto;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">&#8635; 초기화</button>
+  <div style="background:var(--orange);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:0 4px 16px rgba(232,96,10,0.2);">
+    <div style="padding:11px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">&#128196;</span><span style="font-size:13px;font-weight:900;color:#fff;">상황 내용 추가</span></div>
+      <button onclick="document.getElementById('reportContent').value='';reports=[];reportCount=0;document.getElementById('reportList').innerHTML='';document.getElementById('reportListCard').style.display='none';" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">&#8635; 초기화</button>
     </div>
-    <div style="padding:14px 16px 16px;">
-      <textarea id="reportContent" rows="3" placeholder="현장 상황을 입력하세요&#10;예) 4층 창문에서 화염 및 연기 발생 확인" style="width:100%;font-size:14px;padding:12px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.7;transition:border-color .15s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--border)';this.style.background='var(--surface2)'"></textarea>
-      <button onclick="addReport()" style="width:100%;margin-top:10px;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(232,96,10,0.35);transition:all 0.2s;letter-spacing:0.3px;">
-        <span>＋</span> 상황 추가
-      </button>
+    <div style="background:var(--surface);padding:14px;">
+      <textarea id="reportContent" rows="4" placeholder="현장 상황을 입력하세요" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.8;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <button onclick="addReport()" style="width:100%;margin-top:10px;padding:13px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);">+ 상황 추가</button>
     </div>
   </div>
-  <div class="card" id="reportListCard" style="display:none;">
-    <div class="card-head"><span class="card-badge b-green">목록</span><span class="card-title">보고 목록</span></div>
+  <div id="reportListCard" style="display:none;" class="card">
+    <div style="font-size:12px;font-weight:800;color:var(--ink4);margin-bottom:8px;">추가된 상황 목록</div>
     <div id="reportList"></div>
   </div>
-  <div class="sec-lbl" style="margin-top:4px;">&#128203; 보고 순서</div>
-  <div class="seq-wrap">
-    <button class="seq-btn on" onclick="setSeq('출동',this)">출동</button>
-    <button class="seq-btn"   onclick="setSeq('2보',this)">2보</button>
-    <button class="seq-btn"   onclick="setSeq('3보',this)">3보</button>
-    <button class="seq-btn"   onclick="setSeq('4보',this)">4보</button>
-    <button class="seq-btn seq-final" onclick="setSeq('최종',this)">최종</button>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:13px;">&#128196;</span><span style="font-size:12px;font-weight:800;color:var(--ink3);">보고 순서</span></div>
+    </div>
+    <div class="seq-wrap" id="seqWrap"></div>
   </div>
   <div class="output-wrap">
     <div class="output-head">
-      <span style="font-size:16px;">&#128228;</span>
-      <span class="output-head-label" style="margin-left:8px;">자동 생성 보고문</span>
-      <div class="mac-dots" style="margin-left:auto;">
-        <div class="mac-dot" style="background:#FF5F57"></div>
-        <div class="mac-dot" style="background:#FEBC2E"></div>
-        <div class="mac-dot" style="background:#28C840"></div>
-      </div>
+      <span class="output-head-label">&#128228; 생성된 보고문</span>
+      <div style="display:flex;gap:5px;"><div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div><div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div><div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div></div>
     </div>
     <div class="output-body" id="outputBox">정보를 입력하면 자동 생성됩니다.</div>
     <div class="send-area">
-      <button class="send-btn" id="sendBtn" onclick="sendReport()">&#128228; 전파하기</button>
-      <button class="copy-only-btn" id="copyOnlyBtn" onclick="copyOnlyText()">&#128203; 텍스트만 복사</button>
-      <div id="noShareWrap" style="display:none;"><div class="info-box">&#128203; 복사 후 카카오톡·문자에 붙여넣기 하세요.</div></div>
+      <button class="send-btn" onclick="sendReport()">&#128228; 전파하기</button>
+      <button class="copy-only-btn" onclick="copyOnlyText()">&#128203; 텍스트만 복사</button>
     </div>
     <div class="spell-wrap">
-      <button class="spell-toggle" onclick="toggleSpell()" id="spellToggleBtn">&#10003; 전파 전 맞춤법 검사</button>
+      <button class="spell-toggle" onclick="toggleSpell()">&#10003; 전파 전 맞춤법 검사</button>
       <div id="spellSection" style="display:none;margin-top:10px;">
         <textarea id="spellInput" rows="7" style="width:100%;font-size:13px;padding:10px 13px;border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.7;" placeholder="보고문이 자동 입력됩니다..."></textarea>
         <div style="display:flex;gap:8px;margin-top:6px;">
@@ -439,10 +238,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
             <div style="font-size:10px;font-weight:800;color:var(--green);margin-bottom:5px;">&#9999; 교정된 텍스트</div>
             <div id="spellCorrected" style="font-size:13px;color:var(--ink);line-height:1.9;word-break:break-all;white-space:pre-wrap;font-family:var(--mono);"></div>
           </div>
-          <div id="spellErrorsWrap" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:8px;">
-            <div style="font-size:10px;font-weight:800;color:var(--red);margin-bottom:6px;">&#9998; 수정 내역</div>
-            <div id="spellErrors" style="font-size:12px;color:var(--ink2);line-height:2.0;"></div>
-          </div>
           <div style="display:flex;gap:8px;">
             <button onclick="sendCorrectedReport()" style="flex:1;padding:12px;font-size:13px;font-weight:800;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#128228; 교정본 전파</button>
             <button onclick="copyCorrectedOnly()" style="flex:1;padding:12px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#128203; 텍스트 복사</button>
@@ -453,157 +248,95 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 </div>
 
-
 <!-- 보고서 탭 -->
 <div id="tab-report" class="screen">
-
-  <!-- PAGE 0: 유형선택 + AI 스캔 -->
   <div class="rpt-page on" id="rptPage0">
-
-    <!-- STEP 1: 보고서 유형 선택 -->
     <div class="card" style="margin-bottom:12px;">
-      <div class="card-head">
-        <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-        <span class="card-title">보고서 유형 선택</span>
-      </div>
+      <div class="card-head"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><span class="card-title">보고서 유형 선택</span></div>
       <div class="rpt-type-grid" style="margin-bottom:0;">
-        <button class="rpt-type-btn sel" onclick="selectRptType(this,'fire')" data-type="fire"><span class="ico">🔥</span>화재</button>
-        <button class="rpt-type-btn" onclick="selectRptType(this,'rescue')" data-type="rescue"><span class="ico">🚑</span>구조</button>
-        <button class="rpt-type-btn" onclick="selectRptType(this,'ems')" data-type="ems"><span class="ico">🏥</span>구급</button>
-        <button class="rpt-type-btn" onclick="selectRptType(this,'hazmat')" data-type="hazmat"><span class="ico">☣️</span>위험물</button>
-        <button class="rpt-type-btn" onclick="selectRptType(this,'misc')" data-type="misc"><span class="ico">⚡</span>기타</button>
-        <button class="rpt-type-btn" onclick="selectRptType(this,'training')" data-type="training"><span class="ico">🎓</span>훈련</button>
+        <button class="rpt-type-btn sel" onclick="selectRptType(this,'fire')" data-type="fire"><span class="ico">&#128293;</span>화재</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'rescue')" data-type="rescue"><span class="ico">&#128657;</span>구조</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'ems')" data-type="ems"><span class="ico">&#127973;</span>구급</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'hazmat')" data-type="hazmat"><span class="ico">&#9763;&#65039;</span>위험물</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'misc')" data-type="misc"><span class="ico">&#9889;</span>기타</button>
+        <button class="rpt-type-btn" onclick="selectRptType(this,'training')" data-type="training"><span class="ico">&#127891;</span>훈련</button>
       </div>
     </div>
-
-    <!-- STEP 2: AI 현장사진 스캔 -->
     <div class="card" style="margin-bottom:12px;">
-      <div class="card-head">
-        <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
-        <span class="card-title">AI 현장사진 스캔</span>
-        <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--ink4);">최대 10장</span>
-      </div>
-
-      <!-- 사진 업로드 영역 -->
-      <label id="rptDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:24px 16px;background:var(--orange-lt);cursor:pointer;transition:all .2s;margin-bottom:12px;">
+      <div class="card-head"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><span class="card-title">AI 현장사진 스캔</span><span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--ink4);">최대 10장</span></div>
+      <label id="rptDropZone" class="rpt-drop-zone">
         <input type="file" id="rptFileInput" accept="image/*" multiple onchange="handleRptFiles(this.files)" style="display:none;"/>
-        <div style="font-size:28px;">📷</div>
+        <div style="font-size:28px;">&#128247;</div>
         <div style="font-size:14px;font-weight:800;color:var(--orange);">사진 선택 또는 드래그</div>
         <div style="font-size:11px;color:var(--ink4);">JPG · PNG · WEBP 지원</div>
       </label>
-
-      <!-- 썸네일 -->
-      <div class="rpt-thumb-row" id="rptThumbRow" style="margin-bottom:4px;"></div>
-
-      <!-- 진행 상태 -->
+      <div class="rpt-thumb-row" id="rptThumbRow" style="margin-bottom:8px;"></div>
       <div class="rpt-scan-progress" id="rptScanProgress" style="margin-bottom:8px;">
         <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;margin-bottom:6px;" id="rptScanStatus">AI 분석 중...</div>
         <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptScanBar"></div></div>
       </div>
-
-      <!-- 완료 메시지 -->
-      <div class="rpt-scan-done" id="rptScanDone">
-        <div style="font-size:13px;font-weight:800;color:var(--green);">✅ 분석 완료 — 보고서 생성 버튼을 눌러주세요</div>
-      </div>
-
-      <!-- AI 분석 버튼 -->
-      <button id="rptAiBtn" onclick="rptRunScanAI()" disabled
-        style="width:100%;margin-top:4px;padding:13px;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:var(--navy);color:#fff;box-shadow:0 4px 16px rgba(26,58,107,0.25);opacity:0.45;">
-        🤖 AI 분석 시작
-      </button>
+      <div class="rpt-scan-done" id="rptScanDone"><div style="font-size:13px;font-weight:800;color:var(--green);">&#9989; 분석 완료</div></div>
+      <button id="rptAiBtn" onclick="rptRunScanAI()" disabled class="rpt-ai-btn" style="margin-top:4px;">&#129302; AI 분석 시작</button>
     </div>
-
-    <!-- 다음 버튼 -->
-    <button onclick="rptGoPage(1)"
-      style="width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;">
-      📋 AI 보고서 생성하기 →
-    </button>
-
+    <button onclick="rptGoPage(1)" style="width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;">&#128203; AI 보고서 생성하기 &#8594;</button>
   </div>
-
-  <!-- PAGE 1: AI 보고서 생성 + 출력 -->
   <div class="rpt-page" id="rptPage1">
     <div class="card">
       <div class="card-head"><span class="card-badge b-green">AI 생성</span><span class="card-title">공식 상황보고서</span></div>
-      <button class="rpt-ai-btn" id="rptGenBtn" onclick="rptGenerateReport()" style="margin-top:0;">
-        🤖 AI 보고서 생성
-      </button>
+      <button class="rpt-ai-btn" id="rptGenBtn" onclick="rptGenerateReport()">&#129302; AI 보고서 생성</button>
       <div class="rpt-scan-progress" id="rptGenProgress" style="margin-top:12px;">
         <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptGenStatus">생성 중...</div>
         <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptGenBar"></div></div>
       </div>
       <div class="rpt-result-wrap" id="rptResultWrap" style="display:none;margin-top:12px;">
-        <div class="rpt-result-head">
-          <span class="rpt-result-head-label">AI 생성 초안</span>
-          <button onclick="copyRptResult()" style="font-size:11px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">📋 복사</button>
-        </div>
+        <div class="rpt-result-head"><span class="rpt-result-head-label">AI 생성 초안</span><button onclick="copyRptResult()" style="font-size:11px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">&#128203; 복사</button></div>
         <div class="rpt-result-body" id="rptResultBody" contenteditable="true"></div>
       </div>
     </div>
-
     <div class="card" style="margin-top:0;">
       <div class="rpt-out-grid">
-        <button class="rpt-out-btn pdf" onclick="rptExportPDF()"><span class="out-ico">📄</span>PDF 저장</button>
-        <button class="rpt-out-btn share" onclick="rptShareReport()"><span class="out-ico">📤</span>공유하기</button>
-        <button class="rpt-out-btn copy" onclick="copyRptResult()"><span class="out-ico">📋</span>텍스트 복사</button>
-        <button class="rpt-out-btn reset" onclick="rptReset()"><span class="out-ico">🔄</span>초기화</button>
+        <button class="rpt-out-btn pdf" onclick="rptExportPDF()"><span class="out-ico">&#128196;</span>PDF 저장</button>
+        <button class="rpt-out-btn share" onclick="rptShareReport()"><span class="out-ico">&#128228;</span>공유하기</button>
+        <button class="rpt-out-btn copy" onclick="copyRptResult()"><span class="out-ico">&#128203;</span>텍스트 복사</button>
+        <button class="rpt-out-btn reset" onclick="rptReset()"><span class="out-ico">&#128260;</span>초기화</button>
       </div>
       <div id="rptMsg" class="rpt-msg"></div>
     </div>
-
-    <div class="rpt-nav-row">
-      <button class="rpt-nav-prev" onclick="rptGoPage(0)">← 뒤로</button>
-    </div>
+    <div class="rpt-nav-row"><button class="rpt-nav-prev" onclick="rptGoPage(0)">&#8592; 뒤로</button></div>
   </div>
-
 </div>
 
 <!-- 지도 탭 -->
 <div id="tab-map" class="screen">
   <div class="card">
     <div class="card-head"><span class="card-badge b-orange">지도 앱으로 열기</span><span class="card-title">외부 지도 앱</span></div>
-    <div id="mapAddrBanner" style="display:none;background:var(--orange-lt);border:1.5px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--orange);">
-      📍 <span id="mapAddrText"></span>
-    </div>
-    <button class="map-app-btn" id="kakaoMapBtn" onclick="openKakaoMap()">
-      <div style="width:52px;height:52px;border-radius:14px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🗺️</div>
-      <div class="map-app-info">
-        <div class="map-app-name" style="font-size:17px;font-weight:900;">카카오맵</div>
-        <div class="map-app-loc" id="kakaoMapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
-      </div>
-      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
+    <div id="mapAddrBanner" style="display:none;background:var(--orange-lt);border:1.5px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--orange);">&#128205; <span id="mapAddrText"></span></div>
+    <button class="map-app-btn" onclick="openKakaoMap()">
+      <div style="width:52px;height:52px;border-radius:14px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">&#128506;&#65039;</div>
+      <div class="map-app-info"><div class="map-app-name">카카오맵</div><div class="map-app-loc" id="kakaoMapLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">&#8250;</div>
     </button>
     <button class="map-app-btn" onclick="openNaverMap()">
-      <div style="width:52px;height:52px;border-radius:14px;background:#03C75A;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🧭</div>
-      <div class="map-app-info">
-        <div class="map-app-name" style="font-size:17px;font-weight:900;">네이버 지도</div>
-        <div class="map-app-loc" id="naverMapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
-      </div>
-      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
+      <div style="width:52px;height:52px;border-radius:14px;background:#03C75A;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">&#129517;</div>
+      <div class="map-app-info"><div class="map-app-name">네이버 지도</div><div class="map-app-loc" id="naverMapLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">&#8250;</div>
     </button>
     <button class="map-app-btn" onclick="openTmap()" style="margin-bottom:0;">
-      <div style="width:52px;height:52px;border-radius:14px;background:#E30C16;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🚗</div>
-      <div class="map-app-info">
-        <div class="map-app-name" style="font-size:17px;font-weight:900;">T맵</div>
-        <div class="map-app-loc" id="tmapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
-      </div>
-      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
+      <div style="width:52px;height:52px;border-radius:14px;background:#E30C16;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">&#128663;</div>
+      <div class="map-app-info"><div class="map-app-name">T맵</div><div class="map-app-loc" id="tmapLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">&#8250;</div>
     </button>
   </div>
 </div>
 
 <!-- 연락처 탭 -->
 <div id="tab-contacts" class="screen">
-
-  <!-- 탭 세그먼트 -->
-  <div class="seg-ctrl seg-ctrl-2" style="margin-bottom:14px;">
-    <button class="seg-btn on" id="ctSegDispatch" onclick="switchContactTab('dispatch')">🚒 출동대</button>
-    <button class="seg-btn" id="ctSegAgency" onclick="switchContactTab('agency')">🏛 유관기관</button>
+  <div class="seg-ctrl seg-ctrl-2">
+    <button class="seg-btn on" id="ctSegDispatch" onclick="switchContactTab('dispatch')">&#128658; 출동대</button>
+    <button class="seg-btn" id="ctSegAgency" onclick="switchContactTab('agency')">&#127963; 유관기관</button>
   </div>
-
-  <!-- 연락처 추가 폼 -->
   <div id="addContactForm" style="display:none;" class="card">
-    <div class="card-head"><span class="card-badge b-orange" id="addContactBadge">출동대 연락처 추가</span></div>
+    <div class="card-head"><span class="card-badge b-orange" id="addContactBadge">연락처 추가</span></div>
     <input type="text" id="newContactName" placeholder="이름 / 직책" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:8px;"/>
     <input type="tel" id="newContactTel" placeholder="전화번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
     <input type="text" id="newContactMemo" placeholder="메모 (부서, 차량번호 등)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
@@ -612,1375 +345,541 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <button class="btn" onclick="hideAddContact()">취소</button>
     </div>
   </div>
-
-  <!-- 출동대 패널 -->
   <div id="ctPanelDispatch">
-    <div class="top-bar">
-      <div style="font-size:13px;font-weight:800;color:var(--ink2);">🚒 출동대 연락처</div>
-      <button class="reset-btn" onclick="showAddContact('dispatch')">+ 추가</button>
-    </div>
-    <div id="dispatchContactsList">
-      <div class="empty">📭 출동대 연락처가 없습니다</div>
-    </div>
+    <div class="top-bar"><div style="font-size:13px;font-weight:800;color:var(--ink2);">&#128658; 출동대 연락처</div><button class="reset-btn" onclick="showAddContact('dispatch')">+ 추가</button></div>
+    <div id="dispatchContactsList"><div class="empty">&#128429; 출동대 연락처가 없습니다</div></div>
   </div>
-
-  <!-- 유관기관 패널 -->
   <div id="ctPanelAgency" style="display:none;">
-    <div class="top-bar">
-      <div style="font-size:13px;font-weight:800;color:var(--ink2);">🏛 유관기관 연락처</div>
-      <button class="reset-btn" onclick="showAddContact('agency')">+ 추가</button>
-    </div>
-    <div id="agencyContactsList">
-      <div class="empty">📭 유관기관 연락처가 없습니다</div>
-    </div>
+    <div class="top-bar"><div style="font-size:13px;font-weight:800;color:var(--ink2);">&#127963; 유관기관 연락처</div><button class="reset-btn" onclick="showAddContact('agency')">+ 추가</button></div>
+    <div id="agencyContactsList"><div class="empty">&#128429; 유관기관 연락처가 없습니다</div></div>
   </div>
-
 </div>
 
 <!-- 설정 탭 -->
-<div id="tab-settings" class="screen">
-
-  <!-- 설정 잠금 오버레이 -->
-  <div id="settingsLock" style="position:absolute;inset:0;z-index:100;background:var(--bg);padding:40px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;">
-    <div style="width:100%;max-width:360px;">
-      <div style="text-align:center;margin-bottom:28px;">
-        <div style="width:64px;height:64px;background:var(--orange);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;">🔐</div>
-        <div style="font-size:18px;font-weight:900;color:var(--ink);margin-bottom:6px;">설정 잠금</div>
-        <div style="font-size:13px;color:var(--ink4);">비밀번호를 입력하면 설정을 변경할 수 있습니다</div>
-      </div>
-      <input type="password" id="settingsLockInput" placeholder="비밀번호 입력"
-        onkeydown="if(event.key==='Enter')checkSettingsLock()"
-        style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
-      <button onclick="checkSettingsLock()"
-        style="width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(232,96,10,0.3);">
-        🔓 확인
-      </button>
-      <div id="settingsLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:var(--red);text-align:center;background:var(--red-lt);padding:8px;border-radius:var(--r3);">
-        ❌ 비밀번호가 틀렸습니다.
-      </div>
+<div id="tab-settings" class="screen" style="position:relative;">
+  <div id="settingsLockInline" style="position:absolute;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;min-height:60vh;">
+    <div style="width:100%;max-width:360px;text-align:center;">
+      <div style="width:64px;height:64px;background:var(--orange);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;">&#128272;</div>
+      <div style="font-size:18px;font-weight:900;color:var(--ink);margin-bottom:6px;">설정 잠금</div>
+      <div style="font-size:13px;color:var(--ink4);margin-bottom:24px;">비밀번호를 입력하면 설정을 변경할 수 있습니다</div>
+      <input type="password" id="settingsLockInput" placeholder="설정 비밀번호 입력" onkeydown="if(event.key==='Enter')checkSettingsLock()" style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
+      <button onclick="checkSettingsLock()" style="width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128275; 확인</button>
+      <div id="settingsLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:var(--red);text-align:center;background:var(--red-lt);padding:8px;border-radius:var(--r3);">&#10060; 비밀번호가 틀렸습니다.</div>
     </div>
   </div>
-
-  <!-- 설정 실제 내용 (잠금 해제 후 표시) -->
   <div id="settingsContent" style="display:none;">
-
-  <!-- 공지 관리 -->
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-blue">공지</span><span class="card-title">공지 관리</span></div>
-    <div class="sec-lbl">공지 내용</div>
-    <input type="text" id="cfg_noticeMsg" placeholder="예) 정상 운영 중입니다."
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;" onclick="saveNotice()">📢 공지 저장 및 적용</button>
-  </div>
-
-  <!-- 기능 잠금 -->
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-red">잠금</span><span class="card-title">기능 잠금 관리</span></div>
-    <div class="info-box">🔒 잠금 시 해당 탭이 비활성화되고 공지창에 잠금 안내가 표시됩니다.</div>
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">📋</span>
-          <div><div style="font-size:13px;font-weight:800;color:var(--ink);">보고서 탭</div><div style="font-size:11px;color:var(--ink4);">AI 현장사진 스캔 및 보고서 생성</div></div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-blue">공지</span><span class="card-title">공지 관리</span></div>
+      <div class="sec-lbl">공지 내용</div>
+      <input type="text" id="cfg_noticeMsg" placeholder="예) 정상 운영 중입니다." style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
+      <button class="btn btn-primary" style="width:100%;" onclick="saveNotice()">&#128226; 공지 저장 및 적용</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-red">잠금</span><span class="card-title">기능 잠금 관리</span></div>
+      <div class="info-box">&#128274; 잠금 시 해당 탭이 비활성화됩니다.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">&#128203;</span><div><div style="font-size:13px;font-weight:800;">보고서 탭</div><div style="font-size:11px;color:var(--ink4);">AI 현장사진 스캔 및 보고서 생성</div></div></div>
+          <button id="lockBtn-report" onclick="toggleLock('report')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
         </div>
-        <button id="lockBtn-report" onclick="toggleLock('report')"
-          style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);transition:all .15s;">
-          해제됨
-        </button>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">🗺️</span>
-          <div><div style="font-size:13px;font-weight:800;color:var(--ink);">지도 탭</div><div style="font-size:11px;color:var(--ink4);">외부 지도 앱 연동</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">&#128506;&#65039;</span><div><div style="font-size:13px;font-weight:800;">지도 탭</div><div style="font-size:11px;color:var(--ink4);">외부 지도 앱 연동</div></div></div>
+          <button id="lockBtn-map" onclick="toggleLock('map')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
         </div>
-        <button id="lockBtn-map" onclick="toggleLock('map')"
-          style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);transition:all .15s;">
-          해제됨
-        </button>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">📞</span>
-          <div><div style="font-size:13px;font-weight:800;color:var(--ink);">연락처 탭</div><div style="font-size:11px;color:var(--ink4);">출동대 및 유관기관 연락처</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">&#128222;</span><div><div style="font-size:13px;font-weight:800;">연락처 탭</div><div style="font-size:11px;color:var(--ink4);">출동대 및 유관기관 연락처</div></div></div>
+          <button id="lockBtn-contacts" onclick="toggleLock('contacts')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
         </div>
-        <button id="lockBtn-contacts" onclick="toggleLock('contacts')"
-          style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);transition:all .15s;">
-          해제됨
-        </button>
       </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-red">보안관리</span><span class="card-title">비밀번호 관리</span></div>
-
-    <!-- 앱 진입 비밀번호 변경 -->
-    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">🔓 앱 진입 비밀번호 변경</div>
-    <div class="sec-lbl">현재 비밀번호</div>
-    <input type="password" id="cfg_currentPw" placeholder="현재 앱 진입 비밀번호"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
-    <div class="sec-lbl">새 비밀번호</div>
-    <input type="password" id="cfg_newPw" placeholder="새 비밀번호 (4자리 이상)"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
-    <div class="sec-lbl">새 비밀번호 확인</div>
-    <input type="password" id="cfg_confirmPw" placeholder="비밀번호 재입력"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;background:var(--navy);margin-bottom:16px;" onclick="changePw()">🔐 앱 비밀번호 변경</button>
-    <div id="pwMsg" style="margin-top:-10px;margin-bottom:8px;"></div>
-
-    <!-- 설정 탭 비밀번호 변경 -->
-    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">⚙️ 설정 탭 비밀번호 변경</div>
-    <div class="sec-lbl">현재 설정 비밀번호</div>
-    <input type="password" id="cfg_currentSettingsPw" placeholder="현재 설정 비밀번호"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
-    <div class="sec-lbl">새 설정 비밀번호</div>
-    <input type="password" id="cfg_newSettingsPw" placeholder="새 비밀번호 (4자리 이상)"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
-    <div class="sec-lbl">새 설정 비밀번호 확인</div>
-    <input type="password" id="cfg_confirmSettingsPw" placeholder="비밀번호 재입력"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;background:var(--navy);" onclick="changeSettingsPw()">⚙️ 설정 비밀번호 변경</button>
-    <div id="settingsPwMsg" style="margin-top:8px;"></div>
-  </div>
-
-  <!-- 자동 잠금 -->
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-purple">자동잠금</span><span class="card-title">앱 자동 잠금 시간</span></div>
-    <div class="info-box">⏱ 설정한 시간 동안 앱을 사용하지 않으면 자동으로 잠금 화면으로 돌아갑니다.</div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px;" id="autoLockBtns">
-      <button class="auto-lock-btn" data-min="0"   onclick="setAutoLock(0)">🔓 사용 안 함</button>
-      <button class="auto-lock-btn" data-min="5"   onclick="setAutoLock(5)">5분</button>
-      <button class="auto-lock-btn" data-min="10"  onclick="setAutoLock(10)">10분</button>
-      <button class="auto-lock-btn" data-min="30"  onclick="setAutoLock(30)">30분</button>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-red">보안관리</span><span class="card-title">비밀번호 관리</span></div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">&#128275; 앱 진입 비밀번호 변경</div>
+      <div class="sec-lbl">현재 비밀번호</div>
+      <input type="password" id="cfg_currentPw" placeholder="현재 앱 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+      <div class="sec-lbl">새 비밀번호</div>
+      <input type="password" id="cfg_newPw" placeholder="새 비밀번호 (4자리 이상)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+      <div class="sec-lbl">새 비밀번호 확인</div>
+      <input type="password" id="cfg_confirmPw" placeholder="비밀번호 재입력" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+      <button class="btn btn-primary" style="width:100%;background:var(--navy);margin-bottom:16px;" onclick="changePw()">&#128272; 앱 비밀번호 변경</button>
+      <div id="pwMsg" style="margin-top:-10px;margin-bottom:8px;"></div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">&#9881;&#65039; 설정 탭 비밀번호 변경</div>
+      <div class="sec-lbl">현재 설정 비밀번호</div>
+      <input type="password" id="cfg_currentSettingsPw" placeholder="현재 설정 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+      <div class="sec-lbl">새 설정 비밀번호</div>
+      <input type="password" id="cfg_newSettingsPw" placeholder="새 비밀번호 (4자리 이상)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+      <div class="sec-lbl">새 설정 비밀번호 확인</div>
+      <input type="password" id="cfg_confirmSettingsPw" placeholder="비밀번호 재입력" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+      <button class="btn btn-primary" style="width:100%;background:var(--navy);" onclick="changeSettingsPw()">&#9881;&#65039; 설정 비밀번호 변경</button>
+      <div id="settingsPwMsg" style="margin-top:8px;"></div>
     </div>
-    <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-purple">자동잠금</span><span class="card-title">앱 자동 잠금 시간</span></div>
+      <div class="info-box">&#9200; 설정한 시간 동안 앱을 사용하지 않으면 자동으로 잠금됩니다.</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px;">
+        <button class="auto-lock-btn" data-min="0" onclick="setAutoLock(0)">&#128275; 사용 안 함</button>
+        <button class="auto-lock-btn" data-min="5" onclick="setAutoLock(5)">5분</button>
+        <button class="auto-lock-btn" data-min="10" onclick="setAutoLock(10)">10분</button>
+        <button class="auto-lock-btn" data-min="30" onclick="setAutoLock(30)">30분</button>
+      </div>
+      <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-green">Gemini AI</span><span class="card-title">AI API 설정</span></div>
+      <div class="info-box">AI 분석 기능에 사용할 Gemini API Key를 입력하세요.</div>
+      <div class="sec-lbl">API Key</div>
+      <input type="password" id="cfg_geminiKey" placeholder="AIza..." style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+      <button class="btn btn-primary" style="width:100%;" onclick="saveGeminiKey()">&#128190; 저장</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-badge b-red">위험</span><span class="card-title">데이터 초기화</span></div>
+      <div class="info-box">&#9888;&#65039; 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
+      <button class="btn" style="width:100%;color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="clearAllData()">&#128465;&#65039; 모든 데이터 초기화</button>
+    </div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v3.0&nbsp;·&nbsp;서산소방서</div>
   </div>
-  
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-green">Gemini AI</span><span class="card-title">AI API 설정</span></div>
-    <div class="info-box">AI 분석 기능에 사용할 Gemini API Key를 입력하세요. 키는 기기에만 저장됩니다.</div>
-    <div class="sec-lbl">API Key</div>
-    <input type="password" id="cfg_geminiKey" placeholder="AIza..." style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;" onclick="saveGeminiKey()">💾 저장</button>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="card-badge b-red">위험</span><span class="card-title">데이터 초기화</span></div>
-    <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다. 되돌릴 수 없습니다.</div>
-    <button class="btn" style="width:100%;color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="clearAllData()">🗑️ 모든 데이터 초기화</button>
-  </div>
-  
-  <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">
-    소방 상황보고 시스템 v2.5<br>서산소방서
-  </div>
-  </div><!-- /settingsContent -->
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
 <script>
-// ============================================================
-// 전역 상태
-// ============================================================
-let currentLat = null, currentLng = null, currentAddress = '';
-let kakaoMap = null;
-let rptCurrentPage = 0;
-let rptCurrentType = 'fire';
-let rptPhotos = [];
-let rptScanPhotos = [];
-let rptActionCount = 0;
-let userContacts = [];
-let dispatchHistory = [];
+var currentLat=null,currentLng=null,currentAddress='';
+var rptCurrentPage=0,rptCurrentType='fire';
+var rptScanPhotos=[],rptPhotos=[];
+var userContacts=[];
+var dispatchHistory=[];
+var reports=[],reportCount=0;
+var seqState={};
+var currentContactTab='dispatch';
+var LOCKABLE_TABS=['report','map','contacts'];
+var featureLocks={};
+var autoLockTimer=null,autoLockMinutes=0;
 
-// ============================================================
-// 시계
-// ============================================================
-function updateClock(){
-  const n = new Date();
-  const h = String(n.getHours()).padStart(2,'0');
-  const m = String(n.getMinutes()).padStart(2,'0');
-  const s = String(n.getSeconds()).padStart(2,'0');
-  const el = document.getElementById('clock');
-  if(el) el.textContent = h+':'+m+':'+s;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// ============================================================
-// 앱 잠금
-// ============================================================
-function initAppLock(){
-  const pw = localStorage.getItem('appLockPw') || '0261';
-  const screen = document.getElementById('appLockScreen');
-  if(!screen) return;
-  screen.style.display = 'flex';
-  loadUserContacts();
-  loadHistory();
-  loadNoticeAndLocks();
-  loadAutoLock();
-  // PWA install prompt
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    window._installPrompt = e;
-    const banner = document.getElementById('installBanner');
-    if(banner) banner.classList.add('show');
-  });
-}
-
-function checkSettingsLock(){
-  const pw = localStorage.getItem('settingsPw') || '2399';
-  const input = document.getElementById('settingsLockInput');
-  const err = document.getElementById('settingsLockError');
-  const lock = document.getElementById('settingsLock');
-  const content = document.getElementById('settingsContent');
-  if(!input) return;
-  if(input.value === pw){
-    if(lock) lock.style.display = 'none';
-    if(content) content.style.display = 'block';
-    if(err) err.style.display = 'none';
-  } else {
-    if(err) err.style.display = 'block';
-    input.value = '';
-    input.focus();
-  }
-}
-
-function checkAppLock(){
-  const pw = localStorage.getItem('appLockPw') || '0261';
-  const input = document.getElementById('appLockInput');
-  const err = document.getElementById('appLockError');
-  const screen = document.getElementById('appLockScreen');
-  if(!input) return;
-  if(input.value === pw){
-    screen.style.display = 'none';
-    switchTab('dispatch');
-  } else {
-    if(err) err.style.display = 'block';
-    input.value = '';
-    input.focus();
-  }
-}
-
-// ============================================================
-// 공지 & 기능잠금
-// ============================================================
-const LOCKABLE_TABS = ['report','map','contacts'];
-let featureLocks = {};
-
-function loadNoticeAndLocks(){
-  // 공지 로드
-  const n = JSON.parse(localStorage.getItem('appNotice') || '{}');
-  if(n.msg) document.getElementById('noticeMsg').textContent = n.msg;
-  if(n.msg){
-    const cfg_m = document.getElementById('cfg_noticeMsg');
-    if(cfg_m) cfg_m.value = n.msg;
-  }
-  // 잠금 상태 로드
-  featureLocks = JSON.parse(localStorage.getItem('featureLocks') || '{}');
-  applyAllLocks();
-}
-
-function saveNotice(){
-  const msg = document.getElementById('cfg_noticeMsg')?.value.trim() || '정상 운영 중입니다.';
-  localStorage.setItem('appNotice', JSON.stringify({ msg }));
-  // 배너 즉시 반영
-  const el_m = document.getElementById('noticeMsg');
-  const el_i = document.getElementById('noticeIcon');
-  const banner = document.getElementById('noticeBanner');
-  if(el_m) el_m.textContent = msg;
-  if(el_i) el_i.textContent = '📢';
-  if(banner){ banner.style.display='flex'; banner.style.background='var(--blue-lt)'; banner.style.borderColor='rgba(26,110,232,0.25)'; }
-  showToast('✅ 공지가 저장됐습니다');
-}
-
-function toggleLock(tab){
-  featureLocks[tab] = !featureLocks[tab];
-  localStorage.setItem('featureLocks', JSON.stringify(featureLocks));
-  applyAllLocks();
-  updateNoticeBannerForLocks();
-  showToast(featureLocks[tab] ? `🔒 ${getTabName(tab)} 탭이 잠겼습니다` : `🔓 ${getTabName(tab)} 탭이 해제됐습니다`);
-}
-
-function getTabName(tab){
-  return {report:'보고서', map:'지도', contacts:'연락처'}[tab] || tab;
-}
-
-function applyAllLocks(){
-  LOCKABLE_TABS.forEach(tab => {
-    const btn = document.getElementById('lockBtn-'+tab);
-    const nav = document.getElementById('nav-'+tab);
-    const locked = !!featureLocks[tab];
-    // 버튼 UI
-    if(btn){
-      btn.textContent = locked ? '🔒 잠김' : '해제됨';
-      btn.style.background  = locked ? 'var(--red-lt)'  : 'var(--surface)';
-      btn.style.color       = locked ? 'var(--red)'     : 'var(--ink3)';
-      btn.style.borderColor = locked ? 'rgba(217,48,37,0.35)' : 'var(--border)';
-    }
-    // 네비 버튼 흐리게
-    if(nav){
-      nav.style.opacity = locked ? '0.4' : '1';
-      nav.style.pointerEvents = locked ? 'none' : '';
-    }
-  });
-}
-
-function updateNoticeBannerForLocks(){
-  const lockedTabs = LOCKABLE_TABS.filter(t => featureLocks[t]).map(getTabName);
-  const banner  = document.getElementById('noticeBanner');
-  const el_t    = document.getElementById('noticeTitle');
-  const el_m    = document.getElementById('noticeMsg');
-  const el_i    = document.getElementById('noticeIcon');
-  if(!banner) return;
-  if(lockedTabs.length > 0){
-    if(el_i) el_i.textContent = '🔒';
-    if(el_t) el_t.textContent = '관리자 공지 — 기능 제한 중';
-    if(el_m) el_m.textContent = `현재 잠금된 탭: ${lockedTabs.join(', ')}`;
-    banner.style.background   = 'var(--red-lt)';
-    banner.style.borderColor  = 'rgba(217,48,37,0.3)';
-    banner.style.display      = 'flex';
-    // 네비 클릭 차단 유지
-  } else {
-    // 잠금 없으면 저장된 공지로 복원
-    const n = JSON.parse(localStorage.getItem('appNotice') || '{}');
-    if(el_i) el_i.textContent = '📢';
-    if(el_m) el_m.textContent = n.msg || '정상 운영 중입니다.';
-    banner.style.background  = 'var(--blue-lt)';
-    banner.style.borderColor = 'rgba(26,110,232,0.25)';
-  }
-}
-
-// ============================================================
-// 탭 전환
-// ============================================================
-function switchTab(tab, btnEl){
-  // 잠금 탭 차단
-  if(LOCKABLE_TABS.includes(tab) && featureLocks[tab]){
-    showToast(`🔒 ${getTabName(tab)} 탭은 관리자가 잠금했습니다`);
-    return;
-  }
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-  const screen = document.getElementById('tab-'+tab);
-  if(screen) screen.classList.add('on');
-  const btn = btnEl || document.getElementById('nav-'+tab);
-  if(btn) btn.classList.add('on');
-  if(tab === 'map') initMap();
-  // 설정 탭 진입 시 항상 잠금 초기화
-  if(tab === 'settings'){
-    const lock = document.getElementById('settingsLock');
-    const content = document.getElementById('settingsContent');
-    const input = document.getElementById('settingsLockInput');
-    const err = document.getElementById('settingsLockError');
-    if(lock) lock.style.display = 'flex';
-    if(content) content.style.display = 'none';
-    if(input){ input.value = ''; setTimeout(()=>input.focus(), 100); }
-    if(err) err.style.display = 'none';
-  }
-}
-
-// ============================================================
-// Toast
-// ============================================================
-function showToast(msg, dur=2400){
-  const t = document.getElementById('toast');
-  if(!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
-}
-
-// ============================================================
-// 설정 로드/저장
-// ============================================================
-
-
-function saveGeminiKey(){
-  const s = JSON.parse(localStorage.getItem('appSettings') || '{}');
-  s.geminiKey = document.getElementById('cfg_geminiKey').value.trim();
-  localStorage.setItem('appSettings', JSON.stringify(s));
-  showToast('✅ API Key 저장됨');
-}
-
-function getSettings(){
-  return JSON.parse(localStorage.getItem('appSettings') || '{}');
-}
-
-function changePw(){
-  const cur = document.getElementById('cfg_currentPw').value;
-  const nw = document.getElementById('cfg_newPw').value;
-  const conf = document.getElementById('cfg_confirmPw').value;
-  const stored = localStorage.getItem('appLockPw') || '0261';
-  const msg = document.getElementById('pwMsg');
-  if(cur !== stored){ msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 현재 비밀번호가 틀렸습니다.</div>'; return; }
-  if(nw.length < 4){ msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 비밀번호는 4자리 이상이어야 합니다.</div>'; return; }
-  if(nw !== conf){ msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 새 비밀번호가 일치하지 않습니다.</div>'; return; }
-  localStorage.setItem('appLockPw', nw);
-  msg.innerHTML = '<div class="rpt-msg ok" style="display:block;">✅ 비밀번호가 변경됐습니다.</div>';
-  document.getElementById('cfg_currentPw').value='';
-  document.getElementById('cfg_newPw').value='';
-  document.getElementById('cfg_confirmPw').value='';
-}
-
-function changeSettingsPw(){
-  const cur  = document.getElementById('cfg_currentSettingsPw').value;
-  const nw   = document.getElementById('cfg_newSettingsPw').value;
-  const conf = document.getElementById('cfg_confirmSettingsPw').value;
-  const stored = localStorage.getItem('settingsPw') || '2399';
-  const msg  = document.getElementById('settingsPwMsg');
-  if(cur !== stored){
-    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 현재 설정 비밀번호가 틀렸습니다.</div>'; return;
-  }
-  if(nw.length < 4){
-    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 비밀번호는 4자리 이상이어야 합니다.</div>'; return;
-  }
-  if(nw !== conf){
-    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 새 비밀번호가 일치하지 않습니다.</div>'; return;
-  }
-  localStorage.setItem('settingsPw', nw);
-  msg.innerHTML = '<div class="rpt-msg ok" style="display:block;">✅ 설정 비밀번호가 변경됐습니다.</div>';
-  document.getElementById('cfg_currentSettingsPw').value = '';
-  document.getElementById('cfg_newSettingsPw').value = '';
-  document.getElementById('cfg_confirmSettingsPw').value = '';
-}
-
-// ── 자동 잠금 ──────────────────────────────────────────────
-let autoLockTimer = null;
-let autoLockMinutes = 0;
-
-function loadAutoLock(){
-  autoLockMinutes = parseInt(localStorage.getItem('autoLockMin') || '0');
-  renderAutoLockBtns();
-  resetAutoLockTimer();
-}
-
-function setAutoLock(min){
-  autoLockMinutes = min;
-  localStorage.setItem('autoLockMin', min);
-  renderAutoLockBtns();
-  resetAutoLockTimer();
-  showToast(min === 0 ? '🔓 자동 잠금 해제됨' : `⏱ ${min}분 후 자동 잠금`);
-}
-
-function renderAutoLockBtns(){
-  document.querySelectorAll('.auto-lock-btn').forEach(btn => {
-    const val = parseInt(btn.dataset.min);
-    btn.classList.toggle('on', val === autoLockMinutes);
-  });
-  const status = document.getElementById('autoLockStatus');
-  if(status){
-    status.textContent = autoLockMinutes === 0
-      ? '현재: 자동 잠금 사용 안 함'
-      : `현재: ${autoLockMinutes}분 후 자동 잠금`;
-  }
-}
-
-function resetAutoLockTimer(){
-  if(autoLockTimer) clearTimeout(autoLockTimer);
-  if(autoLockMinutes <= 0) return;
-  autoLockTimer = setTimeout(() => {
-    // 잠금 화면 표시
-    const screen = document.getElementById('appLockScreen');
-    const input  = document.getElementById('appLockInput');
-    const err    = document.getElementById('appLockError');
-    if(screen){ screen.style.display = 'flex'; }
-    if(input) { input.value = ''; input.focus(); }
-    if(err)   { err.style.display = 'none'; }
-    showToast('⏱ 자동 잠금됐습니다');
-  }, autoLockMinutes * 60 * 1000);
-}
-
-// 사용자 활동 감지 → 타이머 리셋
-['touchstart','click','keydown'].forEach(ev => {
-  document.addEventListener(ev, () => { if(autoLockMinutes > 0) resetAutoLockTimer(); }, { passive: true });
-});
-
-function clearAllData(){
-  if(!confirm('정말 모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
-  const pw = localStorage.getItem('appLockPw') || '0261';
-  localStorage.clear();
-  localStorage.setItem('appLockPw', pw);
-  showToast('🗑️ 초기화됐습니다');
-  location.reload();
-}
-
-// ============================================================
-// PWA 설치
-// ============================================================
-function doInstall(){
-  if(window._installPrompt){
-    window._installPrompt.prompt();
-    window._installPrompt.userChoice.then(() => { window._installPrompt = null; });
-  }
-  document.getElementById('installBanner').classList.remove('show');
-}
-function dismissInstall(){
-  document.getElementById('installBanner').classList.remove('show');
-  localStorage.setItem('installDismissed', '1');
-}
-
-</script>
-<script>
-// ============================================================
-// 출동 보고 탭 - 보고서 생성
-// ============================================================
-let seqState = {};
-const seqDef = {
-  dispatch: ['신고접수','출동지령','현장도착','화재진압개시','화재진압완료','철수'],
-  rescue: ['신고접수','출동지령','현장도착','요구조자확인','구조완료','철수'],
-  ems: ['신고접수','출동지령','현장도착','환자평가','병원이송','귀서'],
-  hazmat: ['신고접수','출동지령','현장도착','위험물확인','방제조치','철수'],
-  misc: ['신고접수','출동지령','현장도착','상황확인','조치완료','철수'],
+var seqDef={
+  fire:['신고접수','출동지령','현장도착','화재진압개시','화재진압완료','철수'],
+  rescue:['신고접수','출동지령','현장도착','요구조자확인','구조완료','철수'],
+  ems:['신고접수','출동지령','현장도착','환자평가','병원이송','귀서'],
+  hazmat:['신고접수','출동지령','현장도착','위험물확인','방제조치','철수'],
+  misc:['신고접수','출동지령','현장도착','상황확인','조치완료','철수'],
+  training:['훈련시작','상황부여','훈련진행','평가','훈련종료','귀서'],
 };
 
-function selectType(btn, type){
-  document.querySelectorAll('.seq-btn[data-type]').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  renderSeq(type);
+function updateClock(){
+  var n=new Date(),el=document.getElementById('clock');
+  if(el)el.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
 }
+setInterval(updateClock,1000);updateClock();
 
-// 출동 유형 버튼 (화재/구조/구급)
-const typeSeqMap = { '화재':'dispatch', '구조':'rescue', '구급':'ems' };
-function setDispatchType(typeName, btn){
-  // 버튼 활성화 표시
-  document.querySelectorAll('[id^="typeBtn-"]').forEach(b => {
-    b.style.borderColor = 'var(--border)';
-    b.style.background  = 'var(--surface)';
-    b.style.color       = 'var(--ink3)';
-    b.style.boxShadow   = 'var(--shadow)';
+function initAppLock(){
+  var s=document.getElementById('appLockScreen');if(s)s.style.display='flex';
+  loadUserContacts();loadHistory();loadNoticeAndLocks();loadAutoLock();loadGeminiKeySetting();
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window._installPrompt=e;});
+}
+function checkAppLock(){
+  var pw=localStorage.getItem('appLockPw')||'0261';
+  var inp=document.getElementById('appLockInput');
+  var err=document.getElementById('appLockError');
+  var s=document.getElementById('appLockScreen');
+  if(!inp)return;
+  if(inp.value===pw){if(s)s.style.display='none';switchTab('dispatch');}
+  else{if(err)err.style.display='block';inp.value='';inp.focus();}
+}
+function checkSettingsLock(){
+  var pw=localStorage.getItem('settingsPw')||'2399';
+  var inp=document.getElementById('settingsLockInput');
+  var err=document.getElementById('settingsLockError');
+  var lock=document.getElementById('settingsLockInline');
+  var content=document.getElementById('settingsContent');
+  if(!inp)return;
+  if(inp.value===pw){
+    if(lock)lock.style.display='none';
+    if(content)content.style.display='block';
+    if(err)err.style.display='none';
+  }else{if(err)err.style.display='block';inp.value='';inp.focus();}
+}
+function switchTab(tab,btnEl){
+  if(LOCKABLE_TABS.indexOf(tab)>=0&&featureLocks[tab]){showToast('잠금된 탭입니다');return;}
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on');});
+  var screen=document.getElementById('tab-'+tab);if(screen)screen.classList.add('on');
+  var btn=btnEl||document.getElementById('nav-'+tab);if(btn)btn.classList.add('on');
+  if(tab==='settings'){
+    var lock=document.getElementById('settingsLockInline');
+    var content=document.getElementById('settingsContent');
+    var sinp=document.getElementById('settingsLockInput');
+    var serr=document.getElementById('settingsLockError');
+    if(lock)lock.style.display='flex';if(content)content.style.display='none';
+    if(sinp){sinp.value='';setTimeout(function(){sinp.focus();},100);}
+    if(serr)serr.style.display='none';
+  }
+}
+function showToast(msg,dur){
+  dur=dur||2400;var t=document.getElementById('toast');
+  if(!t)return;t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},dur);
+}
+function loadNoticeAndLocks(){
+  var n=JSON.parse(localStorage.getItem('appNotice')||'{}');
+  if(n.msg){
+    var el=document.getElementById('noticeMsg');if(el)el.textContent=n.msg;
+    var cfg=document.getElementById('cfg_noticeMsg');if(cfg)cfg.value=n.msg;
+  }
+  featureLocks=JSON.parse(localStorage.getItem('featureLocks')||'{}');
+  applyAllLocks();
+}
+function saveNotice(){
+  var msg=(document.getElementById('cfg_noticeMsg')?document.getElementById('cfg_noticeMsg').value:'').trim()||'정상 운영 중입니다.';
+  localStorage.setItem('appNotice',JSON.stringify({msg:msg}));
+  var el=document.getElementById('noticeMsg');if(el)el.textContent=msg;
+  var bn=document.getElementById('noticeBanner');
+  if(bn){bn.style.display='flex';bn.style.background='var(--blue-lt)';bn.style.borderColor='rgba(26,110,232,0.25)';}
+  showToast('공지가 저장됐습니다');
+}
+function getTabName(tab){return {report:'보고서',map:'지도',contacts:'연락처'}[tab]||tab;}
+function toggleLock(tab){
+  featureLocks[tab]=!featureLocks[tab];
+  localStorage.setItem('featureLocks',JSON.stringify(featureLocks));
+  applyAllLocks();updateNoticeBannerForLocks();
+  showToast(featureLocks[tab]?getTabName(tab)+' 탭이 잠겼습니다':getTabName(tab)+' 탭이 해제됐습니다');
+}
+function applyAllLocks(){
+  LOCKABLE_TABS.forEach(function(tab){
+    var btn=document.getElementById('lockBtn-'+tab);
+    var nav=document.getElementById('nav-'+tab);
+    var locked=!!featureLocks[tab];
+    if(btn){btn.textContent=locked?'잠김':'해제됨';btn.style.background=locked?'var(--red-lt)':'var(--surface)';btn.style.color=locked?'var(--red)':'var(--ink3)';btn.style.borderColor=locked?'rgba(217,48,37,0.35)':'var(--border)';}
+    if(nav){nav.style.opacity=locked?'0.4':'1';nav.style.pointerEvents=locked?'none':'';}
   });
-  btn.style.borderColor = 'var(--orange)';
-  btn.style.background  = 'var(--orange)';
-  btn.style.color       = '#fff';
-  btn.style.boxShadow   = '0 2px 8px rgba(232,96,10,0.35)';
-  // 보고 순서 재렌더
-  const seqType = typeSeqMap[typeName] || 'dispatch';
-  renderSeq(seqType);
+}
+function updateNoticeBannerForLocks(){
+  var lockedTabs=LOCKABLE_TABS.filter(function(t){return featureLocks[t];}).map(getTabName);
+  var banner=document.getElementById('noticeBanner');
+  var el_m=document.getElementById('noticeMsg');
+  var el_t=document.getElementById('noticeTitle');
+  if(!banner)return;
+  if(lockedTabs.length>0){
+    if(el_t)el_t.textContent='관리자 공지 — 기능 제한 중';
+    if(el_m)el_m.textContent='현재 잠금된 탭: '+lockedTabs.join(', ');
+    banner.style.background='var(--red-lt)';banner.style.borderColor='rgba(217,48,37,0.3)';banner.style.display='flex';
+  }else{
+    var n=JSON.parse(localStorage.getItem('appNotice')||'{}');
+    if(el_t)el_t.textContent='서산소방서 상황보고 시스템';
+    if(el_m)el_m.textContent=n.msg||'정상 운영 중입니다.';
+    banner.style.background='var(--blue-lt)';banner.style.borderColor='rgba(26,110,232,0.25)';
+  }
+}
+function changePw(){
+  var cur=document.getElementById('cfg_currentPw').value;
+  var nw=document.getElementById('cfg_newPw').value;
+  var conf=document.getElementById('cfg_confirmPw').value;
+  var stored=localStorage.getItem('appLockPw')||'0261';
+  var msg=document.getElementById('pwMsg');
+  if(cur!==stored){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">현재 비밀번호가 틀렸습니다.</div>';return;}
+  if(nw.length<4){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">4자리 이상 입력하세요.</div>';return;}
+  if(nw!==conf){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">비밀번호가 일치하지 않습니다.</div>';return;}
+  localStorage.setItem('appLockPw',nw);
+  msg.innerHTML='<div class="rpt-msg ok" style="display:block;">비밀번호가 변경됐습니다.</div>';
+  document.getElementById('cfg_currentPw').value='';document.getElementById('cfg_newPw').value='';document.getElementById('cfg_confirmPw').value='';
+}
+function changeSettingsPw(){
+  var cur=document.getElementById('cfg_currentSettingsPw').value;
+  var nw=document.getElementById('cfg_newSettingsPw').value;
+  var conf=document.getElementById('cfg_confirmSettingsPw').value;
+  var stored=localStorage.getItem('settingsPw')||'2399';
+  var msg=document.getElementById('settingsPwMsg');
+  if(cur!==stored){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">현재 비밀번호가 틀렸습니다.</div>';return;}
+  if(nw.length<4){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">4자리 이상 입력하세요.</div>';return;}
+  if(nw!==conf){msg.innerHTML='<div class="rpt-msg fail" style="display:block;">비밀번호가 일치하지 않습니다.</div>';return;}
+  localStorage.setItem('settingsPw',nw);
+  msg.innerHTML='<div class="rpt-msg ok" style="display:block;">설정 비밀번호가 변경됐습니다.</div>';
+  document.getElementById('cfg_currentSettingsPw').value='';document.getElementById('cfg_newSettingsPw').value='';document.getElementById('cfg_confirmSettingsPw').value='';
+}
+function clearAllData(){
+  if(!confirm('정말 모든 데이터를 초기화하시겠습니까?'))return;
+  var pw=localStorage.getItem('appLockPw')||'0261';
+  var spw=localStorage.getItem('settingsPw')||'2399';
+  localStorage.clear();
+  localStorage.setItem('appLockPw',pw);localStorage.setItem('settingsPw',spw);
+  showToast('초기화됐습니다');location.reload();
+}
+function loadGeminiKeySetting(){
+  var s=JSON.parse(localStorage.getItem('appSettings')||'{}');
+  if(s.geminiKey){var el=document.getElementById('cfg_geminiKey');if(el)el.value=s.geminiKey;}
+}
+function saveGeminiKey(){
+  var s=JSON.parse(localStorage.getItem('appSettings')||'{}');
+  s.geminiKey=(document.getElementById('cfg_geminiKey')?document.getElementById('cfg_geminiKey').value:'').trim();
+  localStorage.setItem('appSettings',JSON.stringify(s));showToast('API Key 저장됨');
+}
+function getSettings(){return JSON.parse(localStorage.getItem('appSettings')||'{}');}
+function loadAutoLock(){
+  autoLockMinutes=parseInt(localStorage.getItem('autoLockMin')||'0');
+  renderAutoLockBtns();resetAutoLockTimer();
+}
+function setAutoLock(min){
+  autoLockMinutes=min;localStorage.setItem('autoLockMin',min);
+  renderAutoLockBtns();resetAutoLockTimer();
+  showToast(min===0?'자동 잠금 해제됨':min+'분 후 자동 잠금');
+}
+function renderAutoLockBtns(){
+  document.querySelectorAll('.auto-lock-btn').forEach(function(btn){btn.classList.toggle('on',parseInt(btn.dataset.min)===autoLockMinutes);});
+  var s=document.getElementById('autoLockStatus');
+  if(s)s.textContent=autoLockMinutes===0?'현재: 자동 잠금 사용 안 함':'현재: '+autoLockMinutes+'분 후 자동 잠금';
+}
+function resetAutoLockTimer(){
+  if(autoLockTimer)clearTimeout(autoLockTimer);
+  if(autoLockMinutes<=0)return;
+  autoLockTimer=setTimeout(function(){
+    var s=document.getElementById('appLockScreen');var inp=document.getElementById('appLockInput');
+    if(s)s.style.display='flex';if(inp){inp.value='';inp.focus();}
+    showToast('자동 잠금됐습니다');
+  },autoLockMinutes*60*1000);
+}
+['touchstart','click','keydown'].forEach(function(ev){document.addEventListener(ev,function(){if(autoLockMinutes>0)resetAutoLockTimer();},{passive:true});});
+
+var typeSeqMap={fire:'fire',rescue:'rescue',ems:'ems',hazmat:'hazmat',misc:'misc',training:'training'};
+function setDispatchType(type,btn){
+  document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
+  btn.style.borderColor='var(--orange)';btn.style.background='var(--orange)';btn.style.color='#fff';
+  renderSeq(typeSeqMap[type]||'fire');
+}
+function renderSeq(type){
+  var wrap=document.getElementById('seqWrap');if(!wrap)return;
+  var steps=seqDef[type]||seqDef.fire;seqState={};
+  wrap.innerHTML=steps.map(function(s,i){return '<button class="seq-btn'+(i===steps.length-1?' seq-final':'')+'" onclick="toggleStep(this,'+i+',\''+s+'\')">'+s+'</button>';}).join('');
+}
+function toggleStep(btn,idx,label){
+  var now=new Date();
+  if(btn.classList.contains('on')){btn.classList.remove('on');delete seqState[idx];}
+  else{btn.classList.add('on');seqState[idx]={label:label,time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')};}
   renderOutput();
 }
-
-function renderSeq(type){
-  const wrap = document.getElementById('seqWrap');
-  if(!wrap) return;
-  const steps = seqDef[type] || seqDef.dispatch;
-  seqState = {};
-  wrap.innerHTML = steps.map((s,i) => 
-    `<button class="seq-btn${i===steps.length-1?' seq-final':''}" data-step="${i}" onclick="toggleStep(this,${i},'${s}')">${s}</button>`
-  ).join('');
-}
-
-function toggleStep(btn, idx, label){
-  const now = new Date();
-  if(btn.classList.contains('on')){
-    btn.classList.remove('on');
-    delete seqState[idx];
-  } else {
-    btn.classList.add('on');
-    seqState[idx] = { label, time: now.toTimeString().slice(0,5) };
-  }
-  generateReport();
-}
-
 function renderOutput(){
-  // 출동 탭 보고문 자동 생성
-  const loc      = (document.getElementById('location')?.value     || '').trim();
-  const obj      = (document.getElementById('fireObject')?.value   || '').trim();
-  const scale    = (document.getElementById('fireScale')?.value    || '').trim();
-  const casualty = (document.getElementById('fireCasualty')?.value || '').trim();
-  const sender   = (document.getElementById('sigName')?.value      || '').trim();
-  const box      = document.getElementById('outputBox');
-  if(!box) return;
-  if(!loc && !obj){ box.textContent = '정보를 입력하면 자동 생성됩니다.'; return; }
-  const now = new Date();
-  const timeStr = now.toTimeString().slice(0,5);
-  let text = `[출동보고]
-`;
-  if(loc)      text += `📍 장소: ${loc}
-`;
-  if(obj)      text += `🔥 대상: ${obj}`;
-  if(scale)    text += ` / ${scale}`;
-  if(obj)      text += '
-';
-  if(casualty) text += `🚑 인명: ${casualty}
-`;
-  text += `🕐 ${timeStr}`;
-  if(sender)   text += ` / ${sender}`;
-  box.textContent = text;
+  var loc=(document.getElementById('location')?document.getElementById('location').value:'').trim();
+  var obj=(document.getElementById('fireObject')?document.getElementById('fireObject').value:'').trim();
+  var scale=(document.getElementById('fireScale')?document.getElementById('fireScale').value:'').trim();
+  var casualty=(document.getElementById('fireCasualty')?document.getElementById('fireCasualty').value:'').trim();
+  var sender=(document.getElementById('sigName')?document.getElementById('sigName').value:'').trim();
+  var box=document.getElementById('outputBox');if(!box)return;
+  if(!loc&&!obj){box.textContent='정보를 입력하면 자동 생성됩니다.';return;}
+  var now=new Date();
+  var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var lines=['[상황보고]'];
+  if(loc)lines.push('장소: '+loc);
+  if(obj)lines.push('대상: '+obj+(scale?' / '+scale:''));
+  if(casualty)lines.push('인명: '+casualty);
+  var steps=Object.values(seqState).sort(function(a,b){return a.label>b.label?1:-1;});
+  if(steps.length>0){lines.push('');lines.push('[조치경과]');steps.forEach(function(s){lines.push('  '+s.label+': '+s.time);});}
+  if(reports.length>0){lines.push('');lines.push('[상황]');reports.forEach(function(r){lines.push('  '+r.time+' '+r.text);});}
+  lines.push('');lines.push(timeStr+(sender?' / '+sender:''));
+  box.textContent=lines.join('\n');
 }
-
-function generateReport(){
-  const cfg = getSettings();
-  const station = cfg.stationName || '서산소방서';
-  const author = cfg.authorName || '';
-  const loc = document.getElementById('dispatchLocation')?.value.trim() || '미입력';
-  const detail = document.getElementById('dispatchDetail')?.value.trim() || '';
-  const target = document.getElementById('dispatchTarget')?.value.trim() || cfg.defaultTarget || '';
-  const now = new Date();
-  const dateStr = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
-  const timeStr = now.toTimeString().slice(0,5);
-  
-  const steps = Object.values(seqState).sort((a,b) => a.label > b.label ? 1 : -1);
-  const stepText = steps.map(s => `· ${s.label}: ${s.time}`).join('
-') || '· (미입력)';
-  
-  let report = `[${station} 상황보고]
-`;
-  report += `━━━━━━━━━━━━━━━━━━━━━
-`;
-  report += `📅 ${dateStr} ${timeStr}
-`;
-  report += `📍 장소: ${loc}
-`;
-  if(detail) report += `📋 내용: ${detail}
-`;
-  report += `
-[조치 경과]
-${stepText}
-`;
-  if(target) report += `
-📡 전파: ${target}
-`;
-  if(author) report += `✍ 작성: ${author}
-`;
-  
-  const output = document.getElementById('reportOutput');
-  if(output) output.textContent = report;
-}
-
-function copyReport(){
-  const output = document.getElementById('reportOutput');
-  if(!output || !output.textContent.trim()){ showToast('⚠️ 보고서를 먼저 생성하세요'); return; }
-  navigator.clipboard.writeText(output.textContent).then(() => {
-    showToast('📋 복사됐습니다');
-    const btn = document.getElementById('copyOnlyBtn');
-    if(btn){ btn.classList.add('done'); setTimeout(()=>btn.classList.remove('done'),2000); }
-  });
-}
-
-function copyOnlyText(){ copyReport(); }
-
-async function sendReport(){
-  const output = document.getElementById('reportOutput');
-  if(!output || !output.textContent.trim()){ showToast('⚠️ 보고서를 먼저 생성하세요'); return; }
-  const text = output.textContent;
-  if(navigator.share){
-    try {
-      await navigator.share({ text });
-      showToast('✅ 전파됐습니다');
-      saveHistory(text);
-      const btn = document.getElementById('sendBtn');
-      if(btn){ btn.classList.add('done'); setTimeout(()=>btn.classList.remove('done'),2000); }
-    } catch(e) { if(e.name!=='AbortError') copyReport(); }
-  } else {
-    await navigator.clipboard.writeText(text);
-    showToast('📋 복사됐습니다 — 붙여넣기하세요');
-    document.getElementById('noShareWrap').style.display='block';
+function addReport(){
+  var content=document.getElementById('reportContent');
+  if(!content||!content.value.trim()){showToast('내용을 입력하세요');return;}
+  var now=new Date();
+  var time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  reportCount++;var item={id:reportCount,time:time,text:content.value.trim()};reports.push(item);
+  var list=document.getElementById('reportList');var card=document.getElementById('reportListCard');
+  if(list){
+    var div=document.createElement('div');div.id='rpt-item-'+reportCount;
+    div.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:6px;font-size:12px;';
+    div.innerHTML='<span style="color:var(--orange);font-family:var(--mono);flex-shrink:0;">'+time+'</span><span style="flex:1;">'+item.text+'</span><button onclick="removeReport('+reportCount+')" style="font-size:13px;background:none;border:none;cursor:pointer;flex-shrink:0;color:var(--ink4);">X</button>';
+    list.appendChild(div);
   }
+  if(card)card.style.display='block';content.value='';renderOutput();showToast('상황이 추가됐습니다');
 }
-
-function saveHistory(text){
-  const h = JSON.parse(localStorage.getItem('dispatchHistory') || '[]');
-  h.unshift({ text, time: new Date().toISOString() });
-  if(h.length > 50) h.splice(50);
-  localStorage.setItem('dispatchHistory', JSON.stringify(h));
-  dispatchHistory = h;
+function removeReport(id){
+  reports=reports.filter(function(r){return r.id!==id;});
+  var el=document.getElementById('rpt-item-'+id);if(el)el.remove();
+  if(reports.length===0){var c=document.getElementById('reportListCard');if(c)c.style.display='none';}
+  renderOutput();
 }
-
-function loadHistory(){
-  dispatchHistory = JSON.parse(localStorage.getItem('dispatchHistory') || '[]');
-  renderHistory();
-}
-
-function renderHistory(){
-  const wrap = document.getElementById('historyList');
-  if(!wrap) return;
-  const stat4 = document.getElementById('stat-total');
-  if(stat4) stat4.textContent = dispatchHistory.length;
-  if(!dispatchHistory.length){
-    wrap.innerHTML = '<div class="empty">📭 기록이 없습니다</div>';
-    return;
-  }
-  wrap.innerHTML = dispatchHistory.map((h,i) => {
-    const d = new Date(h.time);
-    const ds = `${d.getMonth()+1}/${d.getDate()} ${d.toTimeString().slice(0,5)}`;
-    const preview = h.text.split('
-')[0] || '보고서';
-    return `<div class="hist-card">
-      <div class="hist-head" onclick="toggleHist(${i})">
-        <span style="font-size:14px;">📋</span>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${preview}</div>
-          <div style="font-size:11px;color:var(--ink4);">${ds}</div>
-        </div>
-        <span style="font-size:12px;color:var(--ink4);">▾</span>
-      </div>
-      <div class="hist-detail" id="hist-detail-${i}">
-        <pre style="font-size:12px;white-space:pre-wrap;word-break:break-all;color:var(--ink);font-family:var(--mono);line-height:1.8;">${h.text}</pre>
-        <div style="display:flex;gap:6px;margin-top:8px;">
-          <button class="btn" style="flex:1;font-size:12px;" onclick="copyHistItem(${i})">📋 복사</button>
-          <button class="btn" style="font-size:12px;color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="deleteHistItem(${i})">🗑</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleHist(i){
-  const d = document.getElementById('hist-detail-'+i);
-  if(d) d.classList.toggle('open');
-}
-
-function copyHistItem(i){
-  if(dispatchHistory[i]) navigator.clipboard.writeText(dispatchHistory[i].text).then(()=>showToast('📋 복사됐습니다'));
-}
-
-function deleteHistItem(i){
-  dispatchHistory.splice(i,1);
-  localStorage.setItem('dispatchHistory', JSON.stringify(dispatchHistory));
-  renderHistory();
-}
-
 function resetDispatch(){
-  if(!confirm('출동보고를 초기화하시겠습니까?')) return;
-  seqState = {};
-  document.querySelectorAll('.seq-btn').forEach(b => b.classList.remove('on'));
-  const loc = document.getElementById('dispatchLocation');
-  const det = document.getElementById('dispatchDetail');
-  const out = document.getElementById('reportOutput');
-  if(loc) loc.value='';
-  if(det) det.value='';
-  if(out) out.textContent='';
-  showToast('🔄 초기화됐습니다');
+  if(!confirm('출동보고를 초기화하시겠습니까?'))return;
+  seqState={};reports=[];reportCount=0;
+  document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
+  ['location','fireObject','fireScale','fireCasualty','sigName','receiptNo'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var box=document.getElementById('outputBox');if(box)box.textContent='정보를 입력하면 자동 생성됩니다.';
+  var list=document.getElementById('reportList');if(list)list.innerHTML='';
+  var card=document.getElementById('reportListCard');if(card)card.style.display='none';
+  renderSeq('fire');showToast('초기화됐습니다');
 }
-
-// 맞춤법 검사
-async function runSpell(){
-  const input = document.getElementById('spellInput');
-  if(!input || !input.value.trim()){ showToast('⚠️ 검사할 텍스트가 없습니다'); return; }
-  const status = document.getElementById('spellStatus');
-  const btn = document.getElementById('spellBtn');
-  if(status) status.style.display='block';
-  if(btn) btn.disabled=true;
-  const cfg = getSettings();
-  const apiKey = cfg.geminiKey || '';
-  if(!apiKey){ showToast('⚠️ Gemini API Key를 설정해주세요'); if(status)status.style.display='none'; if(btn)btn.disabled=false; return; }
-  try {
-    const prompt = `다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하고 다른 설명은 하지 마세요:
-{"corrected":"교정된 전체 텍스트","errors":[{"original":"원본","fixed":"교정","reason":"이유"}]}
-
-텍스트:
-${input.value}`;
-    const res = await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ temperature:0.1, maxOutputTokens:2048 } })
-    });
-    const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    text = text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(text);
-    const corrEl = document.getElementById('spellCorrected');
-    const errWrap = document.getElementById('spellErrorsWrap');
-    const errEl = document.getElementById('spellErrors');
-    const resultWrap = document.getElementById('spellResultWrap');
-    if(corrEl) corrEl.textContent = parsed.corrected || '';
-    if(parsed.errors && parsed.errors.length > 0){
-      if(errWrap) errWrap.style.display='block';
-      if(errEl) errEl.innerHTML = parsed.errors.map(e=>`<div style="margin-bottom:6px;padding:4px 0;border-bottom:1px solid var(--border);">❌ <span style="color:var(--red);">${e.original}</span> → ✅ <span style="color:var(--green);font-weight:700;">${e.fixed}</span><br><span style="font-size:11px;color:var(--ink4);">${e.reason}</span></div>`).join('');
-    } else {
-      if(errWrap) errWrap.style.display='none';
-    }
-    if(resultWrap) resultWrap.style.display='block';
-  } catch(e){
-    showToast('❌ 검사 실패: '+e.message.substring(0,30));
-  } finally {
-    if(status) status.style.display='none';
-    if(btn) btn.disabled=false;
-  }
+async function sendReport(){
+  var box=document.getElementById('outputBox');
+  if(!box||box.textContent.indexOf('정보를 입력하면')>=0){showToast('보고서를 먼저 작성하세요');return;}
+  var text=box.textContent;
+  if(navigator.share){try{await navigator.share({text:text});showToast('전파됐습니다');saveHistory(text);}catch(e){if(e.name!=='AbortError')navigator.clipboard.writeText(text).then(function(){showToast('복사됐습니다');});}}
+  else{navigator.clipboard.writeText(text).then(function(){showToast('복사됐습니다');});}
 }
-
-function loadReportToSpell(){
-  const out = document.getElementById('reportOutput');
-  const inp = document.getElementById('spellInput');
-  if(out && inp) inp.value = out.textContent;
+function copyOnlyText(){var box=document.getElementById('outputBox');if(box)navigator.clipboard.writeText(box.textContent).then(function(){showToast('복사됐습니다');});}
+function saveHistory(text){
+  var h=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');
+  h.unshift({text:text,time:new Date().toISOString()});if(h.length>50)h.splice(50);
+  localStorage.setItem('dispatchHistory',JSON.stringify(h));dispatchHistory=h;
 }
-
-function sendCorrectedReport(){
-  const corr = document.getElementById('spellCorrected');
-  if(!corr || !corr.textContent.trim()){ showToast('⚠️ 교정된 텍스트가 없습니다'); return; }
-  if(navigator.share){
-    navigator.share({ text: corr.textContent }).then(()=>showToast('✅ 전파됐습니다'));
-  } else {
-    navigator.clipboard.writeText(corr.textContent).then(()=>showToast('📋 복사됐습니다'));
-  }
-}
-
-function copyCorrectedOnly(){
-  const corr = document.getElementById('spellCorrected');
-  if(corr) navigator.clipboard.writeText(corr.textContent).then(()=>showToast('📋 복사됐습니다'));
-}
-
+function loadHistory(){dispatchHistory=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');}
 function toggleSpell(){
-  const sec = document.getElementById('spellSection');
-  if(!sec) return;
-  if(sec.style.display==='none'||!sec.style.display){
-    sec.style.display='block';
-    loadReportToSpell();
-  } else {
-    sec.style.display='none';
-  }
+  var sec=document.getElementById('spellSection');if(!sec)return;
+  if(sec.style.display==='none'||!sec.style.display){sec.style.display='block';loadReportToSpell();}else{sec.style.display='none';}
 }
-</script>
-<script>
-// ============================================================
-// AI 스캔 (rptRunScanAI) - FIX 2: closing } added
-// ============================================================
-async function rptRunScanAI(){
-  if(!rptScanPhotos.length){ showToast('⚠️ 사진을 먼저 업로드하세요'); return; }
-  const cfg = getSettings();
-  const apiKey = cfg.geminiKey || '';
-  if(!apiKey){ showToast('⚠️ 설정에서 Gemini API Key를 입력해주세요'); switchTab('settings'); return; }
-  
-  const btn = document.getElementById('rptAiBtn');
-  const statusDiv = document.getElementById('rptScanProgress');
-  const bar = document.getElementById('rptScanBar');
-  const statusText = document.getElementById('rptScanStatus');
-  const doneDiv = document.getElementById('rptScanDone');
-  const errBox = null;
-  
-  if(btn) btn.disabled = true;
-  if(statusDiv) statusDiv.style.display = 'block';
-  if(doneDiv) doneDiv.style.display = 'none';
-  
-  let prog = 0;
-  const pint = setInterval(()=>{
-    prog = Math.min(prog+2, 85);
-    if(bar) bar.style.width = prog+'%';
-  }, 200);
-  
-  try {
-    if(statusText) statusText.textContent = '이미지 분석 중...';
-    
-    const imgParts = await Promise.all(rptScanPhotos.map(async (file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const b64 = e.target.result.split(',')[1];
-          resolve({ inlineData: { mimeType: file.type, data: b64 } });
-        };
-        reader.readAsDataURL(file);
-      });
-    }));
-    
-    const prompt = `이 소방 현장 사진들을 분석하여 보고서 작성에 필요한 정보를 추출하세요. 반드시 JSON 형식으로만 응답하세요 (다른 설명 없이):
-{"address":"추정 주소 또는 장소","summary":"사고 개요 (2-3문장)","incidentType":"fire/rescue/ems/hazmat/misc 중 하나","propertyDamage":"피해 규모 추정","casualties":"인명피해 추정","keyFindings":"주요 현장 관찰사항"}`;
-    
-    const parts = [{ text: prompt }, ...imgParts];
-    
-    const res = await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts }], generationConfig:{ temperature:0.2, maxOutputTokens:1024 } })
-    });
-    
-    const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    text = text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(text);
-    
-    clearInterval(pint);
-    if(bar) bar.style.width = '100%';
-    
-    // 파싱된 데이터를 폼에 채우기
-    if(parsed.address){ const el = document.getElementById('rpt_address'); if(el){ el.value=parsed.address; el.parentElement.classList.add('ai-filled'); } }
-    if(parsed.summary){ const el = document.getElementById('rpt_summary'); if(el){ el.value=parsed.summary; el.parentElement.classList.add('ai-filled'); } }
-    
-    // 인시던트 타입 선택
-    if(parsed.incidentType){
-      const typeBtn = document.querySelector(`.rpt-type-btn[data-type="${parsed.incidentType}"]`);
-      if(typeBtn) selectRptType(typeBtn, parsed.incidentType);
-    }
-    
-    if(doneDiv) doneDiv.style.display='block';
-    if(statusDiv) statusDiv.style.display='none';
-    
-    const banner = document.getElementById('rptAiBanner');
-    if(banner) banner.classList.add('show');
-    
-    showToast('✅ AI 분석 완료!');
-  } catch(e){
-    clearInterval(pint);
-    if(statusDiv) statusDiv.style.display='none';
-    if(bar) bar.style.width='0%';
-    if(doneDiv) doneDiv.style.display='none';
-    showToast('⚠️ '+(e.message||'분석 실패').substring(0,40));
-    console.error('[rptRunScanAI]',e);
-  }
-}  // ← FIX 2: 이 줄이 핵심 수정 (async function rptRunScanAI 닫는 })
-
-/* ★ 공식 보고서 생성 */
-async function rptGenerateReport(){
-  const cfg = getSettings();
-  const apiKey = cfg.geminiKey || '';
-  if(!apiKey){ showToast('⚠️ API Key를 설정해주세요'); switchTab('settings'); return; }
-  
-  const btn = document.getElementById('rptGenBtn');
-  const prog = document.getElementById('rptGenProgress');
-  const progBar = document.getElementById('rptGenBar');
-  const status = document.getElementById('rptGenStatus');
-  const resultWrap = document.getElementById('rptResultWrap');
-  const resultBody = document.getElementById('rptResultBody');
-  
-  if(btn) btn.disabled=true;
-  if(prog) prog.style.display='block';
-  if(resultWrap) resultWrap.style.display='none';
-  
-  let p=0;
-  const pint = setInterval(()=>{ p=Math.min(p+3,90); if(progBar) progBar.style.width=p+'%'; },200);
-  
-  try {
-    // 폼 데이터 수집
-    const station = cfg.stationName || '서산소방서';
-    const author = cfg.authorName || '';
-    const rtype = rptCurrentType;
-    const receiveTime = document.getElementById('rpt_receiveTime')?.value || '';
-    const dispatchTime = document.getElementById('rpt_dispatchTime')?.value || '';
-    const arrivalTime = document.getElementById('rpt_arrivalTime')?.value || '';
-    const address = document.getElementById('rpt_address')?.value || '';
-    const summary = document.getElementById('rpt_summary')?.value || '';
-    const vehicles = document.getElementById('rpt_vehicles')?.value || '0';
-    const personnel = document.getElementById('rpt_personnel')?.value || '0';
-    const propertyDmg = document.getElementById('rpt_propertyDmg')?.value || '0';
-    
-    const actions = [];
-    document.querySelectorAll('.rpt-action-row').forEach(row => {
-      const t = row.querySelector('.rpt-action-time')?.value;
-      const txt = row.querySelector('.rpt-action-text')?.value;
-      if(txt) actions.push(`${t||''} ${txt}`);
-    });
-    
-    const typeNames = {fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
-    
-    const prompt = `다음 소방 현장 정보를 바탕으로 공식 상황보고서를 작성하세요. 실제 소방 보고서 형식으로 정확하고 간결하게 작성하세요.
-
-소방서: ${station}
-보고서 유형: ${typeNames[rtype]||rtype}
-신고접수: ${receiveTime}
-출동시각: ${dispatchTime}
-현장도착: ${arrivalTime}
-사고장소: ${address}
-사고개요: ${summary}
-투입차량: ${vehicles}대
-투입인원: ${personnel}명
-재산피해: ${propertyDmg}만원
-조치사항: ${actions.join(', ')}
-작성자: ${author}
-
-위 내용을 바탕으로 공식 소방 상황보고서를 작성하세요. 보고서는 제목, 일시, 장소, 사고개요, 피해현황, 조치사항, 투입자원 순으로 작성하고 공문 형식을 유지하세요.`;
-    
-    const res = await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts:[{text:prompt}] }], generationConfig:{ temperature:0.3, maxOutputTokens:2048 } })
-    });
-    
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '생성 실패';
-    
-    clearInterval(pint);
-    if(progBar) progBar.style.width='100%';
-    if(resultBody) resultBody.textContent = text;
-    if(resultWrap) resultWrap.style.display='block';
-    // preview removed
-    showToast('✅ 보고서 생성 완료');
-  } catch(e){
-    clearInterval(pint);
-    showToast('❌ 생성 실패: '+e.message.substring(0,30));
-    console.error('[rptGenerateReport]',e);
-  } finally {
-    if(btn) btn.disabled=false;
-    if(prog) prog.style.display='none';
-  }
+function loadReportToSpell(){var out=document.getElementById('outputBox');var inp=document.getElementById('spellInput');if(out&&inp)inp.value=out.textContent;}
+async function runSpell(){
+  var input=document.getElementById('spellInput');if(!input||!input.value.trim()){showToast('검사할 텍스트가 없습니다');return;}
+  var status=document.getElementById('spellStatus');var btn=document.getElementById('spellBtn');
+  if(status)status.style.display='block';if(btn)btn.disabled=true;
+  var cfg=getSettings();var apiKey=cfg.geminiKey||'';
+  if(!apiKey){showToast('Gemini API Key를 설정해주세요');if(status)status.style.display='none';if(btn)btn.disabled=false;return;}
+  try{
+    var prompt='다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n'+input.value;
+    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:2048}})});
+    var data=await res.json();
+    var text=(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0]?data.candidates[0].content.parts[0].text:'{}');
+    text=text.replace(/```json|```/g,'').trim();
+    var parsed=JSON.parse(text);
+    var corrEl=document.getElementById('spellCorrected');
+    var resultWrap=document.getElementById('spellResultWrap');
+    if(corrEl)corrEl.textContent=parsed.corrected||'';
+    if(resultWrap)resultWrap.style.display='block';
+  }catch(e){showToast('검사 실패: '+e.message.substring(0,30));}
+  finally{if(status)status.style.display='none';if(btn)btn.disabled=false;}
 }
-
-
-function copyRptResult(){
-  const body = document.getElementById('rptResultBody');
-  if(body) navigator.clipboard.writeText(body.textContent||body.innerText).then(()=>showToast('📋 복사됐습니다'));
+function sendCorrectedReport(){
+  var corr=document.getElementById('spellCorrected');if(!corr||!corr.textContent.trim()){showToast('교정된 텍스트가 없습니다');return;}
+  if(navigator.share){navigator.share({text:corr.textContent}).then(function(){showToast('전파됐습니다');});}
+  else{navigator.clipboard.writeText(corr.textContent).then(function(){showToast('복사됐습니다');});}
 }
+function copyCorrectedOnly(){var corr=document.getElementById('spellCorrected');if(corr)navigator.clipboard.writeText(corr.textContent).then(function(){showToast('복사됐습니다');});}
 
-async function rptShareReport(){
-  const body = document.getElementById('rptResultBody');
-  if(!body || !body.textContent.trim()){ showToast('⚠️ 먼저 보고서를 생성하세요'); return; }
-  if(navigator.share){
-    await navigator.share({ text: body.textContent });
-    showToast('✅ 공유됐습니다');
-  } else {
-    await navigator.clipboard.writeText(body.textContent);
-    showToast('📋 복사됐습니다');
-  }
-}
-
-function rptExportPDF(){
-  const body = document.getElementById('rptResultBody');
-  if(!body || !body.textContent.trim()){ showToast('⚠️ 먼저 보고서를 생성하세요'); return; }
-  const w = window.open('','_blank');
-  w.document.write(`<html><head><meta charset="UTF-8"><title>소방 상황보고서</title><style>body{font-family:'Noto Sans KR',sans-serif;padding:40px;font-size:14px;line-height:2.0;}</style></head><body><pre>${body.textContent}</pre></body></html>`);
-  w.document.close();
-  setTimeout(()=>{ w.print(); }, 500);
-}
-
-function rptReset(){
-  if(!confirm('보고서를 초기화하시겠습니까?')) return;
-  rptScanPhotos=[];
-  rptPhotos=[];
-  rptActionCount=0;
-  const thumbRow = document.getElementById('rptThumbRow');
-  if(thumbRow) thumbRow.innerHTML='';
-  const photoThumb = document.getElementById('rptPhotoThumbRow');
-  if(photoThumb) photoThumb.innerHTML='';
-  const actionList = document.getElementById('rptActionList');
-  if(actionList) actionList.innerHTML='';
-  ['rpt_receiveTime','rpt_dispatchTime','rpt_arrivalTime','rpt_address','rpt_summary','rpt_vehicles','rpt_personnel','rpt_propertyDmg','rpt_dmgBuilding'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.value='';
-  });
-  const resultWrap = document.getElementById('rptResultWrap');
-  if(resultWrap) resultWrap.style.display='none';
-  rptGoPage(0);
-  showToast('🔄 초기화됐습니다');
-}
-
-// 보고서 페이지 이동
-function rptGoPage(page){
-  document.querySelectorAll('.rpt-page').forEach((p,i) => p.classList.toggle('on', i===page));
-  rptCurrentPage = page;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function selectRptType(btn, type){
-  document.querySelectorAll('.rpt-type-btn').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
-  rptCurrentType = type;
-}
-
-function handleRptFiles(files){
-  rptScanPhotos = Array.from(files).slice(0,10);
-  const row = document.getElementById('rptThumbRow');
-  if(row){
-    row.innerHTML = rptScanPhotos.map((f,i) => {
-      const url = URL.createObjectURL(f);
-      return `<img class="rpt-thumb" src="${url}" alt="img${i}"/>`;
-    }).join('');
-  }
-  const btn = document.getElementById('rptAiBtn');
-  if(btn){
-    btn.disabled = rptScanPhotos.length === 0;
-    btn.style.opacity = rptScanPhotos.length === 0 ? '0.45' : '1';
-  }
-}
-
-function handleRptPhotos(files){
-  rptPhotos = [...rptPhotos, ...Array.from(files)].slice(0,20);
-  const row = document.getElementById('rptPhotoThumbRow');
-  if(row){
-    row.innerHTML = rptPhotos.map((f,i) => {
-      const url = URL.createObjectURL(f);
-      return `<img class="rpt-thumb" src="${url}" alt="photo${i}"/>`;
-    }).join('');
-  }
-}
-
-function addRptAction(){
-  const list = document.getElementById('rptActionList');
-  if(!list) return;
-  const now = new Date();
-  const time = now.toTimeString().slice(0,5);
-  const id = ++rptActionCount;
-  const row = document.createElement('div');
-  row.className='rpt-action-row';
-  row.id='rpt-action-'+id;
-  row.innerHTML=`<input class="rpt-action-time" type="time" value="${time}"/><input class="rpt-action-text" type="text" placeholder="조치 내용 입력..."/><button class="rpt-del-btn" onclick="document.getElementById('rpt-action-${id}').remove()">✕</button>`;
-  list.appendChild(row);
-}
-
-function calcDmg(){
-  const vals = ['dead','heavy','light','missing'];
-  const groups = ['civ','ff'];
-  groups.forEach(g=>{
-    let total=0;
-    vals.forEach(v=>{
-      const el=document.getElementById('dmg_'+g+'_'+v);
-      if(el) total+=parseInt(el.value||0);
-    });
-    const tot=document.getElementById('dmg_'+g+'_total');
-    if(tot) tot.value=total;
-  });
-}
-
-    if(preview){ preview.classList.remove('mobile-show'); preview.classList.add('mobile-hide'); }
-    if(btnInput) btnInput.classList.add('on');
-    if(btnPreview) btnPreview.classList.remove('on');
-  } else {
-    if(input){ input.classList.add('mobile-hide'); }
-    if(preview){ preview.classList.add('mobile-show'); preview.classList.remove('mobile-hide'); }
-    if(btnInput) btnInput.classList.remove('on');
-    if(btnPreview) btnPreview.classList.add('on');
-  }
-}
-</script>
-<script>
-// ============================================================
-// 지도 기능
-// ============================================================
-function getLocation(){
-  if(!navigator.geolocation){ showToast('⚠️ 위치 기능을 지원하지 않습니다'); return; }
-  showToast('📡 위치 가져오는 중...');
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      currentLat = pos.coords.latitude;
-      currentLng = pos.coords.longitude;
-      updateLocationUI();
-      reverseGeocode(currentLat, currentLng);
-    },
-    err => { showToast('❌ 위치 오류: ' + err.message.substring(0,30)); },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
-}
-
-function refreshLocation(){ getLocation(); }
-
-function updateLocationUI(){
-  const box = document.getElementById('locStatusBox');
-  const text = document.getElementById('locStatusText');
-  if(!box || !text) return;
-  box.classList.remove('no-loc');
-  box.classList.add('has-loc');
-  const locStr = `${currentLat?.toFixed(6)}, ${currentLng?.toFixed(6)}`;
-  text.innerHTML = `📍 위치 확인됨<br><span style="font-weight:400;font-size:11px;">${locStr}</span>`;
-  
-  // 지도 앱 버튼 업데이트
-  const locDisplay = currentAddress || locStr;
-  ['kakaoMapLoc','naverMapLoc','tmapLoc'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = locDisplay;
-  });
-  
-  if(window.kakaoMapReady) renderKakaoMap();
-}
-
-function reverseGeocode(lat, lng){
-  if(!window.kakao || !window.kakao.maps) return;
-  const geocoder = new kakao.maps.services.Geocoder();
-  geocoder.coord2Address(lng, lat, (result, status) => {
-    if(status === kakao.maps.services.Status.OK && result[0]){
-      const addr = result[0].address;
-      currentAddress = addr.address_name || '';
-      updateLocationUI();
-    }
-  });
-}
-
-function initMap(){
-  if(!window.kakaoMapReady || !currentLat) return;
-  renderKakaoMap();
-}
-
-function renderKakaoMap(){
-  if(!window.kakao || !currentLat) return;
-  const container = document.getElementById('kakaoMapContainer');
-  if(!container) return;
-  try {
-    if(!kakaoMap){
-      kakaoMap = new kakao.maps.Map(container, {
-        center: new kakao.maps.LatLng(currentLat, currentLng),
-        level: 4
-      });
-    } else {
-      kakaoMap.setCenter(new kakao.maps.LatLng(currentLat, currentLng));
-    }
-    new kakao.maps.Marker({ position: new kakao.maps.LatLng(currentLat, currentLng), map: kakaoMap });
-  } catch(e){ console.error('카카오맵 오류:', e); }
-}
-
-function getDispatchAddr(){
-  return (document.getElementById('location')?.value.trim()) || '';
-}
-
+function getDispatchAddr(){return (document.getElementById('location')?document.getElementById('location').value:'').trim();}
 function updateMapLinks(){
-  const addr = getDispatchAddr();
-  const banner = document.getElementById('mapAddrBanner');
-  const addrText = document.getElementById('mapAddrText');
-  const ids = ['kakaoMapLoc','naverMapLoc','tmapLoc'];
+  var addr=getDispatchAddr();var ids=['kakaoMapLoc','naverMapLoc','tmapLoc'];
+  var banner=document.getElementById('mapAddrBanner');var addrText=document.getElementById('mapAddrText');
   if(addr){
-    if(banner){ banner.style.display='block'; }
-    if(addrText){ addrText.textContent = addr; }
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if(el){ el.textContent = addr; el.style.color='var(--orange)'; }
-    });
-    // 버튼 활성화 표시
-    document.querySelectorAll('.map-app-btn').forEach(b => b.classList.add('active-loc'));
-  } else {
-    if(banner){ banner.style.display='none'; }
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if(el){ el.textContent = '주소를 입력하면 연결됩니다'; el.style.color=''; }
-    });
-    document.querySelectorAll('.map-app-btn').forEach(b => b.classList.remove('active-loc'));
+    if(banner)banner.style.display='block';if(addrText)addrText.textContent=addr;
+    ids.forEach(function(id){var el=document.getElementById(id);if(el){el.textContent=addr;el.style.color='var(--orange)';}});
+    document.querySelectorAll('.map-app-btn').forEach(function(b){b.classList.add('active-loc');});
+  }else{
+    if(banner)banner.style.display='none';
+    ids.forEach(function(id){var el=document.getElementById(id);if(el){el.textContent='주소를 입력하면 연결됩니다';el.style.color='';}});
+    document.querySelectorAll('.map-app-btn').forEach(function(b){b.classList.remove('active-loc');});
   }
 }
-
-function openKakaoMap(){
-  const addr = getDispatchAddr();
-  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
-  window.open(`https://map.kakao.com/link/search/${encodeURIComponent(addr)}`,'_blank');
-}
-
-function openNaverMap(){
-  const addr = getDispatchAddr();
-  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
-  window.open(`https://map.naver.com/v5/search/${encodeURIComponent(addr)}`,'_blank');
-}
-
-function openTmap(){
-  const addr = getDispatchAddr();
-  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
-  window.open(`https://apis.openapi.sk.com/tmap/app/routes?goalname=${encodeURIComponent(addr)}&goalAddr=${encodeURIComponent(addr)}`,'_blank');
-}
-
-// ============================================================
-// 연락처 기능
-// ============================================================
-// ── 현재 연락처 탭 ('dispatch' | 'agency') ──
-let currentContactTab = 'dispatch';
+function openKakaoMap(){var addr=getDispatchAddr();if(!addr){showToast('출동 탭에서 주소를 먼저 입력하세요');return;}window.open('https://map.kakao.com/link/search/'+encodeURIComponent(addr),'_blank');}
+function openNaverMap(){var addr=getDispatchAddr();if(!addr){showToast('출동 탭에서 주소를 먼저 입력하세요');return;}window.open('https://map.naver.com/v5/search/'+encodeURIComponent(addr),'_blank');}
+function openTmap(){var addr=getDispatchAddr();if(!addr){showToast('출동 탭에서 주소를 먼저 입력하세요');return;}window.open('https://tmap.life/search?keyword='+encodeURIComponent(addr),'_blank');}
 
 function switchContactTab(tab){
-  currentContactTab = tab;
-  document.getElementById('ctPanelDispatch').style.display = tab==='dispatch' ? 'block' : 'none';
-  document.getElementById('ctPanelAgency').style.display  = tab==='agency'   ? 'block' : 'none';
-  document.getElementById('ctSegDispatch').classList.toggle('on', tab==='dispatch');
-  document.getElementById('ctSegAgency').classList.toggle('on', tab==='agency');
-  // 폼 열려있으면 닫기
+  currentContactTab=tab;
+  document.getElementById('ctPanelDispatch').style.display=tab==='dispatch'?'block':'none';
+  document.getElementById('ctPanelAgency').style.display=tab==='agency'?'block':'none';
+  document.getElementById('ctSegDispatch').classList.toggle('on',tab==='dispatch');
+  document.getElementById('ctSegAgency').classList.toggle('on',tab==='agency');
   hideAddContact();
 }
-
-function loadUserContacts(){
-  userContacts = JSON.parse(localStorage.getItem('userContacts') || '[]');
-  renderUserContacts();
-}
-
+function loadUserContacts(){userContacts=JSON.parse(localStorage.getItem('userContacts')||'[]');renderUserContacts();}
 function renderUserContacts(){
-  const dispatchList = document.getElementById('dispatchContactsList');
-  const agencyList   = document.getElementById('agencyContactsList');
-  if(!dispatchList || !agencyList) return;
-
-  const dispatch = userContacts.filter(c => c.group === 'dispatch');
-  const agency   = userContacts.filter(c => c.group === 'agency');
-
-  // 출동대
-  if(!dispatch.length){
-    dispatchList.innerHTML = '<div class="empty">📭 출동대 연락처가 없습니다</div>';
-  } else {
-    dispatchList.innerHTML = '<div class="card">' +
-      dispatch.map((c) => {
-        const i = userContacts.indexOf(c);
-        return `<div class="contact-item">
-          <div class="contact-avatar">🚒</div>
-          <div class="contact-info">
-            <div class="contact-name">${c.name}</div>
-            <div class="contact-tel">${c.tel}</div>
-            ${c.memo ? `<div class="contact-memo">${c.memo}</div>` : ''}
-          </div>
-          <div class="contact-actions">
-            <a class="contact-call" href="tel:${c.tel.replace(/[^0-9]/g,'')}">📞</a>
-            <button class="contact-del" onclick="deleteContact(${i})">🗑</button>
-          </div>
-        </div>`;
-      }).join('') + '</div>';
-  }
-
-  // 유관기관 (사용자 추가분만)
-  if(!agency.length){
-    agencyList.innerHTML = '<div class="empty">📭 유관기관 연락처가 없습니다</div>';
-  } else {
-    agencyList.innerHTML = '<div class="card"><div class="card-head"><span class="card-badge b-blue">추가됨</span><span class="card-title">추가 유관기관</span></div>' +
-      agency.map((c) => {
-        const i = userContacts.indexOf(c);
-        return `<div class="contact-item">
-          <div class="contact-avatar">🏛</div>
-          <div class="contact-info">
-            <div class="contact-name">${c.name}</div>
-            <div class="contact-tel">${c.tel}</div>
-            ${c.memo ? `<div class="contact-memo">${c.memo}</div>` : ''}
-          </div>
-          <div class="contact-actions">
-            <a class="contact-call" href="tel:${c.tel.replace(/[^0-9]/g,'')}">📞</a>
-            <button class="contact-del" onclick="deleteContact(${i})">🗑</button>
-          </div>
-        </div>`;
-      }).join('') + '</div>';
-  }
+  var dl=document.getElementById('dispatchContactsList');var al=document.getElementById('agencyContactsList');if(!dl||!al)return;
+  var dispatch=userContacts.filter(function(c){return c.group==='dispatch';});
+  var agency=userContacts.filter(function(c){return c.group==='agency';});
+  dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){var i=userContacts.indexOf(c);return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#128658;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContact('+i+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
+  al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){var i=userContacts.indexOf(c);return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#127963;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContact('+i+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
 }
-
 function showAddContact(group){
-  currentContactTab = group || currentContactTab;
-  const badge = document.getElementById('addContactBadge');
-  if(badge) badge.textContent = currentContactTab==='dispatch' ? '출동대 연락처 추가' : '유관기관 연락처 추가';
-  const f = document.getElementById('addContactForm');
-  if(f) f.style.display='block';
+  currentContactTab=group||currentContactTab;
+  var badge=document.getElementById('addContactBadge');
+  if(badge)badge.textContent=currentContactTab==='dispatch'?'출동대 연락처 추가':'유관기관 연락처 추가';
+  var f=document.getElementById('addContactForm');if(f)f.style.display='block';
 }
-function hideAddContact(){ const f=document.getElementById('addContactForm'); if(f)f.style.display='none'; }
-
+function hideAddContact(){var f=document.getElementById('addContactForm');if(f)f.style.display='none';}
 function saveNewContact(){
-  const name = document.getElementById('newContactName')?.value.trim();
-  const tel  = document.getElementById('newContactTel')?.value.trim();
-  const memo = document.getElementById('newContactMemo')?.value.trim();
-  if(!name || !tel){ showToast('⚠️ 이름과 전화번호를 입력하세요'); return; }
-  userContacts.push({ name, tel, memo, group: currentContactTab });
-  localStorage.setItem('userContacts', JSON.stringify(userContacts));
-  renderUserContacts();
-  hideAddContact();
-  document.getElementById('newContactName').value='';
-  document.getElementById('newContactTel').value='';
-  document.getElementById('newContactMemo').value='';
-  showToast('✅ 연락처가 저장됐습니다');
+  var name=(document.getElementById('newContactName')?document.getElementById('newContactName').value:'').trim();
+  var tel=(document.getElementById('newContactTel')?document.getElementById('newContactTel').value:'').trim();
+  var memo=(document.getElementById('newContactMemo')?document.getElementById('newContactMemo').value:'').trim();
+  if(!name||!tel){showToast('이름과 전화번호를 입력하세요');return;}
+  userContacts.push({name:name,tel:tel,memo:memo,group:currentContactTab});
+  localStorage.setItem('userContacts',JSON.stringify(userContacts));
+  renderUserContacts();hideAddContact();
+  document.getElementById('newContactName').value='';document.getElementById('newContactTel').value='';document.getElementById('newContactMemo').value='';
+  showToast('연락처가 저장됐습니다');
 }
-
 function deleteContact(i){
-  if(!confirm('이 연락처를 삭제하시겠습니까?')) return;
-  userContacts.splice(i,1);
-  localStorage.setItem('userContacts', JSON.stringify(userContacts));
-  renderUserContacts();
-  showToast('🗑 삭제됐습니다');
+  if(!confirm('이 연락처를 삭제하시겠습니까?'))return;
+  userContacts.splice(i,1);localStorage.setItem('userContacts',JSON.stringify(userContacts));
+  renderUserContacts();showToast('삭제됐습니다');
 }
-
-// ============================================================
-// 초기화
-// ============================================================
-document.addEventListener('DOMContentLoaded', function(){
-  // 출동 탭 초기화
-  const seqWrap = document.getElementById('seqWrap');
-  if(seqWrap) renderSeq('dispatch');
-  
-  // 보고서 탭 초기화 - 시각 기본값 설정
-  const now = new Date();
-  const localIso = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
-  ['rpt_receiveTime','rpt_dispatchTime','rpt_arrivalTime'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.value = localIso;
-  });
-  
-  // 보고서 액션 하나 기본 추가
-  addRptAction();
-
-  // 드래그앤드롭
-  const dropZone = document.getElementById('rptDropZone');
+function handleRptFiles(files){
+  rptScanPhotos=Array.from(files).slice(0,10);
+  var row=document.getElementById('rptThumbRow');
+  if(row)row.innerHTML=rptScanPhotos.map(function(f,i){return '<img class="rpt-thumb" src="'+URL.createObjectURL(f)+'" alt="'+i+'"/>';}).join('');
+  var btn=document.getElementById('rptAiBtn');if(btn)btn.disabled=rptScanPhotos.length===0;
+}
+function selectRptType(btn,type){document.querySelectorAll('.rpt-type-btn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');rptCurrentType=type;}
+function rptGoPage(page){document.querySelectorAll('.rpt-page').forEach(function(p,i){p.classList.toggle('on',i===page);});rptCurrentPage=page;window.scrollTo({top:0,behavior:'smooth'});}
+async function rptRunScanAI(){
+  if(!rptScanPhotos.length){showToast('사진을 먼저 업로드하세요');return;}
+  var cfg=getSettings();var apiKey=cfg.geminiKey||'';
+  if(!apiKey){showToast('설정에서 Gemini API Key를 입력해주세요');switchTab('settings');return;}
+  var btn=document.getElementById('rptAiBtn');var statusDiv=document.getElementById('rptScanProgress');
+  var bar=document.getElementById('rptScanBar');var statusText=document.getElementById('rptScanStatus');var doneDiv=document.getElementById('rptScanDone');
+  if(btn)btn.disabled=true;if(statusDiv)statusDiv.style.display='block';if(doneDiv)doneDiv.style.display='none';
+  var prog=0;var pint=setInterval(function(){prog=Math.min(prog+2,85);if(bar)bar.style.width=prog+'%';},200);
+  try{
+    if(statusText)statusText.textContent='이미지 분석 중...';
+    var imgParts=await Promise.all(rptScanPhotos.map(function(file){return new Promise(function(resolve){var reader=new FileReader();reader.onload=function(e){resolve({inlineData:{mimeType:file.type,data:e.target.result.split(',')[1]}});};reader.readAsDataURL(file);});}));
+    var prompt='소방 현장 사진을 분석하여 JSON으로 응답하세요:\n{"address":"주소","summary":"사고 개요","incidentType":"fire/rescue/ems/hazmat/misc 중 하나"}';
+    var parts=[{text:prompt}].concat(imgParts);
+    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:parts}],generationConfig:{temperature:0.2,maxOutputTokens:1024}})});
+    var data=await res.json();
+    var text=(data.candidates&&data.candidates[0]?data.candidates[0].content.parts[0].text:'{}');
+    text=text.replace(/```json|```/g,'').trim();var parsed=JSON.parse(text);
+    clearInterval(pint);if(bar)bar.style.width='100%';
+    if(doneDiv)doneDiv.style.display='block';if(statusDiv)statusDiv.style.display='none';
+    showToast('AI 분석 완료!');
+  }catch(e){clearInterval(pint);if(statusDiv)statusDiv.style.display='none';if(bar)bar.style.width='0%';showToast('분석 실패: '+e.message.substring(0,30));console.error('[rptRunScanAI]',e);}
+}
+async function rptGenerateReport(){
+  var cfg=getSettings();var apiKey=cfg.geminiKey||'';
+  if(!apiKey){showToast('API Key를 설정해주세요');switchTab('settings');return;}
+  var btn=document.getElementById('rptGenBtn');var prog=document.getElementById('rptGenProgress');
+  var progBar=document.getElementById('rptGenBar');var resultWrap=document.getElementById('rptResultWrap');var resultBody=document.getElementById('rptResultBody');
+  if(btn)btn.disabled=true;if(prog)prog.style.display='block';if(resultWrap)resultWrap.style.display='none';
+  var p=0;var pint=setInterval(function(){p=Math.min(p+3,90);if(progBar)progBar.style.width=p+'%';},200);
+  try{
+    var typeNames={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
+    var prompt='소방 '+(typeNames[rptCurrentType]||'화재')+' 상황보고서를 공식 소방 형식으로 작성해주세요.';
+    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2048}})});
+    var data=await res.json();
+    var text=(data.candidates&&data.candidates[0]?data.candidates[0].content.parts[0].text:'생성 실패');
+    clearInterval(pint);if(progBar)progBar.style.width='100%';
+    if(resultBody)resultBody.textContent=text;if(resultWrap)resultWrap.style.display='block';showToast('보고서 생성 완료');
+  }catch(e){clearInterval(pint);showToast('생성 실패: '+e.message.substring(0,30));console.error(e);}
+  finally{if(btn)btn.disabled=false;if(prog)prog.style.display='none';}
+}
+function copyRptResult(){var body=document.getElementById('rptResultBody');if(body)navigator.clipboard.writeText(body.textContent||body.innerText).then(function(){showToast('복사됐습니다');});}
+async function rptShareReport(){
+  var body=document.getElementById('rptResultBody');if(!body||!body.textContent.trim()){showToast('먼저 보고서를 생성하세요');return;}
+  if(navigator.share){await navigator.share({text:body.textContent});showToast('공유됐습니다');}else{await navigator.clipboard.writeText(body.textContent);showToast('복사됐습니다');}
+}
+function rptExportPDF(){
+  var body=document.getElementById('rptResultBody');if(!body||!body.textContent.trim()){showToast('먼저 보고서를 생성하세요');return;}
+  var w=window.open('','_blank');w.document.write('<html><head><meta charset="UTF-8"><title>소방 상황보고서</title><style>body{font-family:sans-serif;padding:40px;font-size:14px;line-height:2.0;}</style></head><body><pre>'+body.textContent+'</pre></body></html>');w.document.close();setTimeout(function(){w.print();},500);
+}
+function rptReset(){
+  if(!confirm('보고서를 초기화하시겠습니까?'))return;
+  rptScanPhotos=[];var tr=document.getElementById('rptThumbRow');if(tr)tr.innerHTML='';
+  var rb=document.getElementById('rptResultBody');if(rb)rb.textContent='';
+  var rw=document.getElementById('rptResultWrap');if(rw)rw.style.display='none';
+  var done=document.getElementById('rptScanDone');if(done)done.style.display='none';
+  var btn=document.getElementById('rptAiBtn');if(btn)btn.disabled=true;
+  rptGoPage(0);showToast('초기화됐습니다');
+}
+document.addEventListener('DOMContentLoaded',function(){
+  renderSeq('fire');
+  var dropZone=document.getElementById('rptDropZone');
   if(dropZone){
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleRptFiles(e.dataTransfer.files); });
+    dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange)';});
+    dropZone.addEventListener('dragleave',function(){dropZone.style.borderColor='var(--orange-bd)';});
+    dropZone.addEventListener('drop',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange-bd)';handleRptFiles(e.dataTransfer.files);});
   }
 });
-</script>
-
-</body>
-</html>
+</script></body></html>
