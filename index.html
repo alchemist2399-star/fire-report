@@ -696,6 +696,7 @@ function renderOutput(){
   var sender=(document.getElementById('sigName')?document.getElementById('sigName').value:'').trim();
   var box=document.getElementById('outputBox');if(!box)return;
   if(!loc&&!obj){box.textContent='정보를 입력하면 자동 생성됩니다.';return;}
+  if(!loc&&obj){box.textContent='정보를 입력하면 자동 생성됩니다.';return;}
   var now=new Date();
   var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 
@@ -712,7 +713,7 @@ function renderOutput(){
   var header='['+titleDong+titleObj+']('+stage+')';
 
   // ── 본문: 주소에서 시/군/구 이하만 / 상황 / 인명 / 규모 ──
-  var shortAddr=loc?loc.replace(/^.*?(?:시|군|구)\s*/,''):'';
+  var shortAddr=loc?(loc.replace(/^.*?(?:시|군|구)\s*/,'')||loc):'';
   var bodyParts=[];
   if(shortAddr)bodyParts.push(shortAddr);
   if(reports.length>0)bodyParts.push(reports.map(function(r){return r.text;}).join(', '));
@@ -724,12 +725,6 @@ function renderOutput(){
   var lines=[header,body];
   if(sender)lines.push(sender);
 
-  // ── 조치경과 ──
-  var steps=Object.values(seqState).sort(function(a,b){return a.label>b.label?1:-1;});
-  if(steps.length>0){
-    lines.push('');
-    steps.forEach(function(s){lines.push(s.label+' '+s.time);});
-  }
   box.textContent=lines.join('\n');
 }
 function addReport(){
@@ -761,7 +756,11 @@ function resetDispatch(){
   var box=document.getElementById('outputBox');if(box)box.textContent='정보를 입력하면 자동 생성됩니다.';
   var list=document.getElementById('reportList');if(list)list.innerHTML='';
   var card=document.getElementById('reportListCard');if(card)card.style.display='none';
-  renderSeq('fire');showToast('초기화됐습니다');
+  window._currentDispatchType='fire';
+  window._reportStage='출동';
+  document.querySelectorAll('.rpt-stage-btn').forEach(function(b){b.classList.remove('on');if(b.dataset.stage==='출동')b.classList.add('on');});
+  showToast('초기화됐습니다');
+  renderOutput();
 }
 async function sendReport(){
   var box=document.getElementById('outputBox');
@@ -835,13 +834,20 @@ function switchContactTab(tab){
   document.getElementById('ctSegAgency').classList.toggle('on',tab==='agency');
   hideAddContact();
 }
-function loadUserContacts(){userContacts=JSON.parse(localStorage.getItem('userContacts')||'[]');renderUserContacts();}
+function loadUserContacts(){
+  userContacts=JSON.parse(localStorage.getItem('userContacts')||'[]');
+  // 기존 id 없는 연락처에 id 부여
+  var changed=false;
+  userContacts.forEach(function(c){if(!c.id){c.id=Date.now()+Math.random();changed=true;}});
+  if(changed)localStorage.setItem('userContacts',JSON.stringify(userContacts));
+  renderUserContacts();
+}
 function renderUserContacts(){
   var dl=document.getElementById('dispatchContactsList');var al=document.getElementById('agencyContactsList');if(!dl||!al)return;
   var dispatch=userContacts.filter(function(c){return c.group==='dispatch';});
   var agency=userContacts.filter(function(c){return c.group==='agency';});
-  dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){var i=userContacts.indexOf(c);return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#128658;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContact('+i+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
-  al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){var i=userContacts.indexOf(c);return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#127963;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContact('+i+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
+  dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#128658;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+(c.id||0)+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
+  al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#127963;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+(c.id||0)+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
 }
 function showAddContact(group){
   currentContactTab=group||currentContactTab;
@@ -855,17 +861,19 @@ function saveNewContact(){
   var tel=(document.getElementById('newContactTel')?document.getElementById('newContactTel').value:'').trim();
   var memo=(document.getElementById('newContactMemo')?document.getElementById('newContactMemo').value:'').trim();
   if(!name||!tel){showToast('이름과 전화번호를 입력하세요');return;}
-  userContacts.push({name:name,tel:tel,memo:memo,group:currentContactTab});
+  userContacts.push({id:Date.now(),name:name,tel:tel,memo:memo,group:currentContactTab});
   localStorage.setItem('userContacts',JSON.stringify(userContacts));
   renderUserContacts();hideAddContact();
   document.getElementById('newContactName').value='';document.getElementById('newContactTel').value='';document.getElementById('newContactMemo').value='';
   showToast('연락처가 저장됐습니다');
 }
-function deleteContact(i){
+function deleteContactById(id){
   if(!confirm('이 연락처를 삭제하시겠습니까?'))return;
-  userContacts.splice(i,1);localStorage.setItem('userContacts',JSON.stringify(userContacts));
+  userContacts=userContacts.filter(function(c){return (c.id||0)!==id;});
+  localStorage.setItem('userContacts',JSON.stringify(userContacts));
   renderUserContacts();showToast('삭제됐습니다');
 }
+function deleteContact(i){deleteContactById(i);}
 function handleRptFiles(files){
   rptScanPhotos=Array.from(files).slice(0,10);
   var row=document.getElementById('rptThumbRow');
