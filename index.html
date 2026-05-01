@@ -634,19 +634,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <!-- 설정 탭 -->
 <div id="tab-settings" class="screen">
   <div class="card">
-    <div class="card-head"><span class="card-badge b-orange">기본 설정</span></div>
-    <div class="sec-lbl">소방서 이름</div>
-    <input type="text" id="cfg_stationName" placeholder="서산소방서" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-    <div class="sec-lbl">부서명</div>
-    <input type="text" id="cfg_unitName" placeholder="상황실" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-    <div class="sec-lbl">작성자 이름</div>
-    <input type="text" id="cfg_authorName" placeholder="홍길동" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-    <div class="sec-lbl">기본 전파처</div>
-    <input type="text" id="cfg_defaultTarget" placeholder="상황실, 서장님, 112" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;" onclick="saveSettings()">💾 설정 저장</button>
-  </div>
-  
-  <div class="card">
     <div class="card-head"><span class="card-badge b-red">보안</span><span class="card-title">앱 잠금</span></div>
     <div class="sec-lbl">현재 비밀번호</div>
     <input type="password" id="cfg_currentPw" placeholder="현재 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
@@ -716,7 +703,6 @@ function initAppLock(){
   const screen = document.getElementById('appLockScreen');
   if(!screen) return;
   screen.style.display = 'flex';
-  loadSettings();
   loadUserContacts();
   loadHistory();
   // PWA install prompt
@@ -771,26 +757,7 @@ function showToast(msg, dur=2400){
 // ============================================================
 // 설정 로드/저장
 // ============================================================
-function loadSettings(){
-  const s = JSON.parse(localStorage.getItem('appSettings') || '{}');
-  if(s.stationName) document.getElementById('cfg_stationName').value = s.stationName;
-  if(s.unitName) document.getElementById('cfg_unitName').value = s.unitName;
-  if(s.authorName) document.getElementById('cfg_authorName').value = s.authorName;
-  if(s.defaultTarget) document.getElementById('cfg_defaultTarget').value = s.defaultTarget;
-  if(s.geminiKey) document.getElementById('cfg_geminiKey').value = s.geminiKey;
-}
 
-function saveSettings(){
-  const s = {
-    stationName: document.getElementById('cfg_stationName').value.trim() || '서산소방서',
-    unitName: document.getElementById('cfg_unitName').value.trim() || '상황실',
-    authorName: document.getElementById('cfg_authorName').value.trim(),
-    defaultTarget: document.getElementById('cfg_defaultTarget').value.trim(),
-    geminiKey: document.getElementById('cfg_geminiKey').value.trim()
-  };
-  localStorage.setItem('appSettings', JSON.stringify(s));
-  showToast('✅ 설정이 저장됐습니다');
-}
 
 function saveGeminiKey(){
   const s = JSON.parse(localStorage.getItem('appSettings') || '{}');
