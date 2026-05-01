@@ -624,34 +624,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:13px;font-weight:800;color:var(--ink2);">🏛 유관기관 연락처</div>
       <button class="reset-btn" onclick="showAddContact('agency')">+ 추가</button>
     </div>
-    <div class="card">
-      <div class="card-head"><span class="card-badge b-red">기본</span><span class="card-title">기본 유관기관</span></div>
-      <div class="contact-item">
-        <div class="contact-avatar">🚒</div>
-        <div class="contact-info">
-          <div class="contact-name">서산소방서 상황실</div>
-          <div class="contact-tel">041-669-0119</div>
-        </div>
-        <div class="contact-actions"><a class="contact-call" href="tel:0416690119">📞</a></div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-avatar">🚑</div>
-        <div class="contact-info">
-          <div class="contact-name">119 구급상황관리센터</div>
-          <div class="contact-tel">119</div>
-        </div>
-        <div class="contact-actions"><a class="contact-call" href="tel:119">📞</a></div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-avatar">🏥</div>
-        <div class="contact-info">
-          <div class="contact-name">충남 소방본부</div>
-          <div class="contact-tel">041-635-0119</div>
-        </div>
-        <div class="contact-actions"><a class="contact-call" href="tel:0416350119">📞</a></div>
-      </div>
+    <div id="agencyContactsList">
+      <div class="empty">📭 유관기관 연락처가 없습니다</div>
     </div>
-    <div id="agencyContactsList"></div>
   </div>
 
 </div>
@@ -1567,7 +1542,7 @@ function renderUserContacts(){
 
   // 유관기관 (사용자 추가분만)
   if(!agency.length){
-    agencyList.innerHTML = '';
+    agencyList.innerHTML = '<div class="empty">📭 유관기관 연락처가 없습니다</div>';
   } else {
     agencyList.innerHTML = '<div class="card"><div class="card-head"><span class="card-badge b-blue">추가됨</span><span class="card-title">추가 유관기관</span></div>' +
       agency.map((c) => {
