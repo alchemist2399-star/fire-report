@@ -111,6 +111,15 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .rpt-stage-btn{padding:11px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
 .rpt-stage-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(232,96,10,0.3);}
 .rpt-stage-btn.seq-final.on{border-color:var(--purple);background:var(--purple);color:#fff;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--surface);border-radius:var(--r);padding:24px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.modal-title{font-size:15px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+.modal-msg{font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.6;}
+.modal-btns{display:flex;gap:8px;}
+.modal-cancel{flex:1;padding:12px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.modal-confirm{flex:1;padding:12px;border-radius:var(--r2);border:none;background:var(--orange);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);}
+.modal-confirm.danger{background:var(--red);}
 .dots{display:inline-flex;gap:4px;}
 .dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
 .dots span:nth-child(2){animation-delay:.15s;}
@@ -176,23 +185,23 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128203; 접수번호</div>
       <input id="receiptNo" placeholder="예） 2026-화재-0042" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:11px;color:var(--orange);">&#128205;</span><span style="font-size:11px;font-weight:700;color:var(--ink4);">출동 장소</span><span style="font-size:9px;font-weight:800;padding:2px 6px;background:var(--orange-lt);color:var(--orange);border-radius:3px;">필수</span></div>
-      <input id="location" placeholder="예) 충남 서산시 예천동 496-16" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:10px;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
+      <input id="location" placeholder="예) 충남 서산시 예천동 496-16" maxlength="100" oninput="renderOutput();updateMapLinks();" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:10px;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div>
           <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><span style="font-size:10px;">&#128293;</span><span style="font-size:11px;font-weight:700;color:var(--ink4);">발화 대상물</span><span style="font-size:9px;font-weight:800;padding:2px 6px;background:var(--orange-lt);color:var(--orange);border-radius:3px;">필수</span></div>
-          <input id="fireObject" placeholder="단독주택, 공장" oninput="renderOutput()" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
+          <input id="fireObject" placeholder="단독주택, 공장" maxlength="30" oninput="renderOutput()" style="width:100%;font-size:13px;padding:10px 13px;border:2px solid var(--orange-bd);border-radius:var(--r2);background:var(--orange-lt);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)';this.style.background='#fff'" onblur="this.style.borderColor='var(--orange-bd)';this.style.background='var(--orange-lt)'"/>
         </div>
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128196; 화재 규모</div>
-          <input id="fireScale" placeholder="소형, 반소" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+          <input id="fireScale" placeholder="소형, 반소" maxlength="20" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128100; 인명 피해</div>
-          <input id="fireCasualty" placeholder="대피완료, 없음" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+          <input id="fireCasualty" placeholder="대피완료, 없음" maxlength="30" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">&#128248; 발송자</div>
-          <input id="sigName" placeholder="서산소방서 상황실" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
+          <input id="sigName" placeholder="서산소방서 상황실" maxlength="30" oninput="renderOutput()" style="width:100%;font-size:13px;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
       </div>
     </div>
@@ -448,6 +457,16 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 </div>
 
+<div class="modal-overlay" id="customModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="modalCancel">취소</button>
+      <button class="modal-confirm" id="modalConfirm">확인</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 var currentLat=null,currentLng=null,currentAddress='';
@@ -520,18 +539,31 @@ function switchTab(tab,btnEl){
     if(serr)serr.style.display='none';
   }
 }
+function showConfirm(title,msg,onOk,isDanger){
+  var overlay=document.getElementById('customModal');
+  var tEl=document.getElementById('modalTitle');
+  var mEl=document.getElementById('modalMsg');
+  var okBtn=document.getElementById('modalConfirm');
+  var cancelBtn=document.getElementById('modalCancel');
+  if(!overlay)return onOk&&onOk();
+  tEl.textContent=title;mEl.textContent=msg;
+  okBtn.className='modal-confirm'+(isDanger?' danger':'');
+  overlay.classList.add('show');
+  okBtn.onclick=function(){overlay.classList.remove('show');if(onOk)onOk();};
+  cancelBtn.onclick=function(){overlay.classList.remove('show');};
+}
 function showToast(msg,dur){
   dur=dur||2400;var t=document.getElementById('toast');
   if(!t)return;t.textContent=msg;t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},dur);
 }
 function loadNoticeAndLocks(){
-  var n=JSON.parse(localStorage.getItem('appNotice')||'{}');
+  var n={};try{n=JSON.parse(localStorage.getItem('appNotice')||'{}');}catch(e){n={};}
   if(n.msg){
     var el=document.getElementById('noticeMsg');if(el)el.textContent=n.msg;
     var cfg=document.getElementById('cfg_noticeMsg');if(cfg)cfg.value=n.msg;
   }
-  featureLocks=JSON.parse(localStorage.getItem('featureLocks')||'{}');
+  try{featureLocks=JSON.parse(localStorage.getItem('featureLocks')||'{}');}catch(e){featureLocks={};}
   applyAllLocks();
 }
 function saveNotice(){
@@ -602,7 +634,9 @@ function changeSettingsPw(){
   document.getElementById('cfg_currentSettingsPw').value='';document.getElementById('cfg_newSettingsPw').value='';document.getElementById('cfg_confirmSettingsPw').value='';
 }
 function clearAllData(){
-  if(!confirm('정말 모든 데이터를 초기화하시겠습니까?'))return;
+  showConfirm('모든 데이터 초기화','저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.',function(){_doClearAllData();},true);
+}
+function _doClearAllData(){
   var pw=localStorage.getItem('appLockPw')||'0261';
   var spw=localStorage.getItem('settingsPw')||'2399';
   localStorage.clear();
@@ -618,7 +652,7 @@ function saveGeminiKey(){
   s.geminiKey=(document.getElementById('cfg_geminiKey')?document.getElementById('cfg_geminiKey').value:'').trim();
   localStorage.setItem('appSettings',JSON.stringify(s));showToast('API Key 저장됨');
 }
-function getSettings(){return JSON.parse(localStorage.getItem('appSettings')||'{}');}
+function getSettings(){try{return JSON.parse(localStorage.getItem('appSettings')||'{}');}catch(e){return {};}}
 function loadAutoLock(){
   autoLockMinutes=parseInt(localStorage.getItem('autoLockMin')||'0');
   renderAutoLockBtns();resetAutoLockTimer();
@@ -737,7 +771,11 @@ function addReport(){
   if(list){
     var div=document.createElement('div');div.id='rpt-item-'+reportCount;
     div.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:6px;font-size:12px;';
-    div.innerHTML='<span style="color:var(--orange);font-family:var(--mono);flex-shrink:0;">'+time+'</span><span style="flex:1;">'+item.text+'</span><button onclick="removeReport('+reportCount+')" style="font-size:13px;background:none;border:none;cursor:pointer;flex-shrink:0;color:var(--ink4);">X</button>';
+    var span1=document.createElement('span');span1.style.cssText='color:var(--orange);font-family:var(--mono);flex-shrink:0;';span1.textContent=time;
+    var span2=document.createElement('span');span2.style.flex='1';span2.textContent=item.text;
+    var delBtn=document.createElement('button');delBtn.textContent='X';delBtn.style.cssText='font-size:13px;background:none;border:none;cursor:pointer;flex-shrink:0;color:var(--ink4);';
+    var rId=reportCount;delBtn.onclick=function(){removeReport(rId);};
+    div.appendChild(span1);div.appendChild(span2);div.appendChild(delBtn);
     list.appendChild(div);
   }
   if(card)card.style.display='block';content.value='';renderOutput();showToast('상황이 추가됐습니다');
@@ -749,7 +787,9 @@ function removeReport(id){
   renderOutput();
 }
 function resetDispatch(){
-  if(!confirm('출동보고를 초기화하시겠습니까?'))return;
+  showConfirm('출동보고 초기화','작성 중인 내용이 모두 삭제됩니다. 계속하시겠습니까?',function(){_doResetDispatch();});
+}
+function _doResetDispatch(){
   seqState={};reports=[];reportCount=0;
   document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
   ['location','fireObject','fireScale','fireCasualty','sigName','receiptNo'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
@@ -775,7 +815,7 @@ function saveHistory(text){
   h.unshift({text:text,time:new Date().toISOString()});if(h.length>50)h.splice(50);
   localStorage.setItem('dispatchHistory',JSON.stringify(h));dispatchHistory=h;
 }
-function loadHistory(){dispatchHistory=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');}
+function loadHistory(){try{dispatchHistory=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');}catch(e){dispatchHistory=[];}}
 function toggleSpell(){
   var sec=document.getElementById('spellSection');if(!sec)return;
   if(sec.style.display==='none'||!sec.style.display){sec.style.display='block';loadReportToSpell();}else{sec.style.display='none';}
@@ -789,7 +829,9 @@ async function runSpell(){
   if(!apiKey){showToast('Gemini API Key를 설정해주세요');if(status)status.style.display='none';if(btn)btn.disabled=false;return;}
   try{
     var prompt='다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n'+input.value;
-    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:2048}})});
+    var ctrl1=new AbortController();var t1=setTimeout(function(){ctrl1.abort();},15000);
+    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:2048}}),signal:ctrl1.signal});
+    clearTimeout(t1);
     var data=await res.json();
     var text=(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0]?data.candidates[0].content.parts[0].text:'{}');
     text=text.replace(/```json|```/g,'').trim();
@@ -798,7 +840,10 @@ async function runSpell(){
     var resultWrap=document.getElementById('spellResultWrap');
     if(corrEl)corrEl.textContent=parsed.corrected||'';
     if(resultWrap)resultWrap.style.display='block';
-  }catch(e){showToast('검사 실패: '+e.message.substring(0,30));}
+  }catch(e){
+    var msg=e.name==='AbortError'?'요청 시간 초과 (15초)':'검사 실패: '+e.message.substring(0,30);
+    showToast(msg);
+  }
   finally{if(status)status.style.display='none';if(btn)btn.disabled=false;}
 }
 function sendCorrectedReport(){
@@ -835,19 +880,25 @@ function switchContactTab(tab){
   hideAddContact();
 }
 function loadUserContacts(){
-  userContacts=JSON.parse(localStorage.getItem('userContacts')||'[]');
+  try{userContacts=JSON.parse(localStorage.getItem('userContacts')||'[]');}catch(e){userContacts=[];}
   // 기존 id 없는 연락처에 id 부여
   var changed=false;
   userContacts.forEach(function(c){if(!c.id){c.id=Date.now()+Math.random();changed=true;}});
   if(changed)localStorage.setItem('userContacts',JSON.stringify(userContacts));
   renderUserContacts();
 }
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function renderUserContacts(){
   var dl=document.getElementById('dispatchContactsList');var al=document.getElementById('agencyContactsList');if(!dl||!al)return;
   var dispatch=userContacts.filter(function(c){return c.group==='dispatch';});
   var agency=userContacts.filter(function(c){return c.group==='agency';});
-  dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#128658;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+(c.id||0)+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
-  al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">&#127963;</div><div class="contact-info"><div class="contact-name">'+c.name+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.memo?'<div class="contact-memo">'+c.memo+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+c.tel.replace(/[^0-9]/g,'')+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+(c.id||0)+')">&#128465;</button></div></div>';}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
+  function makeCard(c,ico){
+    var safeId=parseInt(c.id)||0;
+    var safeTel=c.tel.replace(/[^0-9-+s]/g,'');
+    return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">'+ico+'</div><div class="contact-info"><div class="contact-name">'+escHtml(c.name)+'</div><div class="contact-tel">'+escHtml(c.tel)+'</div>'+(c.memo?'<div class="contact-memo">'+escHtml(c.memo)+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+safeTel+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+safeId+')">&#128465;</button></div></div>';
+  }
+  dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){return makeCard(c,'&#128658;');}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
+  al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){return makeCard(c,'&#127963;');}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
 }
 function showAddContact(group){
   currentContactTab=group||currentContactTab;
@@ -868,10 +919,11 @@ function saveNewContact(){
   showToast('연락처가 저장됐습니다');
 }
 function deleteContactById(id){
-  if(!confirm('이 연락처를 삭제하시겠습니까?'))return;
-  userContacts=userContacts.filter(function(c){return (c.id||0)!==id;});
-  localStorage.setItem('userContacts',JSON.stringify(userContacts));
-  renderUserContacts();showToast('삭제됐습니다');
+  showConfirm('연락처 삭제','이 연락처를 삭제하시겠습니까?',function(){
+    userContacts=userContacts.filter(function(c){return (c.id||0)!==id;});
+    localStorage.setItem('userContacts',JSON.stringify(userContacts));
+    renderUserContacts();showToast('삭제됐습니다');
+  },true);
 }
 function deleteContact(i){deleteContactById(i);}
 function handleRptFiles(files){
@@ -902,7 +954,16 @@ async function rptRunScanAI(){
     clearInterval(pint);if(bar)bar.style.width='100%';
     if(doneDiv)doneDiv.style.display='block';if(statusDiv)statusDiv.style.display='none';
     showToast('AI 분석 완료!');
-  }catch(e){clearInterval(pint);if(statusDiv)statusDiv.style.display='none';if(bar)bar.style.width='0%';showToast('분석 실패: '+e.message.substring(0,30));console.error('[rptRunScanAI]',e);}
+  }catch(e){
+    clearInterval(pint);
+    if(statusDiv)statusDiv.style.display='none';
+    if(bar)bar.style.width='0%';
+    var errMsg=e.name==='AbortError'?'요청 시간 초과':'분석 실패: '+e.message.substring(0,30);
+    showToast(errMsg);
+    console.error('[rptRunScanAI]',e);
+  }finally{
+    if(btn)btn.disabled=rptScanPhotos.length===0;
+  }
 }
 async function rptGenerateReport(){
   var cfg=getSettings();var apiKey=cfg.geminiKey||'';
@@ -914,25 +975,42 @@ async function rptGenerateReport(){
   try{
     var typeNames={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
     var prompt='소방 '+(typeNames[rptCurrentType]||'화재')+' 상황보고서를 공식 소방 형식으로 작성해주세요.';
-    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2048}})});
+    var ctrl3=new AbortController();var t3=setTimeout(function(){ctrl3.abort();},30000);
+    var res=await fetch('https://gateway.ai.cloudflare.com/v1/1f4ef4dd0b40518f21422c542a8abbd2/default/google-ai-studio/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2048}}),signal:ctrl3.signal});
+    clearTimeout(t3);
+    if(!res.ok)throw new Error('서버 오류 '+res.status);
     var data=await res.json();
-    var text=(data.candidates&&data.candidates[0]?data.candidates[0].content.parts[0].text:'생성 실패');
+    if(!data.candidates||!data.candidates[0])throw new Error('응답 없음');
+    var text=data.candidates[0].content.parts[0].text||'생성 실패';
     clearInterval(pint);if(progBar)progBar.style.width='100%';
     if(resultBody)resultBody.textContent=text;if(resultWrap)resultWrap.style.display='block';showToast('보고서 생성 완료');
-  }catch(e){clearInterval(pint);showToast('생성 실패: '+e.message.substring(0,30));console.error(e);}
-  finally{if(btn)btn.disabled=false;if(prog)prog.style.display='none';}
+  }catch(e){
+    clearInterval(pint);
+    var errMsg=e.name==='AbortError'?'요청 시간 초과 (30초)':'생성 실패: '+e.message.substring(0,30);
+    showToast(errMsg);
+    console.error('[rptGenerateReport]',e);
+  }finally{
+    if(btn)btn.disabled=false;
+    if(prog)prog.style.display='none';
+    if(progBar)progBar.style.width='0%';
+  }
 }
 function copyRptResult(){var body=document.getElementById('rptResultBody');if(body)navigator.clipboard.writeText(body.textContent||body.innerText).then(function(){showToast('복사됐습니다');});}
 async function rptShareReport(){
   var body=document.getElementById('rptResultBody');if(!body||!body.textContent.trim()){showToast('먼저 보고서를 생성하세요');return;}
-  if(navigator.share){await navigator.share({text:body.textContent});showToast('공유됐습니다');}else{await navigator.clipboard.writeText(body.textContent);showToast('복사됐습니다');}
+  try{
+    if(navigator.share){await navigator.share({text:body.textContent});showToast('공유됐습니다');}
+    else{await navigator.clipboard.writeText(body.textContent);showToast('복사됐습니다');}
+  }catch(e){if(e.name!=='AbortError'){navigator.clipboard.writeText(body.textContent).then(function(){showToast('복사됐습니다');});}}
 }
 function rptExportPDF(){
   var body=document.getElementById('rptResultBody');if(!body||!body.textContent.trim()){showToast('먼저 보고서를 생성하세요');return;}
   var w=window.open('','_blank');w.document.write('<html><head><meta charset="UTF-8"><title>소방 상황보고서</title><style>body{font-family:sans-serif;padding:40px;font-size:14px;line-height:2.0;}</style></head><body><pre>'+body.textContent+'</pre></body></html>');w.document.close();setTimeout(function(){w.print();},500);
 }
 function rptReset(){
-  if(!confirm('보고서를 초기화하시겠습니까?'))return;
+  showConfirm('보고서 초기화','생성된 보고서가 삭제됩니다. 계속하시겠습니까?',function(){_doRptReset();});
+}
+function _doRptReset(){
   rptScanPhotos=[];var tr=document.getElementById('rptThumbRow');if(tr)tr.innerHTML='';
   var rb=document.getElementById('rptResultBody');if(rb)rb.textContent='';
   var rw=document.getElementById('rptResultWrap');if(rw)rw.style.display='none';
