@@ -664,9 +664,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   <!-- 공지 관리 -->
   <div class="card">
     <div class="card-head"><span class="card-badge b-blue">공지</span><span class="card-title">공지 관리</span></div>
-    <div class="sec-lbl">공지 제목</div>
-    <input type="text" id="cfg_noticeTitle" placeholder="예) 서산소방서 상황보고 시스템"
-      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:8px;"/>
     <div class="sec-lbl">공지 내용</div>
     <input type="text" id="cfg_noticeMsg" placeholder="예) 정상 운영 중입니다."
       style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
@@ -837,13 +834,10 @@ let featureLocks = {};
 function loadNoticeAndLocks(){
   // 공지 로드
   const n = JSON.parse(localStorage.getItem('appNotice') || '{}');
-  if(n.title) document.getElementById('noticeTitle').textContent = n.title;
-  if(n.msg)   document.getElementById('noticeMsg').textContent   = n.msg;
-  if(n.title || n.msg){
-    const cfg_t = document.getElementById('cfg_noticeTitle');
+  if(n.msg) document.getElementById('noticeMsg').textContent = n.msg;
+  if(n.msg){
     const cfg_m = document.getElementById('cfg_noticeMsg');
-    if(cfg_t) cfg_t.value = n.title || '';
-    if(cfg_m) cfg_m.value = n.msg   || '';
+    if(cfg_m) cfg_m.value = n.msg;
   }
   // 잠금 상태 로드
   featureLocks = JSON.parse(localStorage.getItem('featureLocks') || '{}');
@@ -851,15 +845,12 @@ function loadNoticeAndLocks(){
 }
 
 function saveNotice(){
-  const title = document.getElementById('cfg_noticeTitle')?.value.trim() || '서산소방서 상황보고 시스템';
-  const msg   = document.getElementById('cfg_noticeMsg')?.value.trim()   || '정상 운영 중입니다.';
-  localStorage.setItem('appNotice', JSON.stringify({ title, msg }));
+  const msg = document.getElementById('cfg_noticeMsg')?.value.trim() || '정상 운영 중입니다.';
+  localStorage.setItem('appNotice', JSON.stringify({ msg }));
   // 배너 즉시 반영
-  const el_t = document.getElementById('noticeTitle');
   const el_m = document.getElementById('noticeMsg');
   const el_i = document.getElementById('noticeIcon');
   const banner = document.getElementById('noticeBanner');
-  if(el_t) el_t.textContent = title;
   if(el_m) el_m.textContent = msg;
   if(el_i) el_i.textContent = '📢';
   if(banner){ banner.style.display='flex'; banner.style.background='var(--blue-lt)'; banner.style.borderColor='rgba(26,110,232,0.25)'; }
@@ -917,8 +908,7 @@ function updateNoticeBannerForLocks(){
     // 잠금 없으면 저장된 공지로 복원
     const n = JSON.parse(localStorage.getItem('appNotice') || '{}');
     if(el_i) el_i.textContent = '📢';
-    if(el_t) el_t.textContent = n.title || '서산소방서 상황보고 시스템';
-    if(el_m) el_m.textContent = n.msg   || '정상 운영 중입니다.';
+    if(el_m) el_m.textContent = n.msg || '정상 운영 중입니다.';
     banner.style.background  = 'var(--blue-lt)';
     banner.style.borderColor = 'rgba(26,110,232,0.25)';
   }
