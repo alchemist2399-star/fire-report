@@ -638,9 +638,11 @@ function resetAutoLockTimer(){
 
 var typeSeqMap={fire:'fire',rescue:'rescue',ems:'ems',hazmat:'hazmat',misc:'misc',training:'training'};
 function setDispatchType(type,btn){
+  window._currentDispatchType=type;
   document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
   btn.style.borderColor='var(--orange)';btn.style.background='var(--orange)';btn.style.color='#fff';
   renderSeq(typeSeqMap[type]||'fire');
+  renderOutput();
 }
 function renderSeq(type){
   var wrap=document.getElementById('seqWrap');if(!wrap)return;
@@ -653,6 +655,26 @@ function toggleStep(btn,idx,label){
   else{btn.classList.add('on');seqState[idx]={label:label,time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')};}
   renderOutput();
 }
+function extractDong(addr){
+  // 주소에서 '면/동/읍/리' 단위 추출
+  var m=addr.match(/([가-힣]+(?:면|동|읍|리|가))/g);
+  if(!m||!m.length)return '';
+  // 시/군/구 다음에 오는 첫 번째 면·동·읍 추출
+  var skip=['특별시','광역시','특별자치시','도','특별자치도','시','군','구'];
+  for(var i=0;i<m.length;i++){
+    var ok=true;
+    for(var j=0;j<skip.length;j++){if(m[i].endsWith(skip[j])){ok=false;break;}}
+    if(ok)return m[i];
+  }
+  return m[m.length-1];
+}
+function makeTitle(dong,obj,dispType){
+  var typeLabel={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'출동',training:'훈련'};
+  var suffix=typeLabel[dispType]||'화재';
+  var part1=dong?dong+' ':'';
+  var part2=obj?obj+suffix:suffix;
+  return part1+part2;
+}
 function renderOutput(){
   var loc=(document.getElementById('location')?document.getElementById('location').value:'').trim();
   var obj=(document.getElementById('fireObject')?document.getElementById('fireObject').value:'').trim();
@@ -663,14 +685,42 @@ function renderOutput(){
   if(!loc&&!obj){box.textContent='정보를 입력하면 자동 생성됩니다.';return;}
   var now=new Date();
   var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  var lines=['[상황보고]'];
-  if(loc)lines.push('장소: '+loc);
-  if(obj)lines.push('대상: '+obj+(scale?' / '+scale:''));
-  if(casualty)lines.push('인명: '+casualty);
+
+  // ── 헤더: [예천동 관공서화재](출동) ──
+  var dong=loc?extractDong(loc):'';
+  var dispType=window._currentDispatchType||'fire';
+  var typeLabel={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'출동',training:'훈련'};
+  var dispLabel=typeLabel[dispType]||'화재';
+  var titleObj=obj?obj+dispLabel:dispLabel;
+  var titleDong=dong?dong+' ':'';
+
+  // 괄호 안: 출동 → 2보 → 3보 → 최종 누적
+  var stepCount=Object.keys(seqState).length;
+  var bracketParts=['출동'];
+  if(stepCount>=2)bracketParts.push('2보');
+  if(stepCount>=4)bracketParts.push('3보');
+  if(stepCount>=6)bracketParts.push('최종');
+  var header='['+titleDong+titleObj+']('+bracketParts.join(', ')+')';
+
+  // ── 본문: 주소에서 시/군/구 이하만 / 상황 / 인명 / 규모 ──
+  var shortAddr=loc?loc.replace(/^.*?(?:시|군|구)\s*/,''):'';
+  var bodyParts=[];
+  if(shortAddr)bodyParts.push(shortAddr);
+  if(reports.length>0)bodyParts.push(reports.map(function(r){return r.text;}).join(', '));
+  if(casualty)bodyParts.push(casualty);
+  if(scale)bodyParts.push(scale);
+  var body=bodyParts.join(' / ');
+
+  // ── 발송자 (입력했을 때만) ──
+  var lines=[header,body];
+  if(sender)lines.push(sender);
+
+  // ── 조치경과 ──
   var steps=Object.values(seqState).sort(function(a,b){return a.label>b.label?1:-1;});
-  if(steps.length>0){lines.push('');lines.push('[조치경과]');steps.forEach(function(s){lines.push('  '+s.label+': '+s.time);});}
-  if(reports.length>0){lines.push('');lines.push('[상황]');reports.forEach(function(r){lines.push('  '+r.time+' '+r.text);});}
-  lines.push('');lines.push(timeStr+(sender?' / '+sender:''));
+  if(steps.length>0){
+    lines.push('');
+    steps.forEach(function(s){lines.push(s.label+' '+s.time);});
+  }
   box.textContent=lines.join('\n');
 }
 function addReport(){
