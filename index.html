@@ -132,7 +132,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .sub-screen.on{display:block;}
 .sub-back{display:flex;align-items:center;gap:8px;padding:0 0 12px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink3);background:none;border:none;font-family:var(--font);}
 .sub-back:active{opacity:0.6;}
-.map-app-btn{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:11px 13px;text-decoration:none;transition:all 0.16s;cursor:pointer;margin-bottom:8px;}
+.map-app-btn{display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;text-decoration:none;transition:all 0.16s;cursor:pointer;margin-bottom:10px;width:100%;box-shadow:var(--shadow);}
 .map-app-btn:active{transform:scale(0.98);}
 .map-app-btn.active-loc{border-color:var(--orange);background:var(--orange-lt);}
 .map-app-icon{width:36px;height:36px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
@@ -559,29 +559,32 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <div id="tab-map" class="screen">
   <div class="card">
     <div class="card-head"><span class="card-badge b-orange">지도 앱으로 열기</span><span class="card-title">외부 지도 앱</span></div>
-    <button class="map-app-btn" id="kakaoMapBtn" onclick="openKakaoMap()" style="padding:18px 16px;margin-bottom:10px;">
-      <div class="map-app-icon" style="background:#FEE500;width:48px;height:48px;border-radius:12px;font-size:26px;">🗺️</div>
-      <div class="map-app-info" style="margin-left:4px;">
-        <div class="map-app-name" style="font-size:16px;font-weight:900;">카카오맵</div>
-        <div class="map-app-loc" id="kakaoMapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
+    <div id="mapAddrBanner" style="display:none;background:var(--orange-lt);border:1.5px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--orange);">
+      📍 <span id="mapAddrText"></span>
+    </div>
+    <button class="map-app-btn" id="kakaoMapBtn" onclick="openKakaoMap()">
+      <div style="width:52px;height:52px;border-radius:14px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🗺️</div>
+      <div class="map-app-info">
+        <div class="map-app-name" style="font-size:17px;font-weight:900;">카카오맵</div>
+        <div class="map-app-loc" id="kakaoMapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
       </div>
-      <div class="map-app-arrow" style="font-size:24px;">›</div>
+      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
     </button>
-    <button class="map-app-btn" onclick="openNaverMap()" style="padding:18px 16px;margin-bottom:10px;">
-      <div class="map-app-icon" style="background:#03C75A;width:48px;height:48px;border-radius:12px;font-size:26px;">🧭</div>
-      <div class="map-app-info" style="margin-left:4px;">
-        <div class="map-app-name" style="font-size:16px;font-weight:900;">네이버 지도</div>
-        <div class="map-app-loc" id="naverMapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
+    <button class="map-app-btn" onclick="openNaverMap()">
+      <div style="width:52px;height:52px;border-radius:14px;background:#03C75A;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🧭</div>
+      <div class="map-app-info">
+        <div class="map-app-name" style="font-size:17px;font-weight:900;">네이버 지도</div>
+        <div class="map-app-loc" id="naverMapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
       </div>
-      <div class="map-app-arrow" style="font-size:24px;">›</div>
+      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
     </button>
-    <button class="map-app-btn" onclick="openTmap()" style="padding:18px 16px;margin-bottom:0;">
-      <div class="map-app-icon" style="background:#E30C16;width:48px;height:48px;border-radius:12px;font-size:26px;">🚗</div>
-      <div class="map-app-info" style="margin-left:4px;">
-        <div class="map-app-name" style="font-size:16px;font-weight:900;">T맵</div>
-        <div class="map-app-loc" id="tmapLoc" style="font-size:12px;margin-top:3px;">탭하여 현재 위치로 열기</div>
+    <button class="map-app-btn" onclick="openTmap()" style="margin-bottom:0;">
+      <div style="width:52px;height:52px;border-radius:14px;background:#E30C16;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🚗</div>
+      <div class="map-app-info">
+        <div class="map-app-name" style="font-size:17px;font-weight:900;">T맵</div>
+        <div class="map-app-loc" id="tmapLoc" style="font-size:12px;margin-top:4px;">주소를 입력하면 연결됩니다</div>
       </div>
-      <div class="map-app-arrow" style="font-size:24px;">›</div>
+      <div style="font-size:26px;color:var(--ink4);flex-shrink:0;">›</div>
     </button>
   </div>
 </div>
@@ -1498,19 +1501,50 @@ function renderKakaoMap(){
   } catch(e){ console.error('카카오맵 오류:', e); }
 }
 
+function getDispatchAddr(){
+  return (document.getElementById('location')?.value.trim()) || '';
+}
+
+function updateMapLinks(){
+  const addr = getDispatchAddr();
+  const banner = document.getElementById('mapAddrBanner');
+  const addrText = document.getElementById('mapAddrText');
+  const ids = ['kakaoMapLoc','naverMapLoc','tmapLoc'];
+  if(addr){
+    if(banner){ banner.style.display='block'; }
+    if(addrText){ addrText.textContent = addr; }
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){ el.textContent = addr; el.style.color='var(--orange)'; }
+    });
+    // 버튼 활성화 표시
+    document.querySelectorAll('.map-app-btn').forEach(b => b.classList.add('active-loc'));
+  } else {
+    if(banner){ banner.style.display='none'; }
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){ el.textContent = '주소를 입력하면 연결됩니다'; el.style.color=''; }
+    });
+    document.querySelectorAll('.map-app-btn').forEach(b => b.classList.remove('active-loc'));
+  }
+}
+
 function openKakaoMap(){
-  if(!currentLat){ showToast('⚠️ 먼저 위치를 가져오세요'); return; }
-  window.open(`https://map.kakao.com/link/map/현재위치,${currentLat},${currentLng}`,'_blank');
+  const addr = getDispatchAddr();
+  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
+  window.open(`https://map.kakao.com/link/search/${encodeURIComponent(addr)}`,'_blank');
 }
 
 function openNaverMap(){
-  if(!currentLat){ showToast('⚠️ 먼저 위치를 가져오세요'); return; }
-  window.open(`https://map.naver.com/?lat=${currentLat}&lng=${currentLng}&zoom=15`,'_blank');
+  const addr = getDispatchAddr();
+  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
+  window.open(`https://map.naver.com/v5/search/${encodeURIComponent(addr)}`,'_blank');
 }
 
 function openTmap(){
-  if(!currentLat){ showToast('⚠️ 먼저 위치를 가져오세요'); return; }
-  window.open(`tmap://route?goalx=${currentLng}&goaly=${currentLat}`) || window.open(`https://tmap.life/${currentLat},${currentLng}`,'_blank');
+  const addr = getDispatchAddr();
+  if(!addr){ showToast('⚠️ 출동 탭에서 주소를 먼저 입력하세요'); return; }
+  window.open(`https://apis.openapi.sk.com/tmap/app/routes?goalname=${encodeURIComponent(addr)}&goalAddr=${encodeURIComponent(addr)}`,'_blank');
 }
 
 // ============================================================
