@@ -257,6 +257,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .install-banner-text span{display:block;font-size:11px;font-weight:400;opacity:0.85;margin-top:1px;}
 .install-btn{padding:7px 14px;border-radius:100px;background:#fff;color:var(--orange);font-size:12px;font-weight:900;border:none;cursor:pointer;font-family:var(--font);flex-shrink:0;}
 .install-dismiss{font-size:20px;color:rgba(255,255,255,0.7);background:none;border:none;cursor:pointer;flex-shrink:0;line-height:1;padding:0 2px;}
+.auto-lock-btn{padding:11px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
+.auto-lock-btn.on{border-color:var(--purple);background:var(--purple-lt);color:var(--purple);}
+.b-purple{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(124,58,237,0.2);}
 .dots{display:inline-flex;gap:4px;}
 .dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
 .dots span:nth-child(2){animation-delay:.15s;}
@@ -709,15 +712,48 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="card-badge b-red">보안관리</span><span class="card-title">접근 비밀번호 관리</span></div>
+    <div class="card-head"><span class="card-badge b-red">보안관리</span><span class="card-title">비밀번호 관리</span></div>
+
+    <!-- 앱 진입 비밀번호 변경 -->
+    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">🔓 앱 진입 비밀번호 변경</div>
     <div class="sec-lbl">현재 비밀번호</div>
-    <input type="password" id="cfg_currentPw" placeholder="현재 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+    <input type="password" id="cfg_currentPw" placeholder="현재 앱 진입 비밀번호"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
     <div class="sec-lbl">새 비밀번호</div>
-    <input type="password" id="cfg_newPw" placeholder="새 비밀번호 (6자리 이상)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+    <input type="password" id="cfg_newPw" placeholder="새 비밀번호 (4자리 이상)"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
     <div class="sec-lbl">새 비밀번호 확인</div>
-    <input type="password" id="cfg_confirmPw" placeholder="비밀번호 재입력" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-    <button class="btn btn-primary" style="width:100%;background:var(--navy);" onclick="changePw()">🔐 비밀번호 변경</button>
-    <div id="pwMsg" style="margin-top:8px;"></div>
+    <input type="password" id="cfg_confirmPw" placeholder="비밀번호 재입력"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+    <button class="btn btn-primary" style="width:100%;background:var(--navy);margin-bottom:16px;" onclick="changePw()">🔐 앱 비밀번호 변경</button>
+    <div id="pwMsg" style="margin-top:-10px;margin-bottom:8px;"></div>
+
+    <!-- 설정 탭 비밀번호 변경 -->
+    <div style="font-size:11px;font-weight:800;color:var(--ink4);letter-spacing:0.8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">⚙️ 설정 탭 비밀번호 변경</div>
+    <div class="sec-lbl">현재 설정 비밀번호</div>
+    <input type="password" id="cfg_currentSettingsPw" placeholder="현재 설정 비밀번호"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+    <div class="sec-lbl">새 설정 비밀번호</div>
+    <input type="password" id="cfg_newSettingsPw" placeholder="새 비밀번호 (4자리 이상)"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
+    <div class="sec-lbl">새 설정 비밀번호 확인</div>
+    <input type="password" id="cfg_confirmSettingsPw" placeholder="비밀번호 재입력"
+      style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+    <button class="btn btn-primary" style="width:100%;background:var(--navy);" onclick="changeSettingsPw()">⚙️ 설정 비밀번호 변경</button>
+    <div id="settingsPwMsg" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- 자동 잠금 -->
+  <div class="card">
+    <div class="card-head"><span class="card-badge b-purple">자동잠금</span><span class="card-title">앱 자동 잠금 시간</span></div>
+    <div class="info-box">⏱ 설정한 시간 동안 앱을 사용하지 않으면 자동으로 잠금 화면으로 돌아갑니다.</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px;" id="autoLockBtns">
+      <button class="auto-lock-btn" data-min="0"   onclick="setAutoLock(0)">🔓 사용 안 함</button>
+      <button class="auto-lock-btn" data-min="5"   onclick="setAutoLock(5)">5분</button>
+      <button class="auto-lock-btn" data-min="10"  onclick="setAutoLock(10)">10분</button>
+      <button class="auto-lock-btn" data-min="30"  onclick="setAutoLock(30)">30분</button>
+    </div>
+    <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
   </div>
   
   <div class="card">
@@ -782,6 +818,7 @@ function initAppLock(){
   loadUserContacts();
   loadHistory();
   loadNoticeAndLocks();
+  loadAutoLock();
   // PWA install prompt
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
@@ -792,7 +829,7 @@ function initAppLock(){
 }
 
 function checkSettingsLock(){
-  const pw = '2399';
+  const pw = localStorage.getItem('settingsPw') || '2399';
   const input = document.getElementById('settingsLockInput');
   const err = document.getElementById('settingsLockError');
   const lock = document.getElementById('settingsLock');
@@ -985,6 +1022,79 @@ function changePw(){
   document.getElementById('cfg_newPw').value='';
   document.getElementById('cfg_confirmPw').value='';
 }
+
+function changeSettingsPw(){
+  const cur  = document.getElementById('cfg_currentSettingsPw').value;
+  const nw   = document.getElementById('cfg_newSettingsPw').value;
+  const conf = document.getElementById('cfg_confirmSettingsPw').value;
+  const stored = localStorage.getItem('settingsPw') || '2399';
+  const msg  = document.getElementById('settingsPwMsg');
+  if(cur !== stored){
+    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 현재 설정 비밀번호가 틀렸습니다.</div>'; return;
+  }
+  if(nw.length < 4){
+    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 비밀번호는 4자리 이상이어야 합니다.</div>'; return;
+  }
+  if(nw !== conf){
+    msg.innerHTML = '<div class="rpt-msg fail" style="display:block;">❌ 새 비밀번호가 일치하지 않습니다.</div>'; return;
+  }
+  localStorage.setItem('settingsPw', nw);
+  msg.innerHTML = '<div class="rpt-msg ok" style="display:block;">✅ 설정 비밀번호가 변경됐습니다.</div>';
+  document.getElementById('cfg_currentSettingsPw').value = '';
+  document.getElementById('cfg_newSettingsPw').value = '';
+  document.getElementById('cfg_confirmSettingsPw').value = '';
+}
+
+// ── 자동 잠금 ──────────────────────────────────────────────
+let autoLockTimer = null;
+let autoLockMinutes = 0;
+
+function loadAutoLock(){
+  autoLockMinutes = parseInt(localStorage.getItem('autoLockMin') || '0');
+  renderAutoLockBtns();
+  resetAutoLockTimer();
+}
+
+function setAutoLock(min){
+  autoLockMinutes = min;
+  localStorage.setItem('autoLockMin', min);
+  renderAutoLockBtns();
+  resetAutoLockTimer();
+  showToast(min === 0 ? '🔓 자동 잠금 해제됨' : `⏱ ${min}분 후 자동 잠금`);
+}
+
+function renderAutoLockBtns(){
+  document.querySelectorAll('.auto-lock-btn').forEach(btn => {
+    const val = parseInt(btn.dataset.min);
+    btn.classList.toggle('on', val === autoLockMinutes);
+  });
+  const status = document.getElementById('autoLockStatus');
+  if(status){
+    status.textContent = autoLockMinutes === 0
+      ? '현재: 자동 잠금 사용 안 함'
+      : `현재: ${autoLockMinutes}분 후 자동 잠금`;
+  }
+}
+
+function resetAutoLockTimer(){
+  if(autoLockTimer) clearTimeout(autoLockTimer);
+  if(autoLockMinutes <= 0) return;
+  autoLockTimer = setTimeout(() => {
+    // 잠금 화면 표시
+    const screen = document.getElementById('appLockScreen');
+    const input  = document.getElementById('appLockInput');
+    const err    = document.getElementById('appLockError');
+    if(screen){ screen.style.display = 'flex'; }
+    if(input) { input.value = ''; input.focus(); }
+    if(err)   { err.style.display = 'none'; }
+    showToast('⏱ 자동 잠금됐습니다');
+  }, autoLockMinutes * 60 * 1000);
+}
+
+// 사용자 활동 감지 → 타이머 리셋
+['touchstart','click','keydown'].forEach(ev => {
+  document.addEventListener(ev, () => { if(autoLockMinutes > 0) resetAutoLockTimer(); }, { passive: true });
+});
 
 function clearAllData(){
   if(!confirm('정말 모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
