@@ -454,34 +454,16 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <!-- 보고서 탭 -->
 <div id="tab-report" class="screen">
 
-  <!-- PAGE 0: AI 스캔 -->
+  <!-- PAGE 0: 유형선택 + AI 스캔 -->
   <div class="rpt-page on" id="rptPage0">
-    <div class="rpt-scan-hero" style="background:linear-gradient(135deg,var(--navy),#2a5298);border:none;">
-      <span class="rpt-scan-hero-ico">🤖</span>
-      <div class="rpt-scan-hero-title" style="color:#fff;">AI 현장사진 스캔</div>
-      <p class="rpt-scan-hero-sub">사진을 올리면 AI가 현장을 분석하여<br>보고서를 자동으로 완성합니다</p>
-      <label class="rpt-drop-zone" id="rptDropZone">
-        <input type="file" id="rptFileInput" accept="image/*" multiple onchange="handleRptFiles(this.files)"/>
-        <div class="rpt-drop-zone-ico">📷</div>
-        <div class="rpt-drop-zone-label">사진 선택 또는 드래그</div>
-        <div class="rpt-drop-zone-hint">JPG·PNG·WEBP 지원 · 최대 10장</div>
-      </label>
-      <div class="rpt-thumb-row" id="rptThumbRow"></div>
-      <button class="rpt-ai-btn" id="rptAiBtn" onclick="rptRunScanAI()" disabled>
-        <span class="dots"><span></span><span></span><span></span></span> AI 분석 시작
-      </button>
-      <div class="rpt-scan-progress" id="rptScanProgress">
-        <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;" id="rptScanStatus">분석 중...</div>
-        <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptScanBar"></div></div>
-      </div>
-      <div class="rpt-scan-done" id="rptScanDone">
-        <div style="font-size:13px;font-weight:800;color:var(--green);">✅ AI 분석 완료 — 보고서가 자동 입력됐습니다!</div>
-      </div>
-    </div>
 
-    <div style="margin-top:16px;">
-      <div class="sec-lbl">보고서 유형 선택</div>
-      <div class="rpt-type-grid">
+    <!-- STEP 1: 보고서 유형 선택 -->
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-head">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        <span class="card-title">보고서 유형 선택</span>
+      </div>
+      <div class="rpt-type-grid" style="margin-bottom:0;">
         <button class="rpt-type-btn sel" onclick="selectRptType(this,'fire')" data-type="fire"><span class="ico">🔥</span>화재</button>
         <button class="rpt-type-btn" onclick="selectRptType(this,'rescue')" data-type="rescue"><span class="ico">🚑</span>구조</button>
         <button class="rpt-type-btn" onclick="selectRptType(this,'ems')" data-type="ems"><span class="ico">🏥</span>구급</button>
@@ -491,14 +473,49 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
     </div>
 
-    <div class="rpt-ai-banner" id="rptAiBanner">
-      <span class="rpt-ai-banner-ico">🤖</span>
-      <span class="rpt-ai-banner-text">AI가 사진에서 정보를 추출했습니다. 아래에서 결과를 확인하세요.</span>
+    <!-- STEP 2: AI 현장사진 스캔 -->
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-head">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+        <span class="card-title">AI 현장사진 스캔</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--ink4);">최대 10장</span>
+      </div>
+
+      <!-- 사진 업로드 영역 -->
+      <label id="rptDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:24px 16px;background:var(--orange-lt);cursor:pointer;transition:all .2s;margin-bottom:12px;">
+        <input type="file" id="rptFileInput" accept="image/*" multiple onchange="handleRptFiles(this.files)" style="display:none;"/>
+        <div style="font-size:28px;">📷</div>
+        <div style="font-size:14px;font-weight:800;color:var(--orange);">사진 선택 또는 드래그</div>
+        <div style="font-size:11px;color:var(--ink4);">JPG · PNG · WEBP 지원</div>
+      </label>
+
+      <!-- 썸네일 -->
+      <div class="rpt-thumb-row" id="rptThumbRow" style="margin-bottom:4px;"></div>
+
+      <!-- 진행 상태 -->
+      <div class="rpt-scan-progress" id="rptScanProgress" style="margin-bottom:8px;">
+        <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;margin-bottom:6px;" id="rptScanStatus">AI 분석 중...</div>
+        <div class="rpt-scan-progress-bar-wrap"><div class="rpt-scan-progress-bar" id="rptScanBar"></div></div>
+      </div>
+
+      <!-- 완료 메시지 -->
+      <div class="rpt-scan-done" id="rptScanDone">
+        <div style="font-size:13px;font-weight:800;color:var(--green);">✅ 분석 완료 — 보고서 생성 버튼을 눌러주세요</div>
+      </div>
+
+      <!-- AI 분석 버튼 -->
+      <button id="rptAiBtn" onclick="rptRunScanAI()" disabled
+        style="width:100%;margin-top:4px;padding:13px;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:var(--navy);color:#fff;box-shadow:0 4px 16px rgba(26,58,107,0.25);opacity:0.45;">
+        🤖 AI 분석 시작
+      </button>
     </div>
 
-    <div class="rpt-nav-row" style="margin-top:16px;">
-      <button class="rpt-nav-next" onclick="rptGoPage(1)">AI 보고서 생성 →</button>
-    </div>
+    <!-- 다음 버튼 -->
+    <button onclick="rptGoPage(1)"
+      style="width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;">
+      📋 AI 보고서 생성하기 →
+    </button>
+
   </div>
 
   <!-- PAGE 1: AI 보고서 생성 + 출력 -->
@@ -1369,7 +1386,10 @@ function handleRptFiles(files){
     }).join('');
   }
   const btn = document.getElementById('rptAiBtn');
-  if(btn) btn.disabled = rptScanPhotos.length === 0;
+  if(btn){
+    btn.disabled = rptScanPhotos.length === 0;
+    btn.style.opacity = rptScanPhotos.length === 0 ? '0.45' : '1';
+  }
 }
 
 function handleRptPhotos(files){
