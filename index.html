@@ -354,11 +354,12 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   </div>
   <div id="addContactForm" style="display:none;" class="card">
     <div class="card-head"><span class="card-badge b-orange" id="addContactBadge">연락처 추가</span></div>
+    <input type="hidden" id="editContactId" value=""/>
     <input type="text" id="newContactName" placeholder="이름 / 직책" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:8px;"/>
     <input type="tel" id="newContactTel" placeholder="전화번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
     <input type="text" id="newContactMemo" placeholder="메모 (부서, 차량번호 등)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;margin-bottom:12px;"/>
     <div class="btn-row">
-      <button class="btn btn-primary" style="flex:1;" onclick="saveNewContact()">저장</button>
+      <button class="btn btn-primary" style="flex:1;" id="contactSaveBtn" onclick="saveNewContact()">저장</button>
       <button class="btn" onclick="hideAddContact()">취소</button>
     </div>
   </div>
@@ -895,28 +896,74 @@ function renderUserContacts(){
   function makeCard(c,ico){
     var safeId=parseInt(c.id)||0;
     var safeTel=c.tel.replace(/[^0-9-+s]/g,'');
-    return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">'+ico+'</div><div class="contact-info"><div class="contact-name">'+escHtml(c.name)+'</div><div class="contact-tel">'+escHtml(c.tel)+'</div>'+(c.memo?'<div class="contact-memo">'+escHtml(c.memo)+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+safeTel+'">&#128222;</a><button class="contact-del" onclick="deleteContactById('+safeId+')">&#128465;</button></div></div>';
+    return '<div class="contact-item"><div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">'+ico+'</div><div class="contact-info"><div class="contact-name">'+escHtml(c.name)+'</div><div class="contact-tel">'+escHtml(c.tel)+'</div>'+(c.memo?'<div class="contact-memo">'+escHtml(c.memo)+'</div>':'')+'</div><div class="contact-actions"><a class="contact-call" href="tel:'+safeTel+'">&#128222;</a><button class="contact-del" style="background:var(--blue-lt);color:var(--blue);border-color:rgba(26,110,232,0.3);" onclick="editContactById('+safeId+')">&#9998;</button><button class="contact-del" onclick="deleteContactById('+safeId+')">&#128465;</button></div></div>';
   }
   dl.innerHTML=dispatch.length?'<div class="card">'+dispatch.map(function(c){return makeCard(c,'&#128658;');}).join('')+'</div>':'<div class="empty">&#128429; 출동대 연락처가 없습니다</div>';
   al.innerHTML=agency.length?'<div class="card">'+agency.map(function(c){return makeCard(c,'&#127963;');}).join('')+'</div>':'<div class="empty">&#128429; 유관기관 연락처가 없습니다</div>';
 }
 function showAddContact(group){
   currentContactTab=group||currentContactTab;
+  // 추가 모드로 초기화
+  var eid=document.getElementById('editContactId');if(eid)eid.value='';
   var badge=document.getElementById('addContactBadge');
   if(badge)badge.textContent=currentContactTab==='dispatch'?'출동대 연락처 추가':'유관기관 연락처 추가';
+  var saveBtn=document.getElementById('contactSaveBtn');
+  if(saveBtn)saveBtn.textContent='저장';
+  document.getElementById('newContactName').value='';
+  document.getElementById('newContactTel').value='';
+  document.getElementById('newContactMemo').value='';
   var f=document.getElementById('addContactForm');if(f)f.style.display='block';
+  setTimeout(function(){var el=document.getElementById('newContactName');if(el)el.focus();},100);
 }
-function hideAddContact(){var f=document.getElementById('addContactForm');if(f)f.style.display='none';}
+function editContactById(id){
+  var c=userContacts.find(function(x){return (x.id||0)===id;});
+  if(!c)return;
+  // 편집 모드 진입
+  var eid=document.getElementById('editContactId');if(eid)eid.value=id;
+  document.getElementById('newContactName').value=c.name||'';
+  document.getElementById('newContactTel').value=c.tel||'';
+  document.getElementById('newContactMemo').value=c.memo||'';
+  var badge=document.getElementById('addContactBadge');
+  if(badge)badge.textContent='연락처 수정';
+  var saveBtn=document.getElementById('contactSaveBtn');
+  if(saveBtn)saveBtn.textContent='수정 저장';
+  var f=document.getElementById('addContactForm');if(f)f.style.display='block';
+  setTimeout(function(){var el=document.getElementById('newContactName');if(el)el.focus();},100);
+  // 해당 패널로 스크롤
+  f.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function hideAddContact(){
+  var f=document.getElementById('addContactForm');if(f)f.style.display='none';
+  var eid=document.getElementById('editContactId');if(eid)eid.value='';
+  var saveBtn=document.getElementById('contactSaveBtn');if(saveBtn)saveBtn.textContent='저장';
+  var badge=document.getElementById('addContactBadge');
+  if(badge)badge.textContent=currentContactTab==='dispatch'?'출동대 연락처 추가':'유관기관 연락처 추가';
+}
 function saveNewContact(){
   var name=(document.getElementById('newContactName')?document.getElementById('newContactName').value:'').trim();
   var tel=(document.getElementById('newContactTel')?document.getElementById('newContactTel').value:'').trim();
   var memo=(document.getElementById('newContactMemo')?document.getElementById('newContactMemo').value:'').trim();
   if(!name||!tel){showToast('이름과 전화번호를 입력하세요');return;}
-  userContacts.push({id:Date.now(),name:name,tel:tel,memo:memo,group:currentContactTab});
-  localStorage.setItem('userContacts',JSON.stringify(userContacts));
-  renderUserContacts();hideAddContact();
-  document.getElementById('newContactName').value='';document.getElementById('newContactTel').value='';document.getElementById('newContactMemo').value='';
-  showToast('연락처가 저장됐습니다');
+  var editId=document.getElementById('editContactId')?document.getElementById('editContactId').value:'';
+  if(editId){
+    // 수정 모드
+    var id=parseInt(editId)||parseFloat(editId);
+    var idx=userContacts.findIndex(function(c){return (c.id||0)===id;});
+    if(idx>-1){
+      userContacts[idx].name=name;
+      userContacts[idx].tel=tel;
+      userContacts[idx].memo=memo;
+      localStorage.setItem('userContacts',JSON.stringify(userContacts));
+      renderUserContacts();hideAddContact();
+      showToast('연락처가 수정됐습니다');
+    }
+  } else {
+    // 추가 모드
+    userContacts.push({id:Date.now(),name:name,tel:tel,memo:memo,group:currentContactTab});
+    localStorage.setItem('userContacts',JSON.stringify(userContacts));
+    renderUserContacts();hideAddContact();
+    showToast('연락처가 저장됐습니다');
+  }
 }
 function deleteContactById(id){
   showConfirm('연락처 삭제','이 연락처를 삭제하시겠습니까?',function(){
