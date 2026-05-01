@@ -108,6 +108,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .reset-btn{padding:6px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);}
 .auto-lock-btn{padding:11px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;}
 .auto-lock-btn.on{border-color:var(--purple);background:var(--purple-lt);color:var(--purple);}
+.rpt-stage-btn{padding:11px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
+.rpt-stage-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(232,96,10,0.3);}
+.rpt-stage-btn.seq-final.on{border-color:var(--purple);background:var(--purple);color:#fff;}
 .dots{display:inline-flex;gap:4px;}
 .dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
 .dots span:nth-child(2){animation-delay:.15s;}
@@ -212,7 +215,12 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:13px;">&#128196;</span><span style="font-size:12px;font-weight:800;color:var(--ink3);">보고 순서</span></div>
     </div>
-    <div class="seq-wrap" id="seqWrap"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      <button class="rpt-stage-btn" data-stage="출동" onclick="setReportStage('출동',this)">&#128227; 출동</button>
+      <button class="rpt-stage-btn" data-stage="2보" onclick="setReportStage('2보',this)">2보</button>
+      <button class="rpt-stage-btn" data-stage="3보" onclick="setReportStage('3보',this)">3보</button>
+      <button class="rpt-stage-btn seq-final" data-stage="최종" onclick="setReportStage('최종',this)">&#9989; 최종</button>
+    </div>
   </div>
   <div class="output-wrap">
     <div class="output-head">
@@ -645,14 +653,19 @@ function setDispatchType(type,btn){
   renderOutput();
 }
 function renderSeq(type){
-  var wrap=document.getElementById('seqWrap');if(!wrap)return;
-  var steps=seqDef[type]||seqDef.fire;seqState={};
-  wrap.innerHTML=steps.map(function(s,i){return '<button class="seq-btn'+(i===steps.length-1?' seq-final':'')+'" onclick="toggleStep(this,'+i+',\''+s+'\')">'+s+'</button>';}).join('');
+  // 유형 변경 시 단계 초기화
+  window._reportStage='출동';
+  document.querySelectorAll('.rpt-stage-btn').forEach(function(b){b.classList.remove('on');if(b.dataset.stage==='출동')b.classList.add('on');});
+  renderOutput();
+}
+function setReportStage(stage,btn){
+  window._reportStage=stage;
+  document.querySelectorAll('.rpt-stage-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderOutput();
 }
 function toggleStep(btn,idx,label){
-  var now=new Date();
-  if(btn.classList.contains('on')){btn.classList.remove('on');delete seqState[idx];}
-  else{btn.classList.add('on');seqState[idx]={label:label,time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')};}
+  // 하위 호환용 (미사용)
   renderOutput();
 }
 function extractDong(addr){
@@ -694,13 +707,9 @@ function renderOutput(){
   var titleObj=obj?obj+dispLabel:dispLabel;
   var titleDong=dong?dong+' ':'';
 
-  // 괄호 안: 출동 → 2보 → 3보 → 최종 누적
-  var stepCount=Object.keys(seqState).length;
-  var bracketParts=['출동'];
-  if(stepCount>=2)bracketParts.push('2보');
-  if(stepCount>=4)bracketParts.push('3보');
-  if(stepCount>=6)bracketParts.push('최종');
-  var header='['+titleDong+titleObj+']('+bracketParts.join(', ')+')';
+  // 괄호 안: 선택된 보고 단계 표시
+  var stage=window._reportStage||'출동';
+  var header='['+titleDong+titleObj+']('+stage+')';
 
   // ── 본문: 주소에서 시/군/구 이하만 / 상황 / 인명 / 규모 ──
   var shortAddr=loc?loc.replace(/^.*?(?:시|군|구)\s*/,''):'';
@@ -924,7 +933,8 @@ function rptReset(){
   rptGoPage(0);showToast('초기화됐습니다');
 }
 document.addEventListener('DOMContentLoaded',function(){
-  renderSeq('fire');
+  window._reportStage='출동';
+  document.querySelectorAll('.rpt-stage-btn').forEach(function(b){if(b.dataset.stage==='출동')b.classList.add('on');});
   var dropZone=document.getElementById('rptDropZone');
   if(dropZone){
     dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange)';});
