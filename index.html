@@ -458,7 +458,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <input class="rpt-input" id="f_addr" placeholder="충청남도 서산시 예천동 496-16"/>
       </div>
       <div class="rpt-field">
-        <label>주요내용 <span id="lbl_mainContent" class="ai-filled" style="display:none;">AI</span></label>
+        <label>내 용 <span id="lbl_mainContent" class="ai-filled" style="display:none;">AI</span></label>
         <input class="rpt-input" id="f_mainContent" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/>
       </div>
       <div class="rpt-field">
@@ -1565,14 +1565,28 @@ function renderReportPreview(){
   var equipment=v('f_equipment')||'';
   var equipDetail=v('f_equipDetail')||'';
 
-  // ── 시간 초 제거 ──
-  function trimSec(str){
-    if(!str)return str;
-    return str.replace(/(\d{1,2}:\d{2}):\d{2}/g,'$1');
-  }
+  // 시간 초 제거
+  function trimSec(s){return s?s.replace(/(\d{1,2}:\d{2}):\d{2}/g,'$1'):s;}
   datetime=trimSec(datetime);
 
-  // ── 건물현황 테이블 ──
+  // row: ○ 레이블 + 한칸 + : + 내용
+  function row(label,val){
+    if(!val)return '';
+    return '<div style="display:flex;align-items:baseline;line-height:1.9;">'+
+      '<span style="flex-shrink:0;white-space:nowrap;">○ '+escHtml(label)+' :</span>'+
+      '<span style="margin-left:6px;">'+escHtml(val)+'</span>'+
+    '</div>';
+  }
+  // subrow: - 레이블 + 한칸 + : + 내용
+  function subrow(label,val){
+    if(!val)return '';
+    return '<div style="display:flex;align-items:baseline;line-height:1.85;font-size:10.5px;">'+
+      '<span style="flex-shrink:0;white-space:nowrap;color:#6B7280;">- '+escHtml(label)+' :</span>'+
+      '<span style="margin-left:6px;">'+escHtml(val)+'</span>'+
+    '</div>';
+  }
+
+  // 건물현황 테이블
   var bldgRows='';
   document.querySelectorAll('#bldgTableBody tr').forEach(function(tr){
     var inputs=tr.querySelectorAll('input');
@@ -1581,93 +1595,88 @@ function renderReportPreview(){
       var isFireRow=vals[4]&&vals[4].indexOf('화재')>=0;
       bldgRows+=
         '<tr'+(isFireRow?' style="background:#FFF3EC;"':'')+'>'+
-        '<td style="padding:5px 6px;border:1px solid #E4E7EE;text-align:center;">'+escHtml(vals[0])+'</td>'+
-        '<td style="padding:5px 6px;border:1px solid #E4E7EE;text-align:center;">'+escHtml(vals[1])+'</td>'+
-        '<td style="padding:5px 6px;border:1px solid #E4E7EE;text-align:center;">'+escHtml(vals[2])+'</td>'+
-        '<td style="padding:5px 6px;border:1px solid #E4E7EE;text-align:center;">'+escHtml(vals[3])+'</td>'+
-        '<td style="padding:5px 6px;border:1px solid #E4E7EE;text-align:center;"'+(isFireRow?' style="color:#E8600A;font-weight:700;"':'')+'>'+escHtml(vals[4])+'</td>'+
+        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[0])+'</td>'+
+        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[1])+'</td>'+
+        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[2])+'</td>'+
+        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[3])+'</td>'+
+        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[4])+'</td>'+
         '</tr>';
     }
   });
 
-  // ── 타임라인 ──
-  var timelineHtml='';
+  // 타임라인 (2열, 초 제거, MM-DD HH:MM)
+  var tlItems=[];
   document.querySelectorAll('#timelineList .timeline-item').forEach(function(item){
     var inputs=item.querySelectorAll('input');
     if(inputs.length>=2&&inputs[1].value.trim()){
       var t=trimSec(inputs[0].value.trim());
-      timelineHtml+=
-        '<div style="margin-bottom:5px;">'+
+      // 연도 제거: "2026-04-24 12:23" → "04-24 12:23"
+      t=t.replace(/^\d{4}-/,'');
+      tlItems.push('<div style="font-size:10.5px;line-height:1.75;">'+
         '<span style="color:#E8600A;font-family:monospace;font-weight:700;">【'+escHtml(t)+'】</span> '+
         escHtml(inputs[1].value.trim())+
-        '</div>';
+      '</div>');
     }
   });
-
-  // ── 인원 파싱: 단위 중복 제거 + 0 필터 ──
-  function formatPersonnel(raw){
-    if(!raw)return '';
-    // "0명명" → "0명", "0명 명" 등 중복 제거
-    raw=raw.replace(/(명|대)\s*\1/g,'$1');
-    raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
-    // 이중괄호 제거
-    raw=raw.replace(/\(\(/g,'(').replace(/\)\)/g,')');
-    // 괄호 안 항목에서 0인 것 제거
-    raw=raw.replace(/\(([^)]+)\)/g,function(_,inner){
-      var items=inner.split(',').map(function(s){return s.trim();});
-      var kept=items.filter(function(it){
-        // "항목명 0" 또는 "항목명 0명" 또는 "항목명 0대" → 제거
-        return !/\s0[명대]?$/.test(it);
-      });
-      return kept.length?'('+kept.join(', ')+')'  :'';
-    });
-    return raw.trim();
+  var timelineHtml='';
+  if(tlItems.length){
+    // 2열 그리드
+    var leftCol='',rightCol='';
+    tlItems.forEach(function(item,i){if(i%2===0)leftCol+=item;else rightCol+=item;});
+    timelineHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 16px;">'+
+      '<div>'+leftCol+'</div><div>'+rightCol+'</div></div>';
   }
 
-  // ── 장비 상세 파싱: 각 장비 0이면 제거, 단위 중복 제거 ──
-  function formatEquipDetail(raw){
+  // 인원 0 필터
+  function filterZeroItems(str){
+    if(!str)return str;
+    str=str.replace(/\(\(/g,'(').replace(/\)\)/g,')');
+    str=str.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
+    str=str.replace(/\(([^)]+)\)/g,function(_,inner){
+      var kept=inner.split(',').map(function(s){return s.trim();}).filter(function(it){return !/\s0[명대]?$/.test(it);});
+      return kept.length?'('+kept.join(', ')+')'  :'';
+    });
+    return str.trim();
+  }
+
+  // 장비 상세 0 필터
+  function filterZeroEquip(raw){
     if(!raw)return '';
-    raw=raw.replace(/(명|대)\s*\1/g,'$1');
     raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
-    // 섹션별 처리: "소방: 1대 (지휘 0, 구급 1, ...)" 또는 "유관기관: 0대 (...)"
     var sections=raw.split('/').map(function(s){return s.trim();}).filter(Boolean);
     var result=[];
     sections.forEach(function(sec){
-      // 헤더 "소방: 1대" + 괄호 내용
       var m=sec.match(/^([\w가-힣\/\s]+:\s*\d+[대명]?)\s*\((.+)\)$/);
       if(m){
         var header=m[1].trim();
-        var inner=m[2];
-        // 총 대수가 0이면 섹션 전체 숨김
         var totalMatch=header.match(/(\d+)[대명]/);
         if(totalMatch&&parseInt(totalMatch[1])===0)return;
-        // 괄호 안 항목 중 0인 것 제거
-        var items=inner.split(',').map(function(s){return s.trim();});
-        var kept=items.filter(function(it){
-          return !/\s0$/.test(it)&&!/\s0[대명]$/.test(it);
-        });
-        if(kept.length){
-          result.push(header+' ('+kept.join(', ')+')');
-        }else{
-          result.push(header);
-        }
+        var kept=m[2].split(',').map(function(s){return s.trim();}).filter(function(it){return !/\s0$/.test(it)&&!/\s0[대명]$/.test(it);});
+        result.push(kept.length?header+' ('+kept.join(', ')+')':header);
       }else{
-        // 괄호 없는 단순 섹션
-        var totalM=sec.match(/:\s*(\d+)[대명]/);
-        if(totalM&&parseInt(totalM[1])===0)return;
+        var tm=sec.match(/:\s*(\d+)[대명]/);
+        if(tm&&parseInt(tm[1])===0)return;
         result.push(sec);
       }
     });
     return result.join(' / ');
   }
 
-  var personnelFmt=formatPersonnel(personnel);
-  var equipDetailFmt=formatEquipDetail(equipDetail);
+  var personnelFmt=filterZeroItems(personnel);
+  var equipFmt=equipment.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
+  var equipDetailFmt=filterZeroEquip(equipDetail);
 
-  // ── 장비 단위 중복 제거 ──
-  var equipFmt=equipment.replace(/(명|대)\s*\1/g,'$1').replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
+  // 소방기관/유관기관 분리
+  var fireDetail='',agencyDetail='';
+  if(equipDetailFmt){
+    equipDetailFmt.split('/').forEach(function(sec){
+      sec=sec.trim();
+      if(/소방기관|소방/.test(sec))fireDetail=sec.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();
+      else if(/유관기관/.test(sec))agencyDetail=sec.replace(/^유관기관\s*:\s*/,'').trim();
+    });
+  }
 
-  // ── 보고서 제목 ──
+  // 보고서 제목
   var reportTitle='';
   if(summary){
     reportTitle=summary;
@@ -1680,74 +1689,79 @@ function renderReportPreview(){
   var body=document.getElementById('reportPreviewBody');
   if(!body)return;
 
+  var S='font-size:11px;'; // 공통 섹션 div 스타일
+
   body.innerHTML=
-    // ── 헤더 ──
-    '<div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #1a3a6b;padding-bottom:12px;margin-bottom:10px;">'+
-      '<div style="font-size:17px;font-weight:900;color:#1a3a6b;line-height:1.4;">'+escHtml(reportTitle)+'</div>'+
-      '<div style="text-align:right;font-size:11px;color:#6B7280;flex-shrink:0;margin-left:12px;">'+escHtml(reportDate)+'<br/>'+escHtml(station)+'<br/>(상황실)</div>'+
+    // 헤더
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #1a3a6b;padding-bottom:8px;margin-bottom:8px;">'+
+      '<div style="font-size:15px;font-weight:500;color:#1a3a6b;">'+escHtml(reportTitle)+'</div>'+
+      '<div style="text-align:right;font-size:10px;color:#6B7280;flex-shrink:0;margin-left:10px;line-height:1.5;">'+escHtml(reportDate)+'<br/>'+escHtml(station)+'<br/>(상황실)</div>'+
     '</div>'+
     (manager||duty?
-      '<div style="font-size:11px;color:#6B7280;margin-bottom:10px;padding:6px 10px;background:#F8F9FB;border-radius:7px;">'+
+      '<div style="font-size:10px;color:#6B7280;background:#F8F9FB;border-radius:5px;padding:4px 8px;margin-bottom:8px;">'+
         (manager?'상황관리: '+escHtml(manager)+'　':'')+
         (duty?'당직근무자: '+escHtml(duty):'')+
       '</div>':'')+
 
-    // ── 1. 사고개요 ──
-    '<h3>1. 사고개요</h3>'+
-    '<div style="padding-left:12px;">'+
-      (datetime?'<div style="margin-bottom:5px;">○ 일 시: '+escHtml(datetime)+
-        (callCount?' <span style="border:1px solid #E4E7EE;border-radius:100px;padding:1px 9px;font-size:11px;">신고건수: '+escHtml(callCount)+'</span>':'')+
-      '</div>':'')+
-      (distance?'<div style="margin-bottom:5px;font-size:12px;color:#6B7280;">　※ '+escHtml(distance)+'</div>':'')+
-      (target?'<div style="margin-bottom:5px;">○ 대 상: '+escHtml(target)+'</div>':'')+
-      (addr?'<div style="margin-bottom:5px;">○ 장 소: '+escHtml(addr)+'</div>':'')+
-      (mainContent?'<div style="margin-bottom:5px;">○ 주요내용: '+escHtml(mainContent)+'</div>':'')+
+    // 1. 사고개요
+    '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">1. 사고개요</span></div>'+
+    '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+
+      (datetime?
+        '<div style="display:flex;align-items:baseline;line-height:1.9;">'+
+          '<span style="flex-shrink:0;white-space:nowrap;">○ 일 시 :</span>'+
+          '<span style="margin-left:6px;">'+escHtml(datetime)+
+            (callCount?'&nbsp;&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:10px;">신고건수: '+escHtml(callCount)+'</span>':'')+
+          '</span>'+
+        '</div>':'')+
+      (distance?'<div style="font-size:10px;color:#6B7280;padding-left:14px;">※ '+escHtml(distance)+'</div>':'')+
+      row('대 상', target)+
+      row('장 소', addr)+
+      row('내 용', mainContent)+
     '</div>'+
 
-    // ── 2. 피해상황 ──
-    '<h3>2. 피해상황</h3>'+
-    '<div style="padding-left:12px;">'+
-      (casualty?'<div style="margin-bottom:5px;">○ 인명피해: '+escHtml(casualty)+'</div>':'')+
-      (damage?'<div style="margin-bottom:'+(bldgRows?'6':'5')+'px;">○ 재산피해: '+escHtml(damage)+'</div>':'')+
-      (bldgRows?
-        '<div style="margin-top:6px;margin-bottom:2px;">'+
-          '<div style="font-size:11px;font-weight:700;color:#6B7280;margin-bottom:4px;padding-left:2px;">▪ 건축물 현황</div>'+
-          '<table style="width:100%;border-collapse:collapse;font-size:11px;">'+
-            '<thead>'+
-              '<tr>'+
-                '<th style="background:#1a3a6b;color:#fff;padding:6px;text-align:center;border:1px solid rgba(255,255,255,0.15);">구분</th>'+
-                '<th style="background:#1a3a6b;color:#fff;padding:6px;text-align:center;border:1px solid rgba(255,255,255,0.15);">구조</th>'+
-                '<th style="background:#1a3a6b;color:#fff;padding:6px;text-align:center;border:1px solid rgba(255,255,255,0.15);">크기(㎡)</th>'+
-                '<th style="background:#1a3a6b;color:#fff;padding:6px;text-align:center;border:1px solid rgba(255,255,255,0.15);">용도</th>'+
-                '<th style="background:#1a3a6b;color:#fff;padding:6px;text-align:center;border:1px solid rgba(255,255,255,0.15);">비고</th>'+
-              '</tr>'+
-            '</thead>'+
-            '<tbody>'+bldgRows+'</tbody>'+
-          '</table>'+
-        '</div>'
-        :'')+
+    // 2. 피해상황
+    '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">2. 피해상황</span></div>'+
+    '<div style="padding-left:4px;margin-bottom:4px;'+S+'">'+
+      row('인명피해', casualty)+
+      row('재산피해', damage)+
     '</div>'+
 
-    // ── 3. 자원동원 ──
-    '<h3>3. 자원동원</h3>'+
-    '<div style="padding-left:12px;">'+
-      (personnelFmt?'<div style="margin-bottom:5px;">○ 인 원: '+escHtml(personnelFmt)+'</div>':'')+
-      (equipFmt?
-        '<div style="margin-bottom:5px;">○ 장 비: '+escHtml(equipFmt)+
-          (equipDetailFmt?
-            '<br><span style="font-size:11px;color:#6B7280;margin-left:16px;">'+escHtml(equipDetailFmt)+'</span>':
-            '')+
+    // 건축물현황
+    (bldgRows?
+      '<div style="padding-left:4px;margin-bottom:8px;">'+
+        '<div style="font-size:10px;font-weight:500;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div>'+
+        '<table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;line-height:1.2;">'+
+          '<thead><tr>'+
+            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:9%;">구분</th>'+
+            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:24%;">구조</th>'+
+            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:12%;">크기(㎡)</th>'+
+            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:30%;">용도</th>'+
+            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:25%;">기타</th>'+
+          '</tr></thead>'+
+          '<tbody>'+bldgRows+'</tbody>'+
+        '</table>'+
+      '</div>':'<div style="margin-bottom:8px;"></div>')+
+
+    // 3. 자원동원
+    '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">3. 자원동원</span></div>'+
+    '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+
+      row('인 원', personnelFmt)+
+      row('장 비', equipFmt)+
+      (fireDetail||agencyDetail?
+        '<div style="padding-left:8px;margin-top:1px;">'+
+          subrow('소방기관', fireDetail)+
+          subrow('유관기관', agencyDetail)+
         '</div>':'')+
     '</div>'+
 
-    // ── 4. 주요 조치사항 ──
+    // 4. 주요 조치사항
     (timelineHtml?
-      '<h3>4. 주요 조치사항</h3>'+
-      '<div style="padding-left:12px;">'+timelineHtml+'</div>':
-      '');
+      '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">4. 주요 조치사항</span></div>'+
+      '<div style="padding-left:4px;margin-bottom:8px;">'+timelineHtml+'</div>':'');
 
   body.innerHTML+=buildPhotoSection();
 }
+
 
 
 
