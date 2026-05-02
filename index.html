@@ -376,10 +376,10 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <div class="rpt-field" style="margin-bottom:0;"><label>인명피해 <span id="lbl_casualty" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_casualty" placeholder="없음"/></div>
         <div class="rpt-field" style="margin-bottom:0;"><label>재산피해 규모</label><input class="rpt-input" id="f_damage" placeholder="4층 보일러실 화재 추정"/></div>
       </div>
-      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">&#127981; 건물 현황 (층별)</div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">&#127981; 건물 현황 (층별) <span style="font-size:9px;font-weight:400;color:var(--ink4);">— 구분·구조·크기·용도는 AI 자동추출 / 비고는 직접 입력</span></div>
       <div style="overflow-x:auto;">
         <table class="bldg-table" id="bldgTable">
-          <thead><tr><th>구분</th><th>구조</th><th>크기(㎡)</th><th>용도</th><th>비고</th></tr></thead>
+          <thead><tr><th>구분</th><th>구조</th><th>크기(㎡)</th><th>용도</th><th>비고 <span style="font-size:9px;font-weight:400;">(직접입력)</span></th></tr></thead>
           <tbody id="bldgTableBody"></tbody>
         </table>
       </div>
@@ -1225,11 +1225,9 @@ function deleteContactById(id){
 
 // ── 보고서 탭 — 건물현황 ─────────────────────────────────────────
 function initBldgTable(){
+  // 기본 행: 구분·구조·크기·용도만 예시, 비고는 사용자 직접 입력
   var defaultRows=[
-    {floor:'1층',struct:'일반철골구조',size:'393.9',use:'체육관 (미니수영장)',note:''},
-    {floor:'2층',struct:'',size:'393.9',use:'체육관',note:''},
-    {floor:'3층',struct:'판넬지붕',size:'156.51',use:'학원',note:''},
-    {floor:'4층',struct:'',size:'90.7',use:'체육관, 물탱크실',note:'화재발생'},
+    {floor:'',struct:'',size:'',use:'',note:''},
   ];
   defaultRows.forEach(function(r){addBldgRow(r);});
 }
@@ -1632,9 +1630,9 @@ function _collectReportData(){
 
 // 비공개 헤더 배너
 function _buildSectionBanner(){
-  // 높이 최소화: padding 줄이고 font-size 9px로 축소
-  return '<div style="border:1px solid #cc0000;margin:0 0 4px 0;padding:1px 6px;text-align:center;border-radius:2px;">'+
-    '<span style="color:#cc0000;font-size:9px;font-weight:500;line-height:1.4;">'+
+  // 극소화: padding 0px, font-size 8px, font-weight 800(굵게)
+  return '<div style="border:1px solid #cc0000;margin:0 0 3px 0;padding:0px 4px;text-align:center;border-radius:2px;line-height:1.3;">'+
+    '<span style="color:#cc0000;font-size:8px;font-weight:800;">'+
     '공공기관의 정보공개에 관한 법률 제9조제1항제6호(개인정보)에 의한 비공개 대상 정보임'+
     '</span></div>';
 }
@@ -1646,9 +1644,9 @@ function _buildSectionHeader(d){
   return '<table style="width:100%;border-collapse:collapse;margin-bottom:6px;">'+
     '<tr>'+
       // 로고 칸 — 너비 확대, 높이 넉넉히
-      '<td style="'+cellBase+'width:110px;text-align:center;vertical-align:middle;background:#f0f4ff;">'+
+      '<td style="'+cellBase+'width:120px;text-align:center;vertical-align:middle;">'+
         '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" '+
-        'style="max-width:100px;max-height:42px;object-fit:contain;" onerror="this.style.display=\'none\'"/>'+
+        'style="max-width:110px;max-height:56px;object-fit:contain;" onerror="this.style.display=\'none\'"/>'+
       '</td>'+
       // 제목 칸
       '<td style="'+cellBase+'text-align:center;font-size:15px;font-weight:700;color:#1a3a6b;vertical-align:middle;">'+
