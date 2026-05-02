@@ -97,8 +97,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .modal-cancel{flex:1;padding:12px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
 .modal-confirm{flex:1;padding:12px;border-radius:var(--r2);border:none;background:var(--orange);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);}
 .modal-confirm.danger{background:var(--red);}
-
-/* 보고서 입력 폼 스타일 */
 .rpt-field{margin-bottom:10px;}
 .rpt-field label{display:block;font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:4px;}
 .rpt-field label .ai-filled{display:inline-block;font-size:9px;font-weight:700;background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;}
@@ -112,8 +110,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .rpt-section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid var(--border);}
 .rpt-section-num{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .rpt-section-title{font-size:13px;font-weight:800;color:var(--ink2);}
-
-/* 건물현황 테이블 */
 .bldg-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
 .bldg-table th{background:var(--navy);color:#fff;padding:7px 6px;font-size:11px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,0.1);}
 .bldg-table td{padding:6px 6px;border:1px solid var(--border);text-align:center;background:var(--surface);}
@@ -121,8 +117,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .bldg-table tr:nth-child(even) td{background:var(--surface2);}
 .bldg-table td.fire-row{background:var(--orange-lt)!important;}
 .bldg-add-btn{width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);margin-bottom:8px;}
-
-/* 타임라인 */
 .timeline-item{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;}
 .timeline-time{width:52px;flex-shrink:0;}
 .timeline-time input{width:100%;font-size:12px;padding:7px 6px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--orange);font-family:var(--mono);font-weight:700;text-align:center;outline:none;}
@@ -131,8 +125,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .timeline-content input{width:100%;font-size:12px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;}
 .timeline-content input:focus{border-color:var(--orange);}
 .timeline-del{width:30px;height:30px;border-radius:50%;background:var(--surface2);color:var(--ink4);border:1.5px solid var(--border);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-
-/* 최종보고서 미리보기 */
 .report-preview{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
 .report-preview-head{background:var(--navy);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
 .report-preview-body{padding:16px;font-size:13px;color:var(--ink);line-height:2.0;font-family:var(--font);}
@@ -140,13 +132,17 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .report-preview-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px;}
 .report-preview-body table th{background:var(--navy);color:#fff;padding:5px 6px;text-align:center;border:1px solid rgba(255,255,255,0.1);}
 .report-preview-body table td{padding:5px 6px;border:1px solid var(--border);text-align:center;}
-
 .ai-badge-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;padding:8px 12px;background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r3);}
 .loading-dots{display:inline-flex;gap:3px;align-items:center;}
 .loading-dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
 .loading-dots span:nth-child(2){animation-delay:.15s;}
 .loading-dots span:nth-child(3){animation-delay:.3s;}
 @keyframes bop{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+/* 보안 에러 메시지 공통 스타일 */
+.sec-err{font-size:12px;font-weight:700;padding:8px 10px;border-radius:var(--r3);margin-top:8px;display:none;}
+.sec-err.show{display:block;}
+.sec-err-red{background:var(--red-lt);color:var(--red);}
+.sec-err-lock{background:#1a1a2e;color:#ff6b6b;font-family:var(--mono);}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 </style>
@@ -178,7 +174,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:12px;text-align:center;">&#128274; 비밀번호를 입력하세요</div>
       <input type="password" id="appLockInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')checkAppLock()" style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:2px solid rgba(255,255,255,0.3);border-radius:10px;background:rgba(255,255,255,0.15);color:#fff;font-family:var(--mono);outline:none;margin-bottom:12px;"/>
       <button onclick="checkAppLock()" style="width:100%;padding:15px;background:#fff;color:var(--orange);border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128275; 입장</button>
-      <div id="appLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:#fff;text-align:center;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">&#10060; 비밀번호가 틀렸습니다.</div>
+      <!-- 보안강화: 브루트포스 방어 에러 메시지 -->
+      <div id="appLockError" class="sec-err sec-err-red" style="margin-top:10px;background:rgba(0,0,0,0.2);color:#fff;border-radius:8px;"></div>
     </div>
   </div>
 </div>
@@ -289,8 +286,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 
 <!-- ==================== 보고서 탭 ==================== -->
 <div id="tab-report" class="screen">
-
-  <!-- STEP 1: 사진 업로드 & AI 분석 -->
   <div class="rpt-page on" id="rptPage0">
     <div class="card">
       <div class="card-head">
@@ -306,7 +301,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <button class="rpt-type-btn" onclick="selectRptType(this,'training')" data-type="training"><span class="ico">&#127891;</span>훈련</button>
       </div>
     </div>
-
     <div class="card">
       <div class="card-head">
         <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
@@ -328,8 +322,6 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="rpt-scan-done" id="rptScanDone" style="margin-bottom:8px;">
         <div style="font-size:13px;font-weight:800;color:var(--green);">&#9989; AI 분석 완료 — 아래에서 추출된 정보를 확인하세요</div>
       </div>
-
-      <!-- AI 분석 결과 카드 -->
       <div id="rptScanResultCard" style="display:none;margin-bottom:10px;background:var(--surface2);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);overflow:hidden;">
         <div style="background:var(--navy);padding:9px 14px;display:flex;align-items:center;gap:8px;">
           <span style="font-size:18px;">&#129302;</span>
@@ -337,206 +329,76 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.6);">녹색 항목은 자동 채워짐</span>
         </div>
         <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#128293;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고유형</div>
-              <div id="scanResultType" style="font-size:14px;font-weight:900;color:var(--orange);"></div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#128205;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">추정 주소 / 장소</div>
-              <div id="scanResultAddr" style="font-size:13px;color:var(--ink);line-height:1.6;"></div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#128196;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 대상물</div>
-              <div id="scanResultTarget" style="font-size:13px;color:var(--ink);"></div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#128221;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 경위 / 개요</div>
-              <div id="scanResultSummary" style="font-size:13px;color:var(--ink);line-height:1.7;"></div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#128100;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">인명피해 추정</div>
-              <div id="scanResultCasualty" style="font-size:13px;color:var(--ink);"></div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <span style="font-size:20px;flex-shrink:0;">&#9201;</span>
-            <div style="flex:1;">
-              <div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">타임라인 (사진에서 추출)</div>
-              <div id="scanResultTimeline" style="font-size:12px;color:var(--ink);line-height:1.8;font-family:var(--mono);"></div>
-            </div>
-          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#128293;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고유형</div><div id="scanResultType" style="font-size:14px;font-weight:900;color:var(--orange);"></div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#128205;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">추정 주소 / 장소</div><div id="scanResultAddr" style="font-size:13px;color:var(--ink);line-height:1.6;"></div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#128196;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 대상물</div><div id="scanResultTarget" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#128221;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 경위 / 개요</div><div id="scanResultSummary" style="font-size:13px;color:var(--ink);line-height:1.7;"></div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#128100;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">인명피해 추정</div><div id="scanResultCasualty" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><span style="font-size:20px;flex-shrink:0;">&#9201;</span><div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">타임라인 (사진에서 추출)</div><div id="scanResultTimeline" style="font-size:12px;color:var(--ink);line-height:1.8;font-family:var(--mono);"></div></div></div>
         </div>
       </div>
-
       <button id="rptAiBtn" onclick="rptRunScanAI()" disabled class="rpt-ai-btn" style="margin-top:4px;">&#129302; AI 분석 시작</button>
     </div>
-
-    <button onclick="rptGoPage(1)" style="width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;">
-      &#128203; 보고서 작성하기 &#8594;
-    </button>
+    <button onclick="rptGoPage(1)" style="width:100%;padding:15px;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);background:var(--orange);color:#fff;box-shadow:0 4px 18px rgba(232,96,10,0.32);display:flex;align-items:center;justify-content:center;gap:8px;">&#128203; 보고서 작성하기 &#8594;</button>
     <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--ink4);">AI 분석 없이도 직접 입력 가능합니다</div>
   </div>
 
   <!-- STEP 2: 보고서 입력 폼 -->
   <div class="rpt-page" id="rptPage1">
-
-    <!-- AI 자동채움 안내 -->
     <div id="rptAiFillBanner" style="display:none;" class="ai-badge-row">
       <span style="font-size:18px;">&#129302;</span>
-      <div style="flex:1;">
-        <div style="font-size:12px;font-weight:800;color:var(--green);">AI 분석 결과가 자동으로 채워졌습니다</div>
-        <div style="font-size:11px;color:var(--ink4);">녹색 항목 확인 후 빈 칸을 직접 입력해주세요</div>
-      </div>
+      <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--green);">AI 분석 결과가 자동으로 채워졌습니다</div><div style="font-size:11px;color:var(--ink4);">녹색 항목 확인 후 빈 칸을 직접 입력해주세요</div></div>
     </div>
-
-    <!-- 헤더 정보 -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">&#128196;</div>
-        <div class="rpt-section-title">보고서 기본 정보</div>
-      </div>
-      <div class="rpt-field">
-        <label>소방서명</label>
-        <input class="rpt-input" id="f_station" placeholder="서산소방서" value="서산소방서"/>
+      <div class="rpt-section-head"><div class="rpt-section-num">&#128196;</div><div class="rpt-section-title">보고서 기본 정보</div></div>
+      <div class="rpt-field"><label>소방서명</label><input class="rpt-input" id="f_station" placeholder="서산소방서" value="서산소방서"/></div>
+      <div class="rpt-row2">
+        <div class="rpt-field"><label>상황관리자</label><input class="rpt-input" id="f_manager" placeholder="소방장 홍길동(☎306)"/></div>
+        <div class="rpt-field"><label>당직근무자</label><input class="rpt-input" id="f_duty" placeholder="소방경 김철수"/></div>
       </div>
       <div class="rpt-row2">
-        <div class="rpt-field">
-          <label>상황관리자 <span style="font-size:10px;color:var(--ink4);">(직책·성명·내선)</span></label>
-          <input class="rpt-input" id="f_manager" placeholder="소방장 홍길동(☎306)"/>
-        </div>
-        <div class="rpt-field">
-          <label>당직근무자</label>
-          <input class="rpt-input" id="f_duty" placeholder="소방경 김철수"/>
-        </div>
-      </div>
-      <div class="rpt-row2">
-        <div class="rpt-field">
-          <label>보고일시</label>
-          <input class="rpt-input" id="f_reportDate" placeholder="2026. 4. 23.(목)"/>
-        </div>
-        <div class="rpt-field">
-          <label>신고건수</label>
-          <input class="rpt-input" id="f_callCount" placeholder="4건"/>
-        </div>
+        <div class="rpt-field"><label>보고일시</label><input class="rpt-input" id="f_reportDate" placeholder="2026. 4. 23.(목)"/></div>
+        <div class="rpt-field"><label>신고건수</label><input class="rpt-input" id="f_callCount" placeholder="4건"/></div>
       </div>
     </div>
-
-    <!-- 1. 사고개요 -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">1</div>
-        <div class="rpt-section-title">사고개요</div>
-      </div>
-      <div class="rpt-field">
-        <label>일시 <span id="lbl_datetime" class="ai-filled" style="display:none;">AI</span></label>
-        <input class="rpt-input" id="f_datetime" placeholder="2026. 4. 23.(목) 12:07(접수) ~"/>
-      </div>
-      <div class="rpt-field">
-        <label>선착대 거리/시간</label>
-        <input class="rpt-input" id="f_distance" placeholder="선착대(예천센터) 2.1km(7분) / 본서 2.1km(7분)"/>
-      </div>
-      <div class="rpt-field">
-        <label>대상 (사고 대상물) <span id="lbl_target" class="ai-filled" style="display:none;">AI</span></label>
-        <input class="rpt-input" id="f_target" placeholder="운동시설(vip 주니어센터)"/>
-      </div>
-      <div class="rpt-field">
-        <label>장소 (주소) <span id="lbl_addr" class="ai-filled" style="display:none;">AI</span></label>
-        <input class="rpt-input" id="f_addr" placeholder="충청남도 서산시 예천동 496-16"/>
-      </div>
-      <div class="rpt-field">
-        <label>내 용 <span id="lbl_mainContent" class="ai-filled" style="display:none;">AI</span></label>
-        <input class="rpt-input" id="f_mainContent" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/>
-      </div>
-      <div class="rpt-field">
-        <label>보고제목 (P119) <span id="lbl_summary" class="ai-filled" style="display:none;">AI</span></label>
-        <input class="rpt-input" id="f_summary" placeholder="예) [1보] 음암급차 소독등(1보)"/>
-      </div>
+      <div class="rpt-section-head"><div class="rpt-section-num">1</div><div class="rpt-section-title">사고개요</div></div>
+      <div class="rpt-field"><label>일시 <span id="lbl_datetime" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_datetime" placeholder="2026. 4. 23.(목) 12:07(접수) ~"/></div>
+      <div class="rpt-field"><label>선착대 거리/시간</label><input class="rpt-input" id="f_distance" placeholder="선착대(예천센터) 2.1km(7분)"/></div>
+      <div class="rpt-field"><label>대상 <span id="lbl_target" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_target" placeholder="운동시설(vip 주니어센터)"/></div>
+      <div class="rpt-field"><label>장소 <span id="lbl_addr" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_addr" placeholder="충청남도 서산시 예천동 496-16"/></div>
+      <div class="rpt-field"><label>내 용 <span id="lbl_mainContent" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_mainContent" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/></div>
+      <div class="rpt-field"><label>보고제목 (P119) <span id="lbl_summary" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_summary" placeholder="예) [1보] 음암급차 소독등(1보)"/></div>
     </div>
-
-    <!-- 2. 피해현황 -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">2</div>
-        <div class="rpt-section-title">피해상황</div>
-      </div>
+      <div class="rpt-section-head"><div class="rpt-section-num">2</div><div class="rpt-section-title">피해상황</div></div>
       <div class="rpt-row2" style="margin-bottom:10px;">
-        <div class="rpt-field" style="margin-bottom:0;">
-          <label>인명피해 <span id="lbl_casualty" class="ai-filled" style="display:none;">AI</span></label>
-          <input class="rpt-input" id="f_casualty" placeholder="없음"/>
-        </div>
-        <div class="rpt-field" style="margin-bottom:0;">
-          <label>재산피해 규모</label>
-          <input class="rpt-input" id="f_damage" placeholder="4층 보일러실 화재 추정"/>
-        </div>
+        <div class="rpt-field" style="margin-bottom:0;"><label>인명피해 <span id="lbl_casualty" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_casualty" placeholder="없음"/></div>
+        <div class="rpt-field" style="margin-bottom:0;"><label>재산피해 규모</label><input class="rpt-input" id="f_damage" placeholder="4층 보일러실 화재 추정"/></div>
       </div>
-
-      <!-- 건물 현황 테이블 -->
       <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">&#127981; 건물 현황 (층별)</div>
       <div style="overflow-x:auto;">
         <table class="bldg-table" id="bldgTable">
-          <thead>
-            <tr><th>구분</th><th>구조</th><th>크기(㎡)</th><th>용도</th><th>비고</th></tr>
-          </thead>
+          <thead><tr><th>구분</th><th>구조</th><th>크기(㎡)</th><th>용도</th><th>비고</th></tr></thead>
           <tbody id="bldgTableBody"></tbody>
         </table>
       </div>
       <button class="bldg-add-btn" onclick="addBldgRow()">+ 층 추가</button>
     </div>
-
-    <!-- 3. 동원상황 -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">3</div>
-        <div class="rpt-section-title">자원동원</div>
-      </div>
+      <div class="rpt-section-head"><div class="rpt-section-num">3</div><div class="rpt-section-title">자원동원</div></div>
       <div class="rpt-row2">
-        <div class="rpt-field">
-          <label>인원 (명) <span id="lbl_personnel" class="ai-filled" style="display:none;">AI</span></label>
-          <input class="rpt-input" id="f_personnel" placeholder="38명(소방38)"/>
-        </div>
-        <div class="rpt-field">
-          <label>장비 (대)</label>
-          <input class="rpt-input" id="f_equipment" placeholder="14대"/>
-        </div>
+        <div class="rpt-field"><label>인원 (명) <span id="lbl_personnel" class="ai-filled" style="display:none;">AI</span></label><input class="rpt-input" id="f_personnel" placeholder="38명(소방38)"/></div>
+        <div class="rpt-field"><label>장비 (대)</label><input class="rpt-input" id="f_equipment" placeholder="14대"/></div>
       </div>
-      <div class="rpt-field">
-        <label>장비 상세</label>
-        <input class="rpt-input" id="f_equipDetail" placeholder="펌프4, 탱크3, 구조2, 구급2, 화학1, 굴절1, 기타2"/>
-      </div>
+      <div class="rpt-field"><label>장비 상세</label><input class="rpt-input" id="f_equipDetail" placeholder="펌프4, 탱크3, 구조2, 구급2, 화학1, 굴절1, 기타2"/></div>
     </div>
-
-    <!-- 4. 조치사항 (타임라인) -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">4</div>
-        <div class="rpt-section-title">주요 조치사항</div>
-        <button onclick="addTimelineItem()" style="margin-left:auto;padding:5px 12px;border-radius:100px;border:1.5px solid var(--orange-bd);background:var(--orange-lt);color:var(--orange);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">+ 추가</button>
-      </div>
+      <div class="rpt-section-head"><div class="rpt-section-num">4</div><div class="rpt-section-title">주요 조치사항</div><button onclick="addTimelineItem()" style="margin-left:auto;padding:5px 12px;border-radius:100px;border:1.5px solid var(--orange-bd);background:var(--orange-lt);color:var(--orange);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">+ 추가</button></div>
       <div id="timelineList"></div>
     </div>
-
-    <!-- 5. 위치도 & 현장사진 업로드 -->
     <div class="card">
-      <div class="rpt-section-head">
-        <div class="rpt-section-num">5</div>
-        <div class="rpt-section-title">위치도 및 현장사진</div>
-      </div>
-
-      <!-- 위치도 -->
+      <div class="rpt-section-head"><div class="rpt-section-num">5</div><div class="rpt-section-title">위치도 및 현장사진</div></div>
       <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">&#128506;&#65039; 위치도 <span style="font-weight:400;">(1장)</span></div>
       <label id="mapDropZone" style="border:2px dashed var(--blue-lt);border-color:rgba(26,110,232,0.35);border-radius:var(--r2);padding:14px;text-align:center;cursor:pointer;background:var(--blue-lt);margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
         <input type="file" id="mapFileInput" accept="image/*" onchange="handleMapFile(this.files)" style="display:none;"/>
@@ -544,12 +406,10 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <div style="font-size:13px;font-weight:800;color:var(--blue);">위치도 사진 선택 또는 드래그</div>
         <div style="font-size:11px;color:var(--ink4);">JPG · PNG · WEBP</div>
       </label>
-      <div id="mapThumbWrap" style="display:none;margin-bottom:10px;position:relative;display:none;">
+      <div id="mapThumbWrap" style="display:none;margin-bottom:10px;position:relative;">
         <img id="mapThumb" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.3);background:#f0f4ff;"/>
         <button onclick="removeMapPhoto()" style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#10005;</button>
       </div>
-
-      <!-- 현장사진 -->
       <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;margin-top:4px;">&#128247; 현장사진 <span style="font-weight:400;">(최대 6장)</span></div>
       <label id="sceneDropZone" style="border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:14px;text-align:center;cursor:pointer;background:var(--orange-lt);margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
         <input type="file" id="sceneFileInput" accept="image/*" multiple onchange="handleSceneFiles(this.files)" style="display:none;"/>
@@ -559,15 +419,13 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </label>
       <div id="sceneThumbRow" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;"></div>
     </div>
-
-    <!-- 네비게이션 -->
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <button onclick="rptGoPage(0)" style="flex:1;padding:13px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#8592; 뒤로</button>
       <button onclick="rptGoPage(2)" style="flex:2;padding:13px;font-size:14px;font-weight:900;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);">&#128196; 보고서 미리보기 &#8594;</button>
     </div>
   </div>
 
-  <!-- STEP 3: 최종 보고서 미리보기 & 출력 -->
+  <!-- STEP 3: 최종 보고서 -->
   <div class="rpt-page" id="rptPage2">
     <div class="card">
       <div class="card-head">
@@ -576,9 +434,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <button onclick="rptGoPage(1)" style="margin-left:auto;font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">&#9998; 수정</button>
       </div>
       <div class="report-preview" id="reportPreview">
-        <div class="report-preview-body" id="reportPreviewBody">
-          보고서를 작성하면 여기에 미리보기가 표시됩니다.
-        </div>
+        <div class="report-preview-body" id="reportPreviewBody">보고서를 작성하면 여기에 미리보기가 표시됩니다.</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
@@ -652,7 +508,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div style="font-size:13px;color:var(--ink4);margin-bottom:24px;">비밀번호를 입력하면 설정을 변경할 수 있습니다</div>
       <input type="password" id="settingsLockInput" placeholder="설정 비밀번호 입력" onkeydown="if(event.key==='Enter')checkSettingsLock()" style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:10px;"/>
       <button onclick="checkSettingsLock()" style="width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">&#128275; 확인</button>
-      <div id="settingsLockError" style="display:none;margin-top:10px;font-size:12px;font-weight:700;color:var(--red);text-align:center;background:var(--red-lt);padding:8px;border-radius:var(--r3);">&#10060; 비밀번호가 틀렸습니다.</div>
+      <!-- 보안강화: 브루트포스 에러 -->
+      <div id="settingsLockError" class="sec-err sec-err-red" style="margin-top:10px;"></div>
     </div>
   </div>
   <div id="settingsContent" style="display:none;">
@@ -682,6 +539,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     </div>
     <div class="card">
       <div class="card-head"><span class="card-badge b-red">보안관리</span><span class="card-title">비밀번호 관리</span></div>
+      <!-- 앱 비밀번호 변경 -->
       <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">&#128275; 앱 진입 비밀번호 변경</div>
       <div class="sec-lbl">현재 비밀번호</div>
       <input type="password" id="cfg_currentPw" placeholder="현재 앱 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
@@ -689,8 +547,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <input type="password" id="cfg_newPw" placeholder="새 비밀번호 (4자리 이상)" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
       <div class="sec-lbl">새 비밀번호 확인</div>
       <input type="password" id="cfg_confirmPw" placeholder="비밀번호 재입력" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-      <button class="btn btn-primary" style="width:100%;background:var(--navy);margin-bottom:16px;" onclick="changePw()">&#128272; 앱 비밀번호 변경</button>
-      <div id="pwMsg" style="margin-top:-10px;margin-bottom:8px;"></div>
+      <button class="btn btn-primary" style="width:100%;background:var(--navy);margin-bottom:8px;" onclick="changePw()">&#128272; 앱 비밀번호 변경</button>
+      <div id="pwMsg" style="margin-bottom:16px;"></div>
+      <!-- 설정 비밀번호 변경 -->
       <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">&#9881;&#65039; 설정 탭 비밀번호 변경</div>
       <div class="sec-lbl">현재 설정 비밀번호</div>
       <input type="password" id="cfg_currentSettingsPw" placeholder="현재 설정 비밀번호" style="width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:8px;"/>
@@ -713,18 +572,19 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
     </div>
     <div class="card">
-      <div class="card-head"><span class="card-badge b-green">Claude AI</span><span class="card-title">AI API 설정</span></div>
-      <div class="info-box">&#128161; AI 분석 기능에 사용할 API Key를 입력하세요. (Gemini API 지원)</div>
+      <div class="card-head"><span class="card-badge b-green">Gemini AI</span><span class="card-title">AI API 설정</span></div>
+      <!-- 보안강화: AES-256-GCM 암호화 저장 안내 -->
+      <div class="info-box">&#128274; API Key는 AES-256-GCM으로 암호화되어 저장됩니다. 앱 비밀번호 변경 시 재입력이 필요합니다.</div>
       <div class="sec-lbl">Gemini API Key</div>
       <input type="password" id="cfg_geminiKey" placeholder="AIza..." style="width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r2);background:var(--surface2);color:var(--ink);font-family:var(--mono);outline:none;margin-bottom:12px;"/>
-      <button class="btn btn-primary" style="width:100%;" onclick="saveGeminiKey()">&#128190; 저장</button>
+      <button class="btn btn-primary" style="width:100%;" onclick="saveGeminiKey()">&#128190; 저장 (암호화)</button>
     </div>
     <div class="card">
       <div class="card-head"><span class="card-badge b-red">위험</span><span class="card-title">데이터 초기화</span></div>
       <div class="info-box">&#9888;&#65039; 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
       <button class="btn" style="width:100%;color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="clearAllData()">&#128465;&#65039; 모든 데이터 초기화</button>
     </div>
-    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v4.0&nbsp;·&nbsp;서산소방서</div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v4.1&nbsp;·&nbsp;서산소방서&nbsp;·&nbsp;🔐 보안강화판</div>
   </div>
 </div>
 
@@ -741,7 +601,121 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== 전역 변수 ====================
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  SECURITY MODULE v1.0                                           ║
+// ║  · SHA-256 해시 기반 비밀번호 저장                               ║
+// ║  · AES-256-GCM + PBKDF2(100,000회) API Key 암호화               ║
+// ║  · 브루트포스 방어 (5회 실패 → 30초 잠금 + 카운트다운)            ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// ── SHA-256 (단방향 해시) ─────────────────────────────────────────
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── AES-256-GCM 암호화 유틸 ──────────────────────────────────────
+async function _deriveKey(password, salt) {
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:100000, hash:'SHA-256' },
+    km, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+  );
+}
+async function encryptText(plain, password) {
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await _deriveKey(password, salt);
+  const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv}, key, new TextEncoder().encode(plain));
+  const out=new Uint8Array(16+12+enc.byteLength);
+  out.set(salt,0); out.set(iv,16); out.set(new Uint8Array(enc),28);
+  return btoa(String.fromCharCode(...out));
+}
+async function decryptText(b64, password) {
+  try {
+    const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    const key=await _deriveKey(password, bytes.slice(0,16));
+    const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes.slice(16,28)}, key, bytes.slice(28));
+    return new TextDecoder().decode(dec);
+  } catch(e) { return null; }
+}
+
+// ── 브루트포스 방어 ───────────────────────────────────────────────
+var _failCounts={app:0, settings:0};
+var _lockUntil={app:0, settings:0};
+var _FAIL_LIMIT=5, _LOCK_MS=30000;
+
+function _isLocked(who) { return Date.now()<_lockUntil[who]; }
+function _recordFail(who) {
+  _failCounts[who]++;
+  if(_failCounts[who]>=_FAIL_LIMIT){ _lockUntil[who]=Date.now()+_LOCK_MS; _failCounts[who]=0; return true; }
+  return false;
+}
+function _recordSuccess(who) { _failCounts[who]=0; _lockUntil[who]=0; }
+function _remainSec(who) { return Math.ceil((_lockUntil[who]-Date.now())/1000); }
+
+// 에러 메시지 + 카운트다운 표시
+function _showLockMsg(who, errElId, inputEl) {
+  var errEl=document.getElementById(errElId); if(!errEl) return;
+  var remaining=_FAIL_LIMIT-_failCounts[who];
+  errEl.className='sec-err sec-err-red show';
+  if(_isLocked(who)) {
+    errEl.className='sec-err sec-err-lock show';
+    if(inputEl) inputEl.disabled=true;
+    var t=setInterval(function(){
+      if(!_isLocked(who)){ clearInterval(t); errEl.className='sec-err'; if(inputEl){inputEl.disabled=false;inputEl.focus();} }
+      else { errEl.textContent='⛔ '+_remainSec(who)+'초 후 다시 시도하세요 ('+_failCounts[who]+'/'+_FAIL_LIMIT+')'; }
+    },1000);
+    errEl.textContent='⛔ '+_remainSec(who)+'초 후 다시 시도하세요';
+  } else {
+    errEl.textContent='❌ 비밀번호가 틀렸습니다 — 남은 횟수: '+remaining+'회';
+  }
+}
+
+// ── 비밀번호 해시 저장/검증/마이그레이션 ─────────────────────────
+async function _migratePwIfNeeded() {
+  var pairs=[{k:'appLockPw',d:'0261'},{k:'settingsPw',d:'2399'}];
+  for(var i=0;i<pairs.length;i++){
+    var p=pairs[i], stored=localStorage.getItem(p.k);
+    if(!stored){ localStorage.setItem(p.k,'sha256:'+await sha256(p.d)); }
+    else if(!stored.startsWith('sha256:')){ localStorage.setItem(p.k,'sha256:'+await sha256(stored)); }
+  }
+}
+async function _checkPw(storageKey, defaultVal, input) {
+  var stored=localStorage.getItem(storageKey)||('sha256:'+await sha256(defaultVal));
+  var h=await sha256(input);
+  return stored.startsWith('sha256:')?(h===stored.slice(7)):(input===stored);
+}
+async function _savePw(storageKey, newPlain) {
+  localStorage.setItem(storageKey,'sha256:'+await sha256(newPlain));
+}
+
+// ── API Key 암호화 저장 ───────────────────────────────────────────
+var _sessionApiKey=''; // 복호화 키는 메모리에만 보관
+
+async function _saveApiKey(plainKey, appPassword) {
+  _sessionApiKey=plainKey||'';
+  if(!plainKey){ localStorage.removeItem('encApiKey'); return; }
+  localStorage.setItem('encApiKey', await encryptText(plainKey, appPassword));
+  // 레거시 평문 제거
+  try{ var s=JSON.parse(localStorage.getItem('appSettings')||'{}'); delete s.geminiKey; localStorage.setItem('appSettings',JSON.stringify(s)); }catch(e){}
+}
+async function _loadApiKeyOnLogin(appPassword) {
+  // 레거시 평문 마이그레이션
+  try {
+    var s=JSON.parse(localStorage.getItem('appSettings')||'{}');
+    if(s.geminiKey){ await _saveApiKey(s.geminiKey, appPassword); return; }
+  } catch(e){}
+  var enc=localStorage.getItem('encApiKey'); if(!enc) return;
+  var dec=await decryptText(enc, appPassword);
+  if(dec!==null) _sessionApiKey=dec;
+  else showToast('⚠️ API Key 복호화 실패 — 설정에서 재입력 필요');
+}
+function getApiKey() { return _sessionApiKey; }
+
+// ══════════════════════════════════════════════════════════════════
+// 기존 앱 로직
+// ══════════════════════════════════════════════════════════════════
 var currentLat=null,currentLng=null,currentAddress='';
 var rptCurrentPage=0,rptCurrentType='fire';
 var rptScanPhotos=[];
@@ -756,87 +730,114 @@ var featureLocks={};
 var autoLockTimer=null,autoLockMinutes=0;
 var bldgRowCount=0;
 var timelineCount=0;
-var rptScanResult=null; // AI 분석 결과 저장
+var rptScanResult=null;
+// 로그인 시 사용한 앱 비밀번호 — API Key 암복호화에 사용
+var _currentAppPassword='';
 
-// ==================== 시계 ====================
+// ── 시계 ─────────────────────────────────────────────────────────
 function updateClock(){
   var n=new Date(),el=document.getElementById('clock');
   if(el)el.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
 }
-setInterval(updateClock,1000);updateClock();
+setInterval(updateClock,1000); updateClock();
 
-// ==================== 앱 초기화 ====================
-window.addEventListener('load',function(){initAppLock();});
-function initAppLock(){
-  var s=document.getElementById('appLockScreen');if(s)s.style.display='flex';
-  loadUserContacts();loadHistory();loadNoticeAndLocks();loadAutoLock();loadGeminiKeySetting();
-  initBldgTable();
-  initTimeline();
-}
-function checkAppLock(){
-  var pw=localStorage.getItem('appLockPw')||'0261';
+// ── 앱 초기화 ────────────────────────────────────────────────────
+window.addEventListener('load', async function(){
+  await _migratePwIfNeeded();      // 비밀번호 해시 마이그레이션
+  var s=document.getElementById('appLockScreen'); if(s)s.style.display='flex';
+  loadUserContacts(); loadHistory(); loadNoticeAndLocks(); loadAutoLock();
+  initBldgTable(); initTimeline();
+});
+
+// ── 앱 잠금 해제 (보안강화) ──────────────────────────────────────
+async function checkAppLock() {
   var inp=document.getElementById('appLockInput');
-  var err=document.getElementById('appLockError');
+  var errEl=document.getElementById('appLockError');
   var s=document.getElementById('appLockScreen');
-  if(!inp)return;
-  if(inp.value===pw){if(s)s.style.display='none';switchTab('dispatch');}
-  else{if(err)err.style.display='block';inp.value='';inp.focus();}
+  if(!inp) return;
+
+  // 브루트포스 체크
+  if(_isLocked('app')) { _showLockMsg('app','appLockError',inp); return; }
+
+  var ok=await _checkPw('appLockPw','0261', inp.value);
+  if(ok) {
+    _recordSuccess('app');
+    _currentAppPassword=inp.value;                      // 비밀번호 메모리 보관
+    await _loadApiKeyOnLogin(_currentAppPassword);       // API Key 복호화
+    if(s)s.style.display='none';
+    if(errEl)errEl.className='sec-err';
+    switchTab('dispatch');
+  } else {
+    var locked=_recordFail('app');
+    _showLockMsg('app','appLockError', inp);
+    inp.value=''; if(!locked) inp.focus();
+  }
 }
-function checkSettingsLock(){
-  var pw=localStorage.getItem('settingsPw')||'2399';
+
+// ── 설정 잠금 해제 (보안강화) ────────────────────────────────────
+async function checkSettingsLock() {
   var inp=document.getElementById('settingsLockInput');
-  var err=document.getElementById('settingsLockError');
+  var errEl=document.getElementById('settingsLockError');
   var lock=document.getElementById('settingsLockInline');
   var content=document.getElementById('settingsContent');
-  if(!inp)return;
-  if(inp.value===pw){
+  if(!inp) return;
+
+  if(_isLocked('settings')) { _showLockMsg('settings','settingsLockError',inp); return; }
+
+  var ok=await _checkPw('settingsPw','2399', inp.value);
+  if(ok) {
+    _recordSuccess('settings');
     if(lock)lock.style.display='none';
     if(content)content.style.display='block';
-    if(err)err.style.display='none';
-  }else{if(err)err.style.display='block';inp.value='';inp.focus();}
+    if(errEl)errEl.className='sec-err';
+    // 저장된 API Key 표시 (마스킹)
+    if(_sessionApiKey){ var el=document.getElementById('cfg_geminiKey'); if(el)el.placeholder='저장됨 (변경하려면 새로 입력)'; }
+  } else {
+    var locked=_recordFail('settings');
+    _showLockMsg('settings','settingsLockError', inp);
+    inp.value=''; if(!locked) inp.focus();
+  }
 }
 
-// ==================== 탭 전환 ====================
+// ── 탭 전환 ──────────────────────────────────────────────────────
 function switchTab(tab,btnEl){
   if(LOCKABLE_TABS.indexOf(tab)>=0&&featureLocks[tab]){showToast('잠금된 탭입니다');return;}
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on');});
-  var screen=document.getElementById('tab-'+tab);if(screen)screen.classList.add('on');
-  var btn=btnEl||document.getElementById('nav-'+tab);if(btn)btn.classList.add('on');
+  var screen=document.getElementById('tab-'+tab); if(screen)screen.classList.add('on');
+  var btn=btnEl||document.getElementById('nav-'+tab); if(btn)btn.classList.add('on');
   if(tab==='settings'){
     var lock=document.getElementById('settingsLockInline');
     var content=document.getElementById('settingsContent');
     var sinp=document.getElementById('settingsLockInput');
     var serr=document.getElementById('settingsLockError');
-    if(lock)lock.style.display='flex';if(content)content.style.display='none';
-    if(sinp){sinp.value='';setTimeout(function(){sinp.focus();},100);}
-    if(serr)serr.style.display='none';
+    if(lock)lock.style.display='flex'; if(content)content.style.display='none';
+    if(sinp){sinp.value='';setTimeout(function(){if(!_isLocked('settings'))sinp.focus();},100);}
+    if(serr)serr.className='sec-err';
+    _recordSuccess('settings'); // 탭 이동 시 실패카운터 유지(리셋 안 함 — 보안 유지)
   }
 }
 
-// ==================== 모달/토스트 ====================
+// ── 모달/토스트 ──────────────────────────────────────────────────
 function showConfirm(title,msg,onOk,isDanger){
   var overlay=document.getElementById('customModal');
-  var tEl=document.getElementById('modalTitle');
-  var mEl=document.getElementById('modalMsg');
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalMsg').textContent=msg;
   var okBtn=document.getElementById('modalConfirm');
-  var cancelBtn=document.getElementById('modalCancel');
-  if(!overlay)return onOk&&onOk();
-  tEl.textContent=title;mEl.textContent=msg;
   okBtn.className='modal-confirm'+(isDanger?' danger':'');
   overlay.classList.add('show');
   okBtn.onclick=function(){overlay.classList.remove('show');if(onOk)onOk();};
-  cancelBtn.onclick=function(){overlay.classList.remove('show');};
+  document.getElementById('modalCancel').onclick=function(){overlay.classList.remove('show');};
 }
 function showToast(msg,dur){
-  dur=dur||2400;var t=document.getElementById('toast');
-  if(!t)return;t.textContent=msg;t.classList.add('show');
+  dur=dur||2400; var t=document.getElementById('toast');
+  if(!t)return; t.textContent=msg; t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},dur);
 }
 
-// ==================== 설정 ====================
+// ── 설정 ─────────────────────────────────────────────────────────
 function loadNoticeAndLocks(){
-  var n={};try{n=JSON.parse(localStorage.getItem('appNotice')||'{}');}catch(e){n={};}
+  var n={}; try{n=JSON.parse(localStorage.getItem('appNotice')||'{}');}catch(e){}
   if(n.msg){var el=document.getElementById('noticeMsg');if(el)el.textContent=n.msg;var cfg=document.getElementById('cfg_noticeMsg');if(cfg)cfg.value=n.msg;}
   try{featureLocks=JSON.parse(localStorage.getItem('featureLocks')||'{}');}catch(e){featureLocks={};}
   applyAllLocks();
@@ -844,11 +845,11 @@ function loadNoticeAndLocks(){
 function saveNotice(){
   var msg=(document.getElementById('cfg_noticeMsg')?document.getElementById('cfg_noticeMsg').value:'').trim()||'정상 운영 중입니다.';
   localStorage.setItem('appNotice',JSON.stringify({msg:msg}));
-  var el=document.getElementById('noticeMsg');if(el)el.textContent=msg;
-  var bn=document.getElementById('noticeBanner');if(bn){bn.style.display='flex';}
+  var el=document.getElementById('noticeMsg'); if(el)el.textContent=msg;
+  var bn=document.getElementById('noticeBanner'); if(bn)bn.style.display='flex';
   showToast('공지가 저장됐습니다');
 }
-function getTabName(tab){return {report:'보고서',map:'지도',contacts:'연락처'}[tab]||tab;}
+function getTabName(tab){return{report:'보고서',map:'지도',contacts:'연락처'}[tab]||tab;}
 function toggleLock(tab){
   featureLocks[tab]=!featureLocks[tab];
   localStorage.setItem('featureLocks',JSON.stringify(featureLocks));
@@ -864,58 +865,77 @@ function applyAllLocks(){
     if(nav){nav.style.opacity=locked?'0.4':'1';nav.style.pointerEvents=locked?'none':'';}
   });
 }
-function changePw(){
+
+// ── 비밀번호 변경 (보안강화: SHA-256 해시) ───────────────────────
+async function changePw(){
   var cur=document.getElementById('cfg_currentPw').value;
   var nw=document.getElementById('cfg_newPw').value;
   var conf=document.getElementById('cfg_confirmPw').value;
-  var stored=localStorage.getItem('appLockPw')||'0261';
-  var msg=document.getElementById('pwMsg');
-  if(cur!==stored){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>';return;}
-  if(nw.length<4){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>';return;}
-  if(nw!==conf){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>';return;}
-  localStorage.setItem('appLockPw',nw);
-  msg.innerHTML='<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">비밀번호가 변경됐습니다.</div>';
+  var msgEl=document.getElementById('pwMsg');
+  function setMsg(html){ if(msgEl)msgEl.innerHTML=html; }
+
+  var ok=await _checkPw('appLockPw','0261', cur);
+  if(!ok){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>'); return; }
+  if(nw.length<4){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>'); return; }
+  if(nw!==conf){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>'); return; }
+
+  await _savePw('appLockPw', nw);
+
+  // API Key를 새 비밀번호로 재암호화
+  if(_sessionApiKey){ await _saveApiKey(_sessionApiKey, nw); }
+  _currentAppPassword=nw;
+
+  setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">✅ 비밀번호가 변경됐습니다.</div>');
   document.getElementById('cfg_currentPw').value='';document.getElementById('cfg_newPw').value='';document.getElementById('cfg_confirmPw').value='';
 }
-function changeSettingsPw(){
+
+async function changeSettingsPw(){
   var cur=document.getElementById('cfg_currentSettingsPw').value;
   var nw=document.getElementById('cfg_newSettingsPw').value;
   var conf=document.getElementById('cfg_confirmSettingsPw').value;
-  var stored=localStorage.getItem('settingsPw')||'2399';
-  var msg=document.getElementById('settingsPwMsg');
-  if(cur!==stored){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>';return;}
-  if(nw.length<4){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>';return;}
-  if(nw!==conf){msg.innerHTML='<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>';return;}
-  localStorage.setItem('settingsPw',nw);
-  msg.innerHTML='<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">설정 비밀번호가 변경됐습니다.</div>';
+  var msgEl=document.getElementById('settingsPwMsg');
+  function setMsg(html){ if(msgEl)msgEl.innerHTML=html; }
+
+  var ok=await _checkPw('settingsPw','2399', cur);
+  if(!ok){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>'); return; }
+  if(nw.length<4){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>'); return; }
+  if(nw!==conf){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>'); return; }
+
+  await _savePw('settingsPw', nw);
+  setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">✅ 설정 비밀번호가 변경됐습니다.</div>');
   document.getElementById('cfg_currentSettingsPw').value='';document.getElementById('cfg_newSettingsPw').value='';document.getElementById('cfg_confirmSettingsPw').value='';
 }
+
 function clearAllData(){
   showConfirm('모든 데이터 초기화','저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.',function(){
-    var pw=localStorage.getItem('appLockPw')||'0261';
-    var spw=localStorage.getItem('settingsPw')||'2399';
+    var pw=localStorage.getItem('appLockPw')||'';
+    var spw=localStorage.getItem('settingsPw')||'';
     localStorage.clear();
-    localStorage.setItem('appLockPw',pw);localStorage.setItem('settingsPw',spw);
-    showToast('초기화됐습니다');location.reload();
+    if(pw)localStorage.setItem('appLockPw',pw);
+    if(spw)localStorage.setItem('settingsPw',spw);
+    showToast('초기화됐습니다'); location.reload();
   },true);
 }
-function loadGeminiKeySetting(){
-  var s=JSON.parse(localStorage.getItem('appSettings')||'{}');
-  if(s.geminiKey){var el=document.getElementById('cfg_geminiKey');if(el)el.value=s.geminiKey;}
+
+// ── API Key 저장 (보안강화: AES-256-GCM) ─────────────────────────
+async function saveGeminiKey(){
+  var inp=document.getElementById('cfg_geminiKey');
+  var key=(inp?inp.value:'').trim();
+  if(!_currentAppPassword){ showToast('앱 재로그인 후 저장해주세요'); return; }
+  await _saveApiKey(key, _currentAppPassword);
+  showToast('🔐 API Key가 암호화되어 저장됐습니다');
+  if(inp){ inp.value=''; inp.placeholder='저장됨 (변경하려면 새로 입력)'; }
 }
-function saveGeminiKey(){
-  var s=JSON.parse(localStorage.getItem('appSettings')||'{}');
-  s.geminiKey=(document.getElementById('cfg_geminiKey')?document.getElementById('cfg_geminiKey').value:'').trim();
-  localStorage.setItem('appSettings',JSON.stringify(s));showToast('API Key 저장됨');
-}
-function getSettings(){try{return JSON.parse(localStorage.getItem('appSettings')||'{}');}catch(e){return {};}}
+function getSettings(){ try{return JSON.parse(localStorage.getItem('appSettings')||'{}');}catch(e){return{};} }
+
+// ── 자동 잠금 ────────────────────────────────────────────────────
 function loadAutoLock(){
   autoLockMinutes=parseInt(localStorage.getItem('autoLockMin')||'0');
-  renderAutoLockBtns();resetAutoLockTimer();
+  renderAutoLockBtns(); resetAutoLockTimer();
 }
 function setAutoLock(min){
-  autoLockMinutes=min;localStorage.setItem('autoLockMin',min);
-  renderAutoLockBtns();resetAutoLockTimer();
+  autoLockMinutes=min; localStorage.setItem('autoLockMin',min);
+  renderAutoLockBtns(); resetAutoLockTimer();
   showToast(min===0?'자동 잠금 해제됨':min+'분 후 자동 잠금');
 }
 function renderAutoLockBtns(){
@@ -927,14 +947,17 @@ function resetAutoLockTimer(){
   if(autoLockTimer)clearTimeout(autoLockTimer);
   if(autoLockMinutes<=0)return;
   autoLockTimer=setTimeout(function(){
-    var s=document.getElementById('appLockScreen');var inp=document.getElementById('appLockInput');
-    if(s)s.style.display='flex';if(inp){inp.value='';inp.focus();}
+    var s=document.getElementById('appLockScreen'); var inp=document.getElementById('appLockInput');
+    _currentAppPassword=''; _sessionApiKey=''; // 자동잠금 시 메모리 키 클리어
+    if(s)s.style.display='flex'; if(inp){inp.value='';inp.focus();}
     showToast('자동 잠금됐습니다');
   },autoLockMinutes*60*1000);
 }
-['touchstart','click','keydown'].forEach(function(ev){document.addEventListener(ev,function(){if(autoLockMinutes>0)resetAutoLockTimer();},{passive:true});});
+['touchstart','click','keydown'].forEach(function(ev){
+  document.addEventListener(ev,function(){if(autoLockMinutes>0)resetAutoLockTimer();},{passive:true});
+});
 
-// ==================== 출동 탭 ====================
+// ── 출동 탭 ──────────────────────────────────────────────────────
 function setDispatchType(type,btn){
   window._currentDispatchType=type;
   document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
@@ -944,7 +967,7 @@ function setDispatchType(type,btn){
 function setReportStage(stage,btn){
   window._reportStage=stage;
   document.querySelectorAll('.rpt-stage-btn').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');renderOutput();
+  btn.classList.add('on'); renderOutput();
 }
 function extractDong(addr){
   var m=addr.match(/([가-힣]+(?:면|동|읍|리|가))/g);
@@ -959,9 +982,8 @@ function renderOutput(){
   var scale=(document.getElementById('fireScale')?document.getElementById('fireScale').value:'').trim();
   var casualty=(document.getElementById('fireCasualty')?document.getElementById('fireCasualty').value:'').trim();
   var sender=(document.getElementById('sigName')?document.getElementById('sigName').value:'').trim();
-  var box=document.getElementById('outputBox');if(!box)return;
+  var box=document.getElementById('outputBox'); if(!box)return;
   if(!loc&&!obj){box.textContent='정보를 입력하면 자동 생성됩니다.';return;}
-  var now=new Date();
   var dong=loc?extractDong(loc):'';
   var dispType=window._currentDispatchType||'fire';
   var typeLabel={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'출동',training:'훈련'};
@@ -986,36 +1008,37 @@ function addReport(){
   if(!content||!content.value.trim()){showToast('내용을 입력하세요');return;}
   var now=new Date();
   var time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  reportCount++;var item={id:reportCount,time:time,text:content.value.trim()};reports.push(item);
-  var list=document.getElementById('reportList');var card=document.getElementById('reportListCard');
+  reportCount++; var item={id:reportCount,time:time,text:content.value.trim()}; reports.push(item);
+  var list=document.getElementById('reportList'); var card=document.getElementById('reportListCard');
   if(list){
     var div=document.createElement('div');div.id='rpt-item-'+reportCount;
     div.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:6px;font-size:12px;';
     var span1=document.createElement('span');span1.style.cssText='color:var(--orange);font-family:var(--mono);flex-shrink:0;';span1.textContent=time;
     var span2=document.createElement('span');span2.style.flex='1';span2.textContent=item.text;
     var delBtn=document.createElement('button');delBtn.textContent='✕';delBtn.style.cssText='font-size:13px;background:none;border:none;cursor:pointer;flex-shrink:0;color:var(--ink4);';
-    var rId=reportCount;delBtn.onclick=function(){removeReport(rId);};
+    var rId=reportCount; delBtn.onclick=function(){removeReport(rId);};
     div.appendChild(span1);div.appendChild(span2);div.appendChild(delBtn);list.appendChild(div);
   }
-  if(card)card.style.display='block';content.value='';renderOutput();showToast('상황이 추가됐습니다');
+  if(card)card.style.display='block';
+  content.value=''; renderOutput(); showToast('상황이 추가됐습니다');
 }
 function removeReport(id){
   reports=reports.filter(function(r){return r.id!==id;});
-  var el=document.getElementById('rpt-item-'+id);if(el)el.remove();
+  var el=document.getElementById('rpt-item-'+id); if(el)el.remove();
   if(reports.length===0){var c=document.getElementById('reportListCard');if(c)c.style.display='none';}
   renderOutput();
 }
 function resetDispatch(){
   showConfirm('출동보고 초기화','작성 중인 내용이 모두 삭제됩니다.',function(){
-    reports=[];reportCount=0;
+    reports=[]; reportCount=0;
     document.querySelectorAll('[id^="typeBtn-"]').forEach(function(b){b.style.borderColor='var(--border)';b.style.background='var(--surface)';b.style.color='var(--ink3)';});
     ['location','fireObject','fireScale','fireCasualty','sigName','receiptNo'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     var box=document.getElementById('outputBox');if(box)box.textContent='정보를 입력하면 자동 생성됩니다.';
     var list=document.getElementById('reportList');if(list)list.innerHTML='';
     var card=document.getElementById('reportListCard');if(card)card.style.display='none';
-    window._currentDispatchType='fire';window._reportStage='출동';
+    window._currentDispatchType='fire'; window._reportStage='출동';
     document.querySelectorAll('.rpt-stage-btn').forEach(function(b){b.classList.remove('on');if(b.dataset.stage==='출동')b.classList.add('on');});
-    showToast('초기화됐습니다');renderOutput();
+    showToast('초기화됐습니다'); renderOutput();
   });
 }
 async function sendReport(){
@@ -1029,7 +1052,7 @@ function copyOnlyText(){var box=document.getElementById('outputBox');if(box)navi
 function saveHistory(text){
   var h=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');
   h.unshift({text:text,time:new Date().toISOString()});if(h.length>50)h.splice(50);
-  localStorage.setItem('dispatchHistory',JSON.stringify(h));dispatchHistory=h;
+  localStorage.setItem('dispatchHistory',JSON.stringify(h)); dispatchHistory=h;
 }
 function loadHistory(){try{dispatchHistory=JSON.parse(localStorage.getItem('dispatchHistory')||'[]');}catch(e){dispatchHistory=[];}}
 function toggleSpell(){
@@ -1041,7 +1064,7 @@ async function runSpell(){
   var input=document.getElementById('spellInput');if(!input||!input.value.trim()){showToast('검사할 텍스트가 없습니다');return;}
   var status=document.getElementById('spellStatus');var btn=document.getElementById('spellBtn');
   if(status)status.style.display='block';if(btn)btn.disabled=true;
-  var cfg=getSettings();var apiKey=cfg.geminiKey||'';
+  var apiKey=getApiKey();
   if(!apiKey){showToast('설정에서 Gemini API Key를 입력해주세요');if(status)status.style.display='none';if(btn)btn.disabled=false;return;}
   try{
     var prompt='다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n'+input.value;
@@ -1061,8 +1084,8 @@ function sendCorrectedReport(){
 }
 function copyCorrectedOnly(){var corr=document.getElementById('spellCorrected');if(corr)navigator.clipboard.writeText(corr.textContent).then(function(){showToast('복사됐습니다');});}
 
-// ==================== 지도 탭 ====================
-function getDispatchAddr(){return (document.getElementById('location')?document.getElementById('location').value:'').trim();}
+// ── 지도 탭 ──────────────────────────────────────────────────────
+function getDispatchAddr(){return(document.getElementById('location')?document.getElementById('location').value:'').trim();}
 function updateMapLinks(){
   var addr=getDispatchAddr();var ids=['kakaoMapLoc','naverMapLoc','tmapLoc'];
   var banner=document.getElementById('mapAddrBanner');var addrText=document.getElementById('mapAddrText');
@@ -1078,7 +1101,7 @@ function openKakaoMap(){var addr=getDispatchAddr();if(!addr){showToast('출동 �
 function openNaverMap(){var addr=getDispatchAddr();if(!addr){showToast('출동 탭에서 주소를 먼저 입력하세요');return;}window.open('https://map.naver.com/v5/search/'+encodeURIComponent(addr),'_blank');}
 function openTmap(){var addr=getDispatchAddr();if(!addr){showToast('출동 탭에서 주소를 먼저 입력하세요');return;}window.open('https://tmap.life/search?keyword='+encodeURIComponent(addr),'_blank');}
 
-// ==================== 연락처 탭 ====================
+// ── 연락처 탭 ────────────────────────────────────────────────────
 function switchContactTab(tab){
   currentContactTab=tab;
   document.getElementById('ctPanelDispatch').style.display=tab==='dispatch'?'block':'none';
@@ -1116,7 +1139,7 @@ function showAddContact(group){
   setTimeout(function(){var el=document.getElementById('newContactName');if(el)el.focus();},100);
 }
 function editContactById(id){
-  var c=userContacts.find(function(x){return (x.id||0)===id;});if(!c)return;
+  var c=userContacts.find(function(x){return(x.id||0)===id;});if(!c)return;
   var eid=document.getElementById('editContactId');if(eid)eid.value=id;
   document.getElementById('newContactName').value=c.name||'';document.getElementById('newContactTel').value=c.tel||'';document.getElementById('newContactMemo').value=c.memo||'';
   var badge=document.getElementById('addContactBadge');if(badge)badge.textContent='연락처 수정';
@@ -1135,7 +1158,7 @@ function saveNewContact(){
   var editId=document.getElementById('editContactId')?document.getElementById('editContactId').value:'';
   if(editId){
     var id=parseInt(editId)||parseFloat(editId);
-    var idx=userContacts.findIndex(function(c){return (c.id||0)===id;});
+    var idx=userContacts.findIndex(function(c){return(c.id||0)===id;});
     if(idx>-1){userContacts[idx].name=name;userContacts[idx].tel=tel;userContacts[idx].memo=memo;localStorage.setItem('userContacts',JSON.stringify(userContacts));renderUserContacts();hideAddContact();showToast('연락처가 수정됐습니다');}
   }else{
     userContacts.push({id:Date.now(),name:name,tel:tel,memo:memo,group:currentContactTab});
@@ -1144,14 +1167,13 @@ function saveNewContact(){
 }
 function deleteContactById(id){
   showConfirm('연락처 삭제','이 연락처를 삭제하시겠습니까?',function(){
-    userContacts=userContacts.filter(function(c){return (c.id||0)!==id;});
+    userContacts=userContacts.filter(function(c){return(c.id||0)!==id;});
     localStorage.setItem('userContacts',JSON.stringify(userContacts));renderUserContacts();showToast('삭제됐습니다');
   },true);
 }
 
-// ==================== 보고서 탭 - 건물현황 테이블 ====================
+// ── 보고서 탭 — 건물현황 ─────────────────────────────────────────
 function initBldgTable(){
-  // 기본 4층 추가
   var defaultRows=[
     {floor:'1층',struct:'일반철골구조',size:'393.9',use:'체육관 (미니수영장)',note:''},
     {floor:'2층',struct:'',size:'393.9',use:'체육관',note:''},
@@ -1161,12 +1183,10 @@ function initBldgTable(){
   defaultRows.forEach(function(r){addBldgRow(r);});
 }
 function addBldgRow(data){
-  data=data||{};
-  bldgRowCount++;
+  data=data||{}; bldgRowCount++;
   var tbody=document.getElementById('bldgTableBody');if(!tbody)return;
   var tr=document.createElement('tr');
   var isFire=data.note&&data.note.indexOf('화재')>=0;
-  if(isFire)tr.className='';
   tr.innerHTML='<td class="'+(isFire?'fire-row':'')+'"><input value="'+(data.floor||'')+'" placeholder="1층"/></td>'+
     '<td><input value="'+(data.struct||'')+'" placeholder="일반철골구조"/></td>'+
     '<td><input value="'+(data.size||'')+'" placeholder="393.9"/></td>'+
@@ -1175,26 +1195,18 @@ function addBldgRow(data){
   tbody.appendChild(tr);
 }
 function updateFireRow(input){
-  var td=input.closest('td');var tr=input.closest('tr');
+  var tr=input.closest('tr');
   var isFireNote=input.value.indexOf('화재')>=0;
-  tr.querySelectorAll('td:first-child,td:last-child').forEach(function(t){
-    t.className=isFireNote?'fire-row':'';
-  });
+  tr.querySelectorAll('td:first-child,td:last-child').forEach(function(t){t.className=isFireNote?'fire-row':'';});
 }
 
-// ==================== 보고서 탭 - 타임라인 ====================
+// ── 보고서 탭 — 타임라인 ─────────────────────────────────────────
 function initTimeline(){
-  var defaults=[
-    {time:'12:07',content:'신고접수'},
-    {time:'12:14',content:'선착대(예천센터), 현장지휘팀 현장도착'},
-    {time:'12:24',content:'초진'},
-    {time:'12:26',content:'완진'},
-  ];
+  var defaults=[{time:'12:07',content:'신고접수'},{time:'12:14',content:'선착대(예천센터), 현장지휘팀 현장도착'},{time:'12:24',content:'초진'},{time:'12:26',content:'완진'}];
   defaults.forEach(function(d){addTimelineItem(d);});
 }
 function addTimelineItem(data){
-  data=data||{};
-  timelineCount++;
+  data=data||{}; timelineCount++;
   var list=document.getElementById('timelineList');if(!list)return;
   var id='tl-'+timelineCount;
   var div=document.createElement('div');div.className='timeline-item';div.id=id;
@@ -1203,19 +1215,16 @@ function addTimelineItem(data){
     '<button class="timeline-del" onclick="removeTimelineItem(\''+id+'\')">&#10005;</button>';
   list.appendChild(div);
 }
-function removeTimelineItem(id){
-  var el=document.getElementById(id);if(el)el.remove();
-}
+function removeTimelineItem(id){var el=document.getElementById(id);if(el)el.remove();}
 
-// ==================== 보고서 탭 - AI 분석 ====================
+// ── 보고서 탭 — AI 분석 ──────────────────────────────────────────
 function selectRptType(btn,type){
   document.querySelectorAll('.rpt-type-btn').forEach(function(b){b.classList.remove('sel');});
-  btn.classList.add('sel');rptCurrentType=type;
+  btn.classList.add('sel'); rptCurrentType=type;
 }
 function rptGoPage(page){
   document.querySelectorAll('.rpt-page').forEach(function(p,i){p.classList.toggle('on',i===page);});
-  rptCurrentPage=page;
-  window.scrollTo({top:0,behavior:'smooth'});
+  rptCurrentPage=page; window.scrollTo({top:0,behavior:'smooth'});
   if(page===2)renderReportPreview();
 }
 function handleRptFiles(files){
@@ -1223,14 +1232,14 @@ function handleRptFiles(files){
   var row=document.getElementById('rptThumbRow');
   if(row)row.innerHTML=rptScanPhotos.map(function(f){return '<img class="rpt-thumb" src="'+URL.createObjectURL(f)+'" />';}).join('');
   var btn=document.getElementById('rptAiBtn');if(btn)btn.disabled=rptScanPhotos.length===0;
-  // 분석결과 초기화
   var rc=document.getElementById('rptScanResultCard');if(rc)rc.style.display='none';
   var done=document.getElementById('rptScanDone');if(done)done.style.display='none';
 }
 
 async function rptRunScanAI(){
   if(!rptScanPhotos.length){showToast('사진을 먼저 업로드하세요');return;}
-  var cfg=getSettings();var apiKey=cfg.geminiKey||'';
+  // 보안강화: getApiKey() — 메모리에서 가져옴
+  var apiKey=getApiKey();
   if(!apiKey){showToast('설정 탭에서 Gemini API Key를 먼저 입력해주세요');return;}
 
   var btn=document.getElementById('rptAiBtn');
@@ -1262,96 +1271,51 @@ async function rptRunScanAI(){
         reader.readAsDataURL(file);
       });
     }));
-
-    var prompt='당신은 소방 문서 OCR 전문가입니다. 업로드된 사진 속 텍스트를 정확하게 읽어서 정보를 추출하세요.\n\n【문서 종류】\n- P119 현장지원시스템 화면 캡처\n- 건축물대장(일반건축물대장(갑)) 캡처\n\n【절대 규칙】\n1. 사진에서 직접 보이는 텍스트만 그대로 옮기세요\n2. 추측하거나 임의 값을 넣지 마세요\n3. 확인 불가 항목은 반드시 null 반환\n4. 건축물대장 없으면 floors는 빈 배열 []\n5. P119 없으면 p119 하위값 모두 null\n\n【건축물대장 추출】\n건축물 현황 표에서 행별로 읽으세요:\n- floor: 층 (예: 1층, 2층)\n- structure: 구조 (예: 철근콘크리트구조)\n- use: 용도 (예: 공공업무시설)\n- area: 면적 숫자만 (예: 460)\n- note: 구분값 (예: 주3)\n\n아래 JSON 형식으로만 응답 (설명 없이 순수 JSON만):';
-    var jsonTemplate='{"p119":{"reportTitle":null,"reportDatetime":null,"disasterType":null,"incidentDatetime":null,"location":null,"mainContent":null,"casualty":{"death":null,"injured":null,"missing":null,"total":null},"property":{"damageAmount":null,"damageArea":null,"damageField":null},"mobilization":{"totalPersonnel":null,"personnelDetail":null,"totalVehicles":null,"fireVehicles":null,"fireVehicleDetail":null,"agencyVehicles":null,"agencyDetail":null},"timeline":[]},"building":{"floors":[],"totalFloors":null,"mainStructure":null,"mainUse":null,"buildingArea":null}}';
-    prompt=prompt+'\n\n'+jsonTemplate
-
+    var prompt='당신은 소방 문서 OCR 전문가입니다. 업로드된 사진 속 텍스트를 정확하게 읽어서 정보를 추출하세요.\n\n【문서 종류】\n- P119 현장지원시스템 화면 캡처\n- 건축물대장(일반건축물대장(갑)) 캡처\n\n【절대 규칙】\n1. 사진에서 직접 보이는 텍스트만 그대로 옮기세요\n2. 추측하거나 임의 값을 넣지 마세요\n3. 확인 불가 항목은 반드시 null 반환\n4. 건축물대장 없으면 floors는 빈 배열 []\n5. P119 없으면 p119 하위값 모두 null\n\n아래 JSON 형식으로만 응답 (설명 없이 순수 JSON만):\n{"p119":{"reportTitle":null,"reportDatetime":null,"disasterType":null,"incidentDatetime":null,"location":null,"mainContent":null,"casualty":{"death":null,"injured":null,"missing":null,"total":null},"property":{"damageAmount":null,"damageArea":null,"damageField":null},"mobilization":{"totalPersonnel":null,"personnelDetail":null,"totalVehicles":null,"fireVehicles":null,"fireVehicleDetail":null,"agencyVehicles":null,"agencyDetail":null},"timeline":[]},"building":{"floors":[],"totalFloors":null,"mainStructure":null,"mainUse":null,"buildingArea":null}}';
     var parts=[{text:prompt}].concat(imgParts);
-    var res=await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+apiKey,
+    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+apiKey,
       {method:'POST',headers:{'Content-Type':'application/json'},
-       body:JSON.stringify({
-         contents:[{parts:parts}],
-         generationConfig:{temperature:0.0,maxOutputTokens:4096,responseMimeType:'application/json'}
-       })}
-    );
-
-    if(!res.ok){
-      var errData=await res.json().catch(function(){return {};});
-      throw new Error('API 오류 '+res.status+': '+(errData.error&&errData.error.message?errData.error.message.substring(0,60):''));
-    }
+       body:JSON.stringify({contents:[{parts:parts}],generationConfig:{temperature:0.0,maxOutputTokens:4096,responseMimeType:'application/json'}})});
+    if(!res.ok){var errData=await res.json().catch(function(){return{};});throw new Error('API 오류 '+res.status+': '+(errData.error&&errData.error.message?errData.error.message.substring(0,60):''));}
     var data=await res.json();
-    if(!data.candidates||!data.candidates[0])throw new Error('AI 응답 없음 — API Key 또는 모델 확인 필요');
-
+    if(!data.candidates||!data.candidates[0])throw new Error('AI 응답 없음');
     var rawText=data.candidates[0].content.parts[0].text||'{}';
-    // strip any markdown fences just in case
     rawText=rawText.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
     var parsed=JSON.parse(rawText);
-
     clearInterval(pint);
     if(bar)bar.style.width='100%';
     rptScanResult=parsed;
-
     setTimeout(function(){
       if(statusDiv)statusDiv.style.display='none';
       if(doneDiv)doneDiv.style.display='block';
       if(resultCard)resultCard.style.display='block';
-
       var p=parsed.p119||{};
-      var b=parsed.building||{};
-
-      // 결과 카드 표시 — null이면 '확인 불가' 표시
       function showVal(id,val){
-        var el=document.getElementById(id);
-        if(!el)return;
-        if(val===null||val===undefined||String(val).trim()===''||val==='null'){
-          el.textContent='— 사진에서 확인 불가';
-          el.style.color='var(--ink4)';
-          el.style.fontStyle='italic';
-        }else{
-          el.textContent=String(val).trim();
-          el.style.color='var(--ink)';
-          el.style.fontStyle='normal';
-        }
+        var el=document.getElementById(id); if(!el)return;
+        if(val===null||val===undefined||String(val).trim()===''||val==='null'){el.textContent='— 사진에서 확인 불가';el.style.color='var(--ink4)';el.style.fontStyle='italic';}
+        else{el.textContent=String(val).trim();el.style.color='var(--ink)';el.style.fontStyle='normal';}
       }
-
-      showVal('scanResultType', p.disasterType);
-      showVal('scanResultAddr', p.location);
-      showVal('scanResultTarget', p.mainContent);
-      showVal('scanResultSummary', p.reportTitle);
-
+      showVal('scanResultType',p.disasterType);
+      showVal('scanResultAddr',p.location);
+      showVal('scanResultTarget',p.mainContent);
+      showVal('scanResultSummary',p.reportTitle);
       var cas=p.casualty||{};
       var casArr=[];
       if(cas.death!==null&&cas.death!==undefined)casArr.push('사망 '+cas.death+'명');
       if(cas.injured!==null&&cas.injured!==undefined)casArr.push('부상 '+cas.injured+'명');
       if(cas.missing!==null&&cas.missing!==undefined)casArr.push('실종 '+cas.missing+'명');
-      showVal('scanResultCasualty', casArr.length?casArr.join(' / '):null);
-
+      showVal('scanResultCasualty',casArr.length?casArr.join(' / '):null);
       var tlEl=document.getElementById('scanResultTimeline');
-      if(tlEl){
-        if(p.timeline&&p.timeline.length){
-          tlEl.textContent=p.timeline.map(function(t){return '('+t.time+') '+t.content;}).join('\n');
-          tlEl.style.color='var(--ink)';tlEl.style.fontStyle='normal';
-        }else{
-          tlEl.textContent='— 사진에서 확인 불가';
-          tlEl.style.color='var(--ink4)';tlEl.style.fontStyle='italic';
-        }
-      }
-
-      // 폼 자동채움
+      if(tlEl){if(p.timeline&&p.timeline.length){tlEl.textContent=p.timeline.map(function(t){return '('+t.time+') '+t.content;}).join('\n');tlEl.style.color='var(--ink)';tlEl.style.fontStyle='normal';}else{tlEl.textContent='— 사진에서 확인 불가';tlEl.style.color='var(--ink4)';tlEl.style.fontStyle='italic';}}
       applyAIResultToForm(parsed);
-
       var filled=countFilled(parsed);
-      showToast('✅ 분석 완료 — '+filled+'개 항목 추출됨', 3500);
-    }, 400);
-
+      showToast('✅ 분석 완료 — '+filled+'개 항목 추출됨',3500);
+    },400);
   }catch(e){
     clearInterval(pint);
     if(statusDiv)statusDiv.style.display='none';
     if(bar)bar.style.width='0%';
-    var msg=e.message||'알 수 없는 오류';
-    showToast('❌ 분석 실패: '+msg.substring(0,60));
+    showToast('❌ 분석 실패: '+e.message.substring(0,60));
     console.error('[rptRunScanAI]',e);
   }finally{
     if(btn)btn.disabled=rptScanPhotos.length===0;
@@ -1359,322 +1323,114 @@ async function rptRunScanAI(){
 }
 
 function countFilled(parsed){
-  var count=0;
-  var p=parsed.p119||{};
-  var b=parsed.building||{};
-  var simpleFields=['reportTitle','reportDatetime','disasterType','incidentDatetime','location','mainContent'];
-  simpleFields.forEach(function(k){if(p[k]!==null&&p[k]!==undefined&&p[k]!=='null')count++;});
-  var cas=p.casualty||{};
-  ['death','injured','missing'].forEach(function(k){if(cas[k]!==null&&cas[k]!==undefined)count++;});
-  var mob=p.mobilization||{};
-  ['totalPersonnel','totalVehicles','fireVehicleDetail'].forEach(function(k){if(mob[k]!==null&&mob[k]!==undefined)count++;});
-  if(p.timeline&&p.timeline.length)count++;
-  if(b.floors&&b.floors.length)count++;
+  var count=0,p=parsed.p119||{},b=parsed.building||{};
+  ['reportTitle','reportDatetime','disasterType','incidentDatetime','location','mainContent'].forEach(function(k){if(p[k]!==null&&p[k]!==undefined&&p[k]!=='null')count++;});
+  var cas=p.casualty||{};['death','injured','missing'].forEach(function(k){if(cas[k]!==null&&cas[k]!==undefined)count++;});
+  var mob=p.mobilization||{};['totalPersonnel','totalVehicles','fireVehicleDetail'].forEach(function(k){if(mob[k]!==null&&mob[k]!==undefined)count++;});
+  if(p.timeline&&p.timeline.length)count++;if(b.floors&&b.floors.length)count++;
   return count;
 }
 
 function applyAIResultToForm(parsed){
-  var p=parsed.p119||{};
-  var b=parsed.building||{};
-
-  // null/undefined/'null'/'' 체크 — 하나라도 해당되면 절대 채우지 않음
-  function isValid(val){
-    if(val===null||val===undefined)return false;
-    var s=String(val).trim();
-    if(s===''||s==='null'||s==='undefined')return false;
-    return true;
-  }
-
-  // 유효한 값만 폼에 채움 (녹색 표시)
-  function fillField(id, lblId, value){
+  var p=parsed.p119||{},b=parsed.building||{};
+  function isValid(val){if(val===null||val===undefined)return false;var s=String(val).trim();return s!==''&&s!=='null'&&s!=='undefined';}
+  function fillField(id,lblId,value){
     if(!isValid(value))return false;
-    var el=document.getElementById(id);
-    if(!el)return false;
-    el.value=String(value).trim();
-    el.classList.add('ai-ok');
-    var lbl=document.getElementById(lblId);
-    if(lbl)lbl.style.display='inline-block';
+    var el=document.getElementById(id);if(!el)return false;
+    el.value=String(value).trim();el.classList.add('ai-ok');
+    var lbl=document.getElementById(lblId);if(lbl)lbl.style.display='inline-block';
     return true;
   }
-
-  // P119 기반 채우기 (확인된 값만)
-  fillField('f_datetime','lbl_datetime', p.incidentDatetime);
-  fillField('f_addr','lbl_addr', p.location);
-  fillField('f_summary','lbl_summary', p.reportTitle);
-
-  // 재난명 → f_target (대상물 아닌 재난명으로 사용)
-  fillField('f_target','lbl_target', p.disasterType);
-  fillField('f_mainContent','lbl_mainContent', p.mainContent);
-
-  // 인명피해 조합
+  fillField('f_datetime','lbl_datetime',p.incidentDatetime);
+  fillField('f_addr','lbl_addr',p.location);
+  fillField('f_summary','lbl_summary',p.reportTitle);
+  fillField('f_target','lbl_target',p.disasterType);
+  fillField('f_mainContent','lbl_mainContent',p.mainContent);
   var cas=p.casualty||{};
   var casArr=[];
   if(isValid(cas.death))casArr.push('사망: '+cas.death+'명');
   if(isValid(cas.injured))casArr.push('부상: '+cas.injured+'명');
   if(isValid(cas.missing))casArr.push('실종: '+cas.missing+'명');
   if(isValid(cas.total))casArr.push('총: '+cas.total+'명');
-  if(casArr.length)fillField('f_casualty','lbl_casualty', casArr.join(' / '));
-
-  // 재산피해
-  var prop=p.property||{};
-  var propArr=[];
+  if(casArr.length)fillField('f_casualty','lbl_casualty',casArr.join(' / '));
+  var prop=p.property||{};var propArr=[];
   if(isValid(prop.damageAmount))propArr.push('피해금액: '+prop.damageAmount);
   if(isValid(prop.damageArea))propArr.push('피해면적: '+prop.damageArea);
-  if(isValid(prop.damageField))propArr.push('피해임야: '+prop.damageField);
-  if(propArr.length)fillField('f_damage','lbl_damage', propArr.join(' / '));
-
-  // 동원 인원
+  if(propArr.length)fillField('f_damage','lbl_damage',propArr.join(' / '));
   var mob=p.mobilization||{};
   var perStr='';
   if(isValid(mob.totalPersonnel))perStr=mob.totalPersonnel+'명';
   if(isValid(mob.personnelDetail))perStr+=(perStr?' (':'(')+mob.personnelDetail+')';
-  if(perStr)fillField('f_personnel','lbl_personnel', perStr);
-
-  // 장비
-  if(isValid(mob.totalVehicles))fillField('f_equipment','lbl_equipment', mob.totalVehicles+'대');
-  var eqDetailArr=[];
-  if(isValid(mob.fireVehicleDetail))eqDetailArr.push('소방: '+mob.fireVehicleDetail);
-  if(isValid(mob.agencyDetail))eqDetailArr.push('유관기관: '+mob.agencyDetail);
-  if(eqDetailArr.length)fillField('f_equipDetail','lbl_equipDetail', eqDetailArr.join(' / '));
-
-  // ── 타임라인: P119에서 추출된 것만, 없으면 완전히 비워둠 ──
+  if(perStr)fillField('f_personnel','lbl_personnel',perStr);
+  if(isValid(mob.totalVehicles))fillField('f_equipment','lbl_equipment',mob.totalVehicles+'대');
+  var eqArr=[];
+  if(isValid(mob.fireVehicleDetail))eqArr.push('소방: '+mob.fireVehicleDetail);
+  if(isValid(mob.agencyDetail))eqArr.push('유관기관: '+mob.agencyDetail);
+  if(eqArr.length)fillField('f_equipDetail','lbl_equipDetail',eqArr.join(' / '));
   var tlList=document.getElementById('timelineList');
   if(tlList){
-    if(p.timeline&&p.timeline.length>0){
-      tlList.innerHTML='';
-      timelineCount=0;
-      p.timeline.forEach(function(t){
-        if(isValid(t.time)&&isValid(t.content))addTimelineItem(t);
-      });
-    } else {
-      // P119 없거나 타임라인 없으면 완전히 비움 (기본값도 넣지 않음)
-      tlList.innerHTML='';
-      timelineCount=0;
-    }
+    if(p.timeline&&p.timeline.length>0){tlList.innerHTML='';timelineCount=0;p.timeline.forEach(function(t){if(isValid(t.time)&&isValid(t.content))addTimelineItem(t);});}
+    else{tlList.innerHTML='';timelineCount=0;}
   }
-
-  // ── 건축물대장: 사진에서 추출된 경우만, 없으면 완전히 비워둠 ──
   var bldgTbody=document.getElementById('bldgTableBody');
   if(bldgTbody){
-    if(b.floors&&b.floors.length>0){
-      bldgTbody.innerHTML='';
-      bldgRowCount=0;
-      b.floors.forEach(function(fl){
-        // 층 정보도 유효한 것만 채움
-        if(isValid(fl.floor)){
-          addBldgRow({
-            floor: fl.floor||'',
-            struct: isValid(fl.structure)?fl.structure:'',
-            size: isValid(fl.area)?fl.area:'',
-            use: isValid(fl.use)?fl.use:'',
-            note: isValid(fl.note)?fl.note:''
-          });
-        }
-      });
-    } else {
-      // 건축물대장 없으면 완전히 비움
-      bldgTbody.innerHTML='';
-      bldgRowCount=0;
-    }
+    if(b.floors&&b.floors.length>0){bldgTbody.innerHTML='';bldgRowCount=0;b.floors.forEach(function(fl){if(isValid(fl.floor))addBldgRow({floor:fl.floor||'',struct:isValid(fl.structure)?fl.structure:'',size:isValid(fl.area)?fl.area:'',use:isValid(fl.use)?fl.use:'',note:isValid(fl.note)?fl.note:''});});}
+    else{bldgTbody.innerHTML='';bldgRowCount=0;}
   }
-
-  // AI 채움 배너
-  var banner=document.getElementById('rptAiFillBanner');
-  if(banner)banner.style.display='flex';
+  var banner=document.getElementById('rptAiFillBanner');if(banner)banner.style.display='flex';
 }
 
-
-
-
-// ==================== 보고서 미리보기 ====================
+// ── 보고서 미리보기 ───────────────────────────────────────────────
 function buildPhotoSection(){
-  var hasMap=!!mapPhoto;
-  var hasScene=scenePhotos.length>0;
+  var hasMap=!!mapPhoto,hasScene=scenePhotos.length>0;
   if(!hasMap&&!hasScene)return '';
-
   var H=120;
-
   var out='<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
-
   if(hasMap&&hasScene){
     out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-left:4px;">';
-    // 위치도
-    out+='<div>'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div>'+
-      '<div style="height:'+H+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">'+
-        '<img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
-      '</div></div>';
-    // 현장사진
-    var n=scenePhotos.length;
-    var cols=n===1?1:2;
-    var rows=Math.ceil(n/cols);
-    var cellH=Math.floor((H-(rows-1)*3)/rows);
-    out+='<div>'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div>'+
-      '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
-    scenePhotos.forEach(function(f){
-      out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;background:#f8f9fb;">'+
-        '<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
-      '</div>';
-    });
+    out+='<div><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div><div style="height:'+H+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;"><img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/></div></div>';
+    var n=scenePhotos.length,cols=n===1?1:2,rows=Math.ceil(n/cols),cellH=Math.floor((H-(rows-1)*3)/rows);
+    out+='<div><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
+    scenePhotos.forEach(function(f){out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;background:#f8f9fb;"><img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>';});
     out+='</div></div></div>';
-
   }else if(hasMap){
-    out+='<div style="padding-left:4px;">'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div>'+
-      '<div style="height:'+(H+20)+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">'+
-        '<img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
-      '</div></div>';
-
+    out+='<div style="padding-left:4px;"><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div><div style="height:'+(H+20)+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;"><img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/></div></div>';
   }else{
-    var n=scenePhotos.length;
-    var cols=Math.min(n,3);
-    var rows=Math.ceil(n/cols);
-    var cellH=Math.floor((H-(rows-1)*3)/rows);
-    out+='<div style="padding-left:4px;">'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div>'+
-      '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
-    scenePhotos.forEach(function(f){
-      out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">'+
-        '<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
-      '</div>';
-    });
+    var n=scenePhotos.length,cols=Math.min(n,3),rows=Math.ceil(n/cols),cellH=Math.floor((H-(rows-1)*3)/rows);
+    out+='<div style="padding-left:4px;"><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
+    scenePhotos.forEach(function(f){out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;"><img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>';});
     out+='</div></div>';
   }
-
   return out;
 }
 
 function renderReportPreview(){
   var station=v('f_station')||'서산소방서';
-  var manager=v('f_manager')||'';
-  var duty=v('f_duty')||'';
-  var reportDate=v('f_reportDate')||getTodayStr();
-  var callCount=v('f_callCount')||'';
-  var datetime=v('f_datetime')||'';
-  var distance=v('f_distance')||'';
-  var target=v('f_target')||'';
-  var addr=v('f_addr')||'';
-  var summary=v('f_summary')||'';
-  var mainContent=v('f_mainContent')||'';
-  var casualty=v('f_casualty')||'';
-  var damage=v('f_damage')||'';
-  var personnel=v('f_personnel')||'';
-  var equipment=v('f_equipment')||'';
+  var manager=v('f_manager')||'';var duty=v('f_duty')||'';
+  var reportDate=v('f_reportDate')||getTodayStr();var callCount=v('f_callCount')||'';
+  var datetime=v('f_datetime')||'';var distance=v('f_distance')||'';
+  var target=v('f_target')||'';var addr=v('f_addr')||'';
+  var summary=v('f_summary')||'';var mainContent=v('f_mainContent')||'';
+  var casualty=v('f_casualty')||'';var damage=v('f_damage')||'';
+  var personnel=v('f_personnel')||'';var equipment=v('f_equipment')||'';
   var equipDetail=v('f_equipDetail')||'';
-
-  // 시간 초 제거
   function trimSec(s){return s?s.replace(/(\d{1,2}:\d{2}):\d{2}/g,'$1'):s;}
   datetime=trimSec(datetime);
-
-  // row: ○ 레이블 + 한칸 + : + 내용
-  function row(label,val){
-    if(!val)return '';
-    return '<div style="display:flex;align-items:baseline;line-height:1.9;">'+
-      '<span style="flex-shrink:0;white-space:nowrap;">○ '+escHtml(label)+' :</span>'+
-      '<span style="margin-left:6px;">'+escHtml(val)+'</span>'+
-    '</div>';
-  }
-  // subrow: - 레이블 + 한칸 + : + 내용
-  function subrow(label,val){
-    if(!val)return '';
-    return '<div style="display:flex;align-items:baseline;line-height:1.85;font-size:10.5px;">'+
-      '<span style="flex-shrink:0;white-space:nowrap;color:#6B7280;">- '+escHtml(label)+' :</span>'+
-      '<span style="margin-left:6px;">'+escHtml(val)+'</span>'+
-    '</div>';
-  }
-
-  // 건물현황 테이블
+  function row(label,val){if(!val)return '';return '<div style="display:flex;align-items:baseline;line-height:1.9;"><span style="flex-shrink:0;white-space:nowrap;">○ '+escHtml(label)+' :</span><span style="margin-left:6px;">'+escHtml(val)+'</span></div>';}
+  function subrow(label,val){if(!val)return '';return '<div style="display:flex;align-items:baseline;line-height:1.85;font-size:10.5px;"><span style="flex-shrink:0;white-space:nowrap;color:#6B7280;">- '+escHtml(label)+' :</span><span style="margin-left:6px;">'+escHtml(val)+'</span></div>';}
   var bldgRows='';
   document.querySelectorAll('#bldgTableBody tr').forEach(function(tr){
     var inputs=tr.querySelectorAll('input');
     var vals=Array.from(inputs).map(function(inp){return inp.value.trim();});
-    if(vals[0]){
-      var isFireRow=vals[4]&&vals[4].indexOf('화재')>=0;
-      bldgRows+=
-        '<tr'+(isFireRow?' style="background:#FFF3EC;"':'')+'>'+
-        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[0])+'</td>'+
-        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[1])+'</td>'+
-        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[2])+'</td>'+
-        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[3])+'</td>'+
-        '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[4])+'</td>'+
-        '</tr>';
-    }
+    if(vals[0]){var isFireRow=vals[4]&&vals[4].indexOf('화재')>=0;bldgRows+='<tr'+(isFireRow?' style="background:#FFF3EC;"':'')+'>'+['<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[0])+'</td>','<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[1])+'</td>','<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[2])+'</td>','<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[3])+'</td>','<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+escHtml(vals[4])+'</td>'].join('')+'</tr>';}
   });
-
-  // 타임라인 (2열, 초 제거, MM-DD HH:MM)
   var tlItems=[];
   document.querySelectorAll('#timelineList .timeline-item').forEach(function(item){
     var inputs=item.querySelectorAll('input');
-    if(inputs.length>=2&&inputs[1].value.trim()){
-      var t=trimSec(inputs[0].value.trim());
-      // 연도 제거: "2026-04-24 12:23" → "04-24 12:23"
-      t=t.replace(/^\d{4}-/,'');
-      tlItems.push('<div style="font-size:10.5px;line-height:1.75;">'+
-        '<span style="color:#E8600A;font-family:monospace;font-weight:700;">【'+escHtml(t)+'】</span> '+
-        escHtml(inputs[1].value.trim())+
-      '</div>');
-    }
+    if(inputs.length>=2&&inputs[1].value.trim()){var t=trimSec(inputs[0].value.trim());t=t.replace(/^\d{4}-/,'');tlItems.push('<div style="font-size:10.5px;line-height:1.75;"><span style="color:#E8600A;font-family:monospace;font-weight:700;">【'+escHtml(t)+'】</span> '+escHtml(inputs[1].value.trim())+'</div>');}
   });
   var timelineHtml='';
-  if(tlItems.length){
-    // 2열 그리드
-    var leftCol='',rightCol='';
-    tlItems.forEach(function(item,i){if(i%2===0)leftCol+=item;else rightCol+=item;});
-    timelineHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 16px;">'+
-      '<div>'+leftCol+'</div><div>'+rightCol+'</div></div>';
-  }
-
-  // 인원 0 필터
-  function filterZeroItems(str){
-    if(!str)return str;
-    str=str.replace(/\(\(/g,'(').replace(/\)\)/g,')');
-    str=str.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
-    str=str.replace(/\(([^)]+)\)/g,function(_,inner){
-      var kept=inner.split(',').map(function(s){return s.trim();}).filter(function(it){return !/\s0[명대]?$/.test(it);});
-      return kept.length?'('+kept.join(', ')+')'  :'';
-    });
-    return str.trim();
-  }
-
-  // 장비 상세 0 필터 — 괄호 내 개별 항목 중 숫자 0인 것 완전 제거
-  function filterZeroEquip(raw){
-    if(!raw)return '';
-    raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
-    // "소방: 1대 (지휘 0, 펌프 0, 구급 1, ...)" → 섹션별 처리
-    var sections=raw.split('/').map(function(s){return s.trim();}).filter(Boolean);
-    var result=[];
-    sections.forEach(function(sec){
-      // 헤더 + 괄호 패턴 매칭
-      var m=sec.match(/^([\w가-힣\/\s]+:\s*\d+[대명]?)\s*\((.+)\)$/);
-      if(m){
-        var header=m[1].trim();
-        // 총 대수가 0이면 섹션 전체 숨김
-        var totalMatch=header.match(/(\d+)[대명]/);
-        if(totalMatch&&parseInt(totalMatch[1])===0)return;
-        // 괄호 안 항목 중 "항목명 0" 패턴 제거 (숫자만 0인 것)
-        var items=m[2].split(',').map(function(s){return s.trim();});
-        var kept=items.filter(function(it){
-          // "지휘 0", "고가 0", "고가/굴절 0" 등 → 제거
-          // "구급 1", "펌프 2" 등 → 유지
-          var numMatch=it.match(/(\d+)$/);
-          if(!numMatch)return true; // 숫자 없으면 유지
-          return parseInt(numMatch[1])!==0;
-        });
-        if(kept.length>0){
-          result.push(header+' ('+kept.join(', ')+')');
-        }else{
-          result.push(header); // 내용이 모두 0이면 헤더만
-        }
-      }else{
-        // 괄호 없는 단순 섹션 — 총 대수가 0이면 숨김
-        var tm=sec.match(/:\s*(\d+)[대명]/);
-        if(tm&&parseInt(tm[1])===0)return;
-        result.push(sec);
-      }
-    });
-    return result.join(' / ');
-  }
+  if(tlItems.length){var leftCol='',rightCol='';tlItems.forEach(function(item,i){if(i%2===0)leftCol+=item;else rightCol+=item;});timelineHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 16px;"><div>'+leftCol+'</div><div>'+rightCol+'</div></div>';}
   function filterZeroEquip(raw){
     if(!raw)return '';
     raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
@@ -1682,193 +1438,76 @@ function renderReportPreview(){
     var result=[];
     sections.forEach(function(sec){
       var m=sec.match(/^([\w가-힣\/\s]+:\s*\d+[대명]?)\s*\((.+)\)$/);
-      if(m){
-        var header=m[1].trim();
-        var totalMatch=header.match(/(\d+)[대명]/);
-        if(totalMatch&&parseInt(totalMatch[1])===0)return;
-        var kept=m[2].split(',').map(function(s){return s.trim();}).filter(function(it){return !/\s0$/.test(it)&&!/\s0[대명]$/.test(it);});
-        result.push(kept.length?header+' ('+kept.join(', ')+')':header);
-      }else{
-        var tm=sec.match(/:\s*(\d+)[대명]/);
-        if(tm&&parseInt(tm[1])===0)return;
-        result.push(sec);
-      }
+      if(m){var header=m[1].trim();var totalMatch=header.match(/(\d+)[대명]/);if(totalMatch&&parseInt(totalMatch[1])===0)return;var kept=m[2].split(',').map(function(s){return s.trim();}).filter(function(it){return!/\s0$/.test(it)&&!/\s0[대명]$/.test(it);});result.push(kept.length?header+' ('+kept.join(', ')+')':header);}
+      else{var tm=sec.match(/:\s*(\d+)[대명]/);if(tm&&parseInt(tm[1])===0)return;result.push(sec);}
     });
     return result.join(' / ');
   }
-
-  var personnelFmt=filterZeroItems(personnel);
+  var personnelFmt=personnel;
   var equipFmt=equipment.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
   var equipDetailFmt=filterZeroEquip(equipDetail);
-
-  // 소방기관/유관기관 분리
   var fireDetail='',agencyDetail='';
-  if(equipDetailFmt){
-    equipDetailFmt.split('/').forEach(function(sec){
-      sec=sec.trim();
-      if(/소방기관|소방/.test(sec))fireDetail=sec.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();
-      else if(/유관기관/.test(sec))agencyDetail=sec.replace(/^유관기관\s*:\s*/,'').trim();
-    });
-  }
-
-  // 보고서 제목
-  var reportTitle='';
-  if(summary){
-    reportTitle=summary;
-  }else{
-    var typeNames={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
-    var dongName=addr?extractDong(addr):'';
-    reportTitle=(dongName?dongName+' ':'')+(target||(typeNames[rptCurrentType]||'기타'))+'발생보고';
-  }
-
-  var body=document.getElementById('reportPreviewBody');
-  if(!body)return;
-
-  var S='font-size:11px;'; // 공통 섹션 div 스타일
-
+  if(equipDetailFmt){equipDetailFmt.split('/').forEach(function(sec){sec=sec.trim();if(/소방기관|소방/.test(sec))fireDetail=sec.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();else if(/유관기관/.test(sec))agencyDetail=sec.replace(/^유관기관\s*:\s*/,'').trim();});}
+  var reportTitle=summary||(addr?extractDong(addr):'')+(target||({fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'}[rptCurrentType]||'기타'))+'발생보고';
+  var body=document.getElementById('reportPreviewBody');if(!body)return;
+  var S='font-size:11px;';
   body.innerHTML=
-    // ① 비공개 안내 박스
-    '<div style="border:1.5px solid #cc0000;margin:0 0 6px 0;padding:3px 8px;text-align:center;border-radius:3px;">'+
-      '<span style="color:#cc0000;font-size:10px;font-weight:500;">공공기관의 정보공개에 관한 법률 제9조제1항제6호(개인정보)에 의한 비공개 대상 정보임</span>'+
-    '</div>'+
-    // ② 로고 | 제목 | 담당자
+    '<div style="border:1.5px solid #cc0000;margin:0 0 6px 0;padding:3px 8px;text-align:center;border-radius:3px;"><span style="color:#cc0000;font-size:10px;font-weight:500;">공공기관의 정보공개에 관한 법률 제9조제1항제6호(개인정보)에 의한 비공개 대상 정보임</span></div>'+
     '<div style="display:grid;grid-template-columns:100px 1fr 130px;align-items:center;padding:6px 0;border-bottom:2px solid #1a3a6b;margin-bottom:8px;gap:8px;">'+
-      '<div style="display:flex;align-items:center;justify-content:center;">'+
-        '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" style="max-width:90px;max-height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"/>'+
-      '</div>'+
+      '<div style="display:flex;align-items:center;justify-content:center;"><img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" style="max-width:90px;max-height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"/></div>'+
       '<div style="text-align:center;font-size:15px;font-weight:500;color:#1a3a6b;">'+escHtml(reportTitle)+'</div>'+
-      '<div style="font-size:10px;color:#6B7280;text-align:right;line-height:1.8;">'+
-        (duty?'당직 '+escHtml(duty)+'<br/>':'')+
-        (manager?'상황 '+escHtml(manager):'서산소방서')+
-      '</div>'+
+      '<div style="font-size:10px;color:#6B7280;text-align:right;line-height:1.8;">'+(duty?'당직 '+escHtml(duty)+'<br/>':'')+escHtml(manager||'서산소방서')+'</div>'+
     '</div>'+
-
-    // 1. 사고개요
     '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">1. 사고개요</span></div>'+
     '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+
-      (datetime?
-        '<div style="display:flex;align-items:baseline;line-height:1.9;">'+
-          '<span style="flex-shrink:0;white-space:nowrap;">○ 일 시 :</span>'+
-          '<span style="margin-left:6px;">'+escHtml(datetime)+
-            (callCount?'&nbsp;&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:10px;">신고건수: '+escHtml(callCount)+'</span>':'')+
-          '</span>'+
-        '</div>':'')+
+      (datetime?'<div style="display:flex;align-items:baseline;line-height:1.9;"><span style="flex-shrink:0;white-space:nowrap;">○ 일 시 :</span><span style="margin-left:6px;">'+escHtml(datetime)+(callCount?'&nbsp;&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:10px;">신고건수: '+escHtml(callCount)+'</span>':'')+'</span></div>':'')+
       (distance?'<div style="font-size:10px;color:#6B7280;padding-left:14px;">※ '+escHtml(distance)+'</div>':'')+
-      row('대 상', target)+
-      row('장 소', addr)+
-      row('내 용', mainContent)+
+      row('대 상',target)+row('장 소',addr)+row('내 용',mainContent)+
     '</div>'+
-
-    // 2. 피해상황
     '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">2. 피해상황</span></div>'+
-    '<div style="padding-left:4px;margin-bottom:4px;'+S+'">'+
-      row('인명피해', casualty)+
-      row('재산피해', damage)+
-    '</div>'+
-
-    // 건축물현황
+    '<div style="padding-left:4px;margin-bottom:4px;'+S+'">'+row('인명피해',casualty)+row('재산피해',damage)+'</div>'+
     (bldgRows?
-      '<div style="padding-left:4px;margin-bottom:8px;">'+
-        '<div style="font-size:10px;font-weight:500;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div>'+
-        '<table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;line-height:1.2;">'+
-          '<thead><tr>'+
-            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:9%;">구분</th>'+
-            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:24%;">구조</th>'+
-            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:12%;">크기(㎡)</th>'+
-            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:30%;">용도</th>'+
-            '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:25%;">기타</th>'+
-          '</tr></thead>'+
-          '<tbody>'+bldgRows+'</tbody>'+
-        '</table>'+
-      '</div>':'<div style="margin-bottom:8px;"></div>')+
-
-    // 3. 자원동원
+      '<div style="padding-left:4px;margin-bottom:8px;"><div style="font-size:10px;font-weight:500;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div>'+
+      '<table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;line-height:1.2;"><thead><tr>'+
+        '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:9%;">구분</th>'+
+        '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:24%;">구조</th>'+
+        '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:12%;">크기(㎡)</th>'+
+        '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:30%;">용도</th>'+
+        '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;border:0.5px solid rgba(255,255,255,0.2);width:25%;">기타</th>'+
+      '</tr></thead><tbody>'+bldgRows+'</tbody></table></div>':'<div style="margin-bottom:8px;"></div>')+
     '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">3. 자원동원</span></div>'+
-    '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+
-      row('인 원', personnelFmt)+
-      row('장 비', equipFmt)+
-      (fireDetail||agencyDetail?
-        '<div style="padding-left:8px;margin-top:1px;">'+
-          subrow('소방기관', fireDetail)+
-          subrow('유관기관', agencyDetail)+
-        '</div>':'')+
-    '</div>'+
-
-    // 4. 주요 조치사항
-    (timelineHtml?
-      '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">4. 주요 조치사항</span></div>'+
-      '<div style="padding-left:4px;margin-bottom:8px;">'+timelineHtml+'</div>':'');
-
+    '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+row('인 원',personnelFmt)+row('장 비',equipFmt)+(fireDetail||agencyDetail?'<div style="padding-left:8px;margin-top:1px;">'+subrow('소방기관',fireDetail)+subrow('유관기관',agencyDetail)+'</div>':'')+'</div>'+
+    (timelineHtml?'<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">4. 주요 조치사항</span></div><div style="padding-left:4px;margin-bottom:8px;">'+timelineHtml+'</div>':'');
   body.innerHTML+=buildPhotoSection();
 }
 
-
-
-
-
 function v(id){var el=document.getElementById(id);return el?(el.value||el.textContent||'').trim():'';}
-function getTodayStr(){
-  var d=new Date();var days=['일','월','화','수','목','금','토'];
-  return d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.('+days[d.getDay()]+')';
-}
-function copyPreviewText(){
-  var body=document.getElementById('reportPreviewBody');
-  if(body){navigator.clipboard.writeText(body.innerText||body.textContent).then(function(){showToast('복사됐습니다');});}
-}
+function getTodayStr(){var d=new Date();var days=['일','월','화','수','목','금','토'];return d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.('+days[d.getDay()]+')'; }
+function copyPreviewText(){var body=document.getElementById('reportPreviewBody');if(body)navigator.clipboard.writeText(body.innerText||body.textContent).then(function(){showToast('복사됐습니다');});}
 async function rptShareReport(){
-  var body=document.getElementById('reportPreviewBody');
-  if(!body)return;
+  var body=document.getElementById('reportPreviewBody');if(!body)return;
   var text=body.innerText||body.textContent;
-  try{
-    if(navigator.share){await navigator.share({text:text});showToast('공유됐습니다');}
-    else{await navigator.clipboard.writeText(text);showToast('복사됐습니다');}
-  }catch(e){if(e.name!=='AbortError'){navigator.clipboard.writeText(text).then(function(){showToast('복사됐습니다');});}}
+  try{if(navigator.share){await navigator.share({text:text});showToast('공유됐습니다');}else{await navigator.clipboard.writeText(text);showToast('복사됐습니다');}}
+  catch(e){if(e.name!=='AbortError'){navigator.clipboard.writeText(text).then(function(){showToast('복사됐습니다');});}}
 }
 async function rptExportPDF(){
   renderReportPreview();
   var previewEl=document.getElementById('reportPreview');
   var body=document.getElementById('reportPreviewBody');
   if(!body||body.innerHTML.indexOf('보고서를 작성하면')>=0){showToast('보고서를 먼저 작성하세요');return;}
-
-  showToast('JPG 저장 중...', 5000);
-
+  showToast('JPG 저장 중...',5000);
   if(!window.html2canvas){
-    await new Promise(function(resolve,reject){
-      var s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      s.onload=resolve;s.onerror=reject;
-      document.head.appendChild(s);
-    });
+    await new Promise(function(resolve,reject){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s);});
   }
-
   try{
-    var canvas=await html2canvas(previewEl,{
-      scale:2,
-      useCORS:true,
-      backgroundColor:'#ffffff',
-      logging:false,
-    });
-
+    var canvas=await html2canvas(previewEl,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
     var dataUrl=canvas.toDataURL('image/jpeg',0.95);
-
     var now=new Date();
     var dateStr=now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
-    var titleEl=document.querySelector('#reportPreviewBody div[style*="font-size:18px"]');
-    var title=titleEl?titleEl.textContent.trim():'소방상황보고서';
-    var filename=dateStr+'_'+title.replace(/\s/g,'')+'.jpg';
-
-    var a=document.createElement('a');
-    a.href=dataUrl;
-    a.download=filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    showToast('✅ JPG 저장 완료', 3000);
-  }catch(e){
-    showToast('저장 실패: '+e.message.substring(0,30));
-    console.error('[rptExportJPG]',e);
-  }
+    var filename=dateStr+'_소방상황보고서.jpg';
+    var a=document.createElement('a');a.href=dataUrl;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+    showToast('✅ JPG 저장 완료',3000);
+  }catch(e){showToast('저장 실패: '+e.message.substring(0,30));console.error('[rptExportJPG]',e);}
 }
 function rptReset(){
   showConfirm('보고서 초기화','작성된 보고서가 모두 삭제됩니다.',function(){
@@ -1878,96 +1517,62 @@ function rptReset(){
     var rc=document.getElementById('rptScanResultCard');if(rc)rc.style.display='none';
     var btn=document.getElementById('rptAiBtn');if(btn)btn.disabled=true;
     var banner=document.getElementById('rptAiFillBanner');if(banner)banner.style.display='none';
-    // 폼 초기화
-    ['f_station','f_manager','f_duty','f_reportDate','f_callCount','f_datetime','f_distance','f_target','f_addr','f_summary','f_mainContent','f_casualty','f_damage','f_personnel','f_equipment','f_equipDetail'].forEach(function(id){
-      var el=document.getElementById(id);if(el){el.value='';el.classList.remove('ai-ok');}
-    });
-    ['lbl_datetime','lbl_target','lbl_addr','lbl_summary','lbl_mainContent','lbl_casualty','lbl_personnel'].forEach(function(id){
-      var el=document.getElementById(id);if(el)el.style.display='none';
-    });
+    ['f_station','f_manager','f_duty','f_reportDate','f_callCount','f_datetime','f_distance','f_target','f_addr','f_summary','f_mainContent','f_casualty','f_damage','f_personnel','f_equipment','f_equipDetail'].forEach(function(id){var el=document.getElementById(id);if(el){el.value='';el.classList.remove('ai-ok');}});
+    ['lbl_datetime','lbl_target','lbl_addr','lbl_summary','lbl_mainContent','lbl_casualty','lbl_personnel'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
     document.getElementById('bldgTableBody').innerHTML='';bldgRowCount=0;initBldgTable();
     document.getElementById('timelineList').innerHTML='';timelineCount=0;initTimeline();
     rptGoPage(0);showToast('초기화됐습니다');
   });
 }
-// ── 위치도 핸들러 ──
 function handleMapFile(files){
   if(!files||!files.length)return;
   mapPhoto=files[0];
-  var wrap=document.getElementById('mapThumbWrap');
-  var thumb=document.getElementById('mapThumb');
-  if(wrap&&thumb){
-    thumb.src=URL.createObjectURL(mapPhoto);
-    wrap.style.display='block';
-  }
-  // 드롭존 숨기기
-  var dz=document.getElementById('mapDropZone');
-  if(dz)dz.style.display='none';
+  var wrap=document.getElementById('mapThumbWrap'),thumb=document.getElementById('mapThumb');
+  if(wrap&&thumb){thumb.src=URL.createObjectURL(mapPhoto);wrap.style.display='block';}
+  var dz=document.getElementById('mapDropZone');if(dz)dz.style.display='none';
   showToast('위치도가 등록됐습니다');
 }
 function removeMapPhoto(){
   mapPhoto=null;
-  var wrap=document.getElementById('mapThumbWrap');
-  var dz=document.getElementById('mapDropZone');
-  var fi=document.getElementById('mapFileInput');
-  if(wrap)wrap.style.display='none';
-  if(dz)dz.style.display='flex';
-  if(fi)fi.value='';
+  var wrap=document.getElementById('mapThumbWrap'),dz=document.getElementById('mapDropZone'),fi=document.getElementById('mapFileInput');
+  if(wrap)wrap.style.display='none';if(dz)dz.style.display='flex';if(fi)fi.value='';
 }
-
-// ── 현장사진 핸들러 ──
 function handleSceneFiles(files){
-  var newFiles=Array.from(files);
-  scenePhotos=scenePhotos.concat(newFiles).slice(0,6);
-  renderSceneThumbs();
-  showToast('현장사진 '+scenePhotos.length+'장 등록됨');
+  scenePhotos=scenePhotos.concat(Array.from(files)).slice(0,6);
+  renderSceneThumbs();showToast('현장사진 '+scenePhotos.length+'장 등록됨');
 }
 function renderSceneThumbs(){
-  var row=document.getElementById('sceneThumbRow');
-  if(!row)return;
-  row.innerHTML='';
+  var row=document.getElementById('sceneThumbRow');if(!row)return;row.innerHTML='';
   scenePhotos.forEach(function(f,i){
-    var wrap=document.createElement('div');
-    wrap.style.cssText='position:relative;flex-shrink:0;';
-    var img=document.createElement('img');
-    img.src=URL.createObjectURL(f);
-    img.style.cssText='width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--border);display:block;';
-    var del=document.createElement('button');
-    del.textContent='✕';
-    del.style.cssText='position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
-    var idx=i;
-    del.onclick=function(){scenePhotos.splice(idx,1);renderSceneThumbs();};
-    wrap.appendChild(img);wrap.appendChild(del);
-    row.appendChild(wrap);
+    var wrap=document.createElement('div');wrap.style.cssText='position:relative;flex-shrink:0;';
+    var img=document.createElement('img');img.src=URL.createObjectURL(f);img.style.cssText='width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--border);display:block;';
+    var del=document.createElement('button');del.textContent='✕';del.style.cssText='position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
+    var idx=i;del.onclick=function(){scenePhotos.splice(idx,1);renderSceneThumbs();};
+    wrap.appendChild(img);wrap.appendChild(del);row.appendChild(wrap);
   });
 }
 
-
-
-// ==================== DOM 초기화 ====================
+// ── DOM 초기화 ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',function(){
   window._reportStage='출동';
   document.querySelectorAll('.rpt-stage-btn').forEach(function(b){if(b.dataset.stage==='출동')b.classList.add('on');});
   var dropZone=document.getElementById('rptDropZone');
-
-  // 위치도 드래그앤드롭
+  if(dropZone){
+    dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange)';});
+    dropZone.addEventListener('dragleave',function(){dropZone.style.borderColor='var(--orange-bd)';});
+    dropZone.addEventListener('drop',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange-bd)';handleRptFiles(e.dataTransfer.files);});
+  }
   var mapDZ=document.getElementById('mapDropZone');
   if(mapDZ){
     mapDZ.addEventListener('dragover',function(e){e.preventDefault();mapDZ.style.borderColor='var(--blue)';});
     mapDZ.addEventListener('dragleave',function(){mapDZ.style.borderColor='rgba(26,110,232,0.35)';});
     mapDZ.addEventListener('drop',function(e){e.preventDefault();mapDZ.style.borderColor='rgba(26,110,232,0.35)';handleMapFile(e.dataTransfer.files);});
   }
-  // 현장사진 드래그앤드롭
   var sceneDZ=document.getElementById('sceneDropZone');
   if(sceneDZ){
     sceneDZ.addEventListener('dragover',function(e){e.preventDefault();sceneDZ.style.borderColor='var(--orange)';});
     sceneDZ.addEventListener('dragleave',function(){sceneDZ.style.borderColor='var(--orange-bd)';});
     sceneDZ.addEventListener('drop',function(e){e.preventDefault();sceneDZ.style.borderColor='var(--orange-bd)';handleSceneFiles(e.dataTransfer.files);});
-  }
-  if(dropZone){
-    dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange)';});
-    dropZone.addEventListener('dragleave',function(){dropZone.style.borderColor='var(--orange-bd)';});
-    dropZone.addEventListener('drop',function(e){e.preventDefault();dropZone.style.borderColor='var(--orange-bd)';handleRptFiles(e.dataTransfer.files);});
   }
 });
 </script>
