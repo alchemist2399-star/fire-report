@@ -1513,7 +1513,7 @@ function buildPhotoSection(){
     var rows=Math.ceil(n/cols);
     var cellH=Math.floor((H-(rows-1)*3)/rows);
     out+='<div>'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진 ('+n+'장)</div>'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div>'+
       '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
     scenePhotos.forEach(function(f){
       out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;background:#f8f9fb;">'+
@@ -1535,7 +1535,7 @@ function buildPhotoSection(){
     var rows=Math.ceil(n/cols);
     var cellH=Math.floor((H-(rows-1)*3)/rows);
     out+='<div style="padding-left:4px;">'+
-      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진 ('+n+'장)</div>'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div>'+
       '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
     scenePhotos.forEach(function(f){
       out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">'+
@@ -1731,16 +1731,21 @@ function renderReportPreview(){
   var S='font-size:11px;'; // 공통 섹션 div 스타일
 
   body.innerHTML=
-    // 헤더
-    '<div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #1a3a6b;padding-bottom:8px;margin-bottom:8px;">'+
-      '<div style="font-size:15px;font-weight:500;color:#1a3a6b;">'+escHtml(reportTitle)+'</div>'+
-      '<div style="text-align:right;font-size:10px;color:#6B7280;flex-shrink:0;margin-left:10px;line-height:1.5;">'+escHtml(reportDate)+'<br/>'+escHtml(station)+'<br/>(상황실)</div>'+
+    // ① 비공개 안내 박스
+    '<div style="border:1.5px solid #cc0000;margin:0 0 6px 0;padding:3px 8px;text-align:center;border-radius:3px;">'+
+      '<span style="color:#cc0000;font-size:10px;font-weight:500;">공공기관의 정보공개에 관한 법률 제9조제1항제6호(개인정보)에 의한 비공개 대상 정보임</span>'+
     '</div>'+
-    (manager||duty?
-      '<div style="font-size:10px;color:#6B7280;background:#F8F9FB;border-radius:5px;padding:4px 8px;margin-bottom:8px;">'+
-        (manager?'상황관리: '+escHtml(manager)+'　':'')+
-        (duty?'당직근무자: '+escHtml(duty):'')+
-      '</div>':'')+
+    // ② 로고 | 제목 | 담당자
+    '<div style="display:grid;grid-template-columns:100px 1fr 130px;align-items:center;padding:6px 0;border-bottom:2px solid #1a3a6b;margin-bottom:8px;gap:8px;">'+
+      '<div style="display:flex;align-items:center;justify-content:center;">'+
+        '<img src="https://raw.githubusercontent.com/sossodam/fire-report/main/logo_chungnam.png" style="max-width:90px;max-height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"/>'+
+      '</div>'+
+      '<div style="text-align:center;font-size:15px;font-weight:500;color:#1a3a6b;">'+escHtml(reportTitle)+'</div>'+
+      '<div style="font-size:10px;color:#6B7280;text-align:right;line-height:1.8;">'+
+        (duty?'당직 '+escHtml(duty)+'<br/>':'')+
+        (manager?'상황 '+escHtml(manager):'서산소방서')+
+      '</div>'+
+    '</div>'+
 
     // 1. 사고개요
     '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">1. 사고개요</span></div>'+
