@@ -743,10 +743,16 @@ setInterval(updateClock,1000); updateClock();
 
 // ── 앱 초기화 ────────────────────────────────────────────────────
 window.addEventListener('load', async function(){
-  await _migratePwIfNeeded();      // 비밀번호 해시 마이그레이션
+  // 마이그레이션 실패해도 앱 진입은 허용 (폴백: 평문 비교로 동작)
+  try { await _migratePwIfNeeded(); } catch(e) { console.warn('[migrate]', e); }
   var s=document.getElementById('appLockScreen'); if(s)s.style.display='flex';
-  loadUserContacts(); loadHistory(); loadNoticeAndLocks(); loadAutoLock();
-  initBldgTable(); initTimeline();
+  // 각 초기화 함수도 독립적으로 실행 — 하나 실패해도 나머지 영향 없음
+  try { loadUserContacts(); } catch(e) { console.warn('[contacts]', e); }
+  try { loadHistory(); } catch(e) { console.warn('[history]', e); }
+  try { loadNoticeAndLocks(); } catch(e) { console.warn('[notice]', e); }
+  try { loadAutoLock(); } catch(e) { console.warn('[autolock]', e); }
+  try { initBldgTable(); } catch(e) { console.warn('[bldg]', e); }
+  try { initTimeline(); } catch(e) { console.warn('[timeline]', e); }
 });
 
 // ── 앱 잠금 해제 (보안강화) ──────────────────────────────────────
@@ -759,18 +765,25 @@ async function checkAppLock() {
   // 브루트포스 체크
   if(_isLocked('app')) { _showLockMsg('app','appLockError',inp); return; }
 
-  var ok=await _checkPw('appLockPw','0261', inp.value);
-  if(ok) {
-    _recordSuccess('app');
-    _currentAppPassword=inp.value;                      // 비밀번호 메모리 보관
-    await _loadApiKeyOnLogin(_currentAppPassword);       // API Key 복호화
-    if(s)s.style.display='none';
-    if(errEl)errEl.className='sec-err';
-    switchTab('dispatch');
-  } else {
-    var locked=_recordFail('app');
-    _showLockMsg('app','appLockError', inp);
-    inp.value=''; if(!locked) inp.focus();
+  try {
+    var ok=await _checkPw('appLockPw','0261', inp.value);
+    if(ok) {
+      _recordSuccess('app');
+      _currentAppPassword=inp.value;
+      await _loadApiKeyOnLogin(_currentAppPassword);
+      if(s)s.style.display='none';
+      if(errEl)errEl.className='sec-err';
+      switchTab('dispatch');
+    } else {
+      var locked=_recordFail('app');
+      _showLockMsg('app','appLockError', inp);
+      inp.value=''; if(!locked) inp.focus();
+    }
+  } catch(e) {
+    // Web Crypto API 실패 (구형 브라우저, 비-HTTPS 등)
+    console.error('[checkAppLock]', e);
+    if(errEl){ errEl.className='sec-err sec-err-red show'; errEl.textContent='⚠️ 보안 오류: '+e.message.substring(0,40)+' — HTTPS 환경에서 접속하세요'; }
+    inp.value='';
   }
 }
 
@@ -778,24 +791,29 @@ async function checkAppLock() {
 async function checkSettingsLock() {
   var inp=document.getElementById('settingsLockInput');
   var errEl=document.getElementById('settingsLockError');
-  var lock=document.getElementById('settingsLockInline');
-  var content=document.getElementById('settingsContent');
+  var lockEl=document.getElementById('settingsLockInline');
+  var contentEl=document.getElementById('settingsContent');
   if(!inp) return;
 
   if(_isLocked('settings')) { _showLockMsg('settings','settingsLockError',inp); return; }
 
-  var ok=await _checkPw('settingsPw','2399', inp.value);
-  if(ok) {
-    _recordSuccess('settings');
-    if(lock)lock.style.display='none';
-    if(content)content.style.display='block';
-    if(errEl)errEl.className='sec-err';
-    // 저장된 API Key 표시 (마스킹)
-    if(_sessionApiKey){ var el=document.getElementById('cfg_geminiKey'); if(el)el.placeholder='저장됨 (변경하려면 새로 입력)'; }
-  } else {
-    var locked=_recordFail('settings');
-    _showLockMsg('settings','settingsLockError', inp);
-    inp.value=''; if(!locked) inp.focus();
+  try {
+    var ok=await _checkPw('settingsPw','2399', inp.value);
+    if(ok) {
+      _recordSuccess('settings');
+      if(lockEl)lockEl.style.display='none';
+      if(contentEl)contentEl.style.display='block';
+      if(errEl)errEl.className='sec-err';
+      if(_sessionApiKey){ var el=document.getElementById('cfg_geminiKey'); if(el)el.placeholder='저장됨 (변경하려면 새로 입력)'; }
+    } else {
+      var locked=_recordFail('settings');
+      _showLockMsg('settings','settingsLockError', inp);
+      inp.value=''; if(!locked) inp.focus();
+    }
+  } catch(e) {
+    console.error('[checkSettingsLock]', e);
+    if(errEl){ errEl.className='sec-err sec-err-red show'; errEl.textContent='⚠️ 보안 오류: '+e.message.substring(0,40); }
+    inp.value='';
   }
 }
 
@@ -868,42 +886,58 @@ function applyAllLocks(){
 
 // ── 비밀번호 변경 (보안강화: SHA-256 해시) ───────────────────────
 async function changePw(){
-  var cur=document.getElementById('cfg_currentPw').value;
-  var nw=document.getElementById('cfg_newPw').value;
-  var conf=document.getElementById('cfg_confirmPw').value;
+  var curEl=document.getElementById('cfg_currentPw');
+  var nwEl=document.getElementById('cfg_newPw');
+  var confEl=document.getElementById('cfg_confirmPw');
   var msgEl=document.getElementById('pwMsg');
+  if(!curEl||!nwEl||!confEl){ showToast('입력 필드를 찾을 수 없습니다'); return; }
+  var cur=curEl.value, nw=nwEl.value, conf=confEl.value;
   function setMsg(html){ if(msgEl)msgEl.innerHTML=html; }
+  function errMsg(txt){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">'+txt+'</div>'); }
+  function okMsg(txt){ setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">'+txt+'</div>'); }
 
-  var ok=await _checkPw('appLockPw','0261', cur);
-  if(!ok){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>'); return; }
-  if(nw.length<4){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>'); return; }
-  if(nw!==conf){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>'); return; }
+  try {
+    var ok=await _checkPw('appLockPw','0261', cur);
+    if(!ok){ errMsg('현재 비밀번호가 틀렸습니다.'); return; }
+    if(nw.length<4){ errMsg('4자리 이상 입력하세요.'); return; }
+    if(nw!==conf){ errMsg('비밀번호가 일치하지 않습니다.'); return; }
 
-  await _savePw('appLockPw', nw);
+    await _savePw('appLockPw', nw);
+    if(_sessionApiKey){ await _saveApiKey(_sessionApiKey, nw); }
+    _currentAppPassword=nw;
 
-  // API Key를 새 비밀번호로 재암호화
-  if(_sessionApiKey){ await _saveApiKey(_sessionApiKey, nw); }
-  _currentAppPassword=nw;
-
-  setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">✅ 비밀번호가 변경됐습니다.</div>');
-  document.getElementById('cfg_currentPw').value='';document.getElementById('cfg_newPw').value='';document.getElementById('cfg_confirmPw').value='';
+    okMsg('✅ 비밀번호가 변경됐습니다.');
+    curEl.value=''; nwEl.value=''; confEl.value='';
+  } catch(e) {
+    console.error('[changePw]', e);
+    errMsg('⚠️ 변경 중 오류가 발생했습니다: '+e.message.substring(0,40));
+  }
 }
 
 async function changeSettingsPw(){
-  var cur=document.getElementById('cfg_currentSettingsPw').value;
-  var nw=document.getElementById('cfg_newSettingsPw').value;
-  var conf=document.getElementById('cfg_confirmSettingsPw').value;
+  var curEl=document.getElementById('cfg_currentSettingsPw');
+  var nwEl=document.getElementById('cfg_newSettingsPw');
+  var confEl=document.getElementById('cfg_confirmSettingsPw');
   var msgEl=document.getElementById('settingsPwMsg');
+  if(!curEl||!nwEl||!confEl){ showToast('입력 필드를 찾을 수 없습니다'); return; }
+  var cur=curEl.value, nw=nwEl.value, conf=confEl.value;
   function setMsg(html){ if(msgEl)msgEl.innerHTML=html; }
+  function errMsg(txt){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">'+txt+'</div>'); }
+  function okMsg(txt){ setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">'+txt+'</div>'); }
 
-  var ok=await _checkPw('settingsPw','2399', cur);
-  if(!ok){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">현재 비밀번호가 틀렸습니다.</div>'); return; }
-  if(nw.length<4){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">4자리 이상 입력하세요.</div>'); return; }
-  if(nw!==conf){ setMsg('<div style="font-size:12px;color:var(--red);font-weight:700;padding:8px;background:var(--red-lt);border-radius:var(--r3);">비밀번호가 일치하지 않습니다.</div>'); return; }
+  try {
+    var ok=await _checkPw('settingsPw','2399', cur);
+    if(!ok){ errMsg('현재 비밀번호가 틀렸습니다.'); return; }
+    if(nw.length<4){ errMsg('4자리 이상 입력하세요.'); return; }
+    if(nw!==conf){ errMsg('비밀번호가 일치하지 않습니다.'); return; }
 
-  await _savePw('settingsPw', nw);
-  setMsg('<div style="font-size:12px;color:var(--green);font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">✅ 설정 비밀번호가 변경됐습니다.</div>');
-  document.getElementById('cfg_currentSettingsPw').value='';document.getElementById('cfg_newSettingsPw').value='';document.getElementById('cfg_confirmSettingsPw').value='';
+    await _savePw('settingsPw', nw);
+    okMsg('✅ 설정 비밀번호가 변경됐습니다.');
+    curEl.value=''; nwEl.value=''; confEl.value='';
+  } catch(e) {
+    console.error('[changeSettingsPw]', e);
+    errMsg('⚠️ 변경 중 오류가 발생했습니다: '+e.message.substring(0,40));
+  }
 }
 
 function clearAllData(){
