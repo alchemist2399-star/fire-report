@@ -1461,8 +1461,13 @@ function applyAIResultToForm(parsed){
   if(propArr.length)fillField('f_damage','lbl_damage',propArr.join(' / '));
   var mob=p.mobilization||{};
   var perStr='';
-  if(isValid(mob.totalPersonnel))perStr=mob.totalPersonnel+'명';
-  if(isValid(mob.personnelDetail))perStr+=(perStr?' (':'(')+mob.personnelDetail+')';
+  if(isValid(mob.totalPersonnel))perStr=String(mob.totalPersonnel).replace(/명$/,'')+'명';
+  if(isValid(mob.personnelDetail)){
+    // 괄호 중복 방지: 이미 괄호 있으면 그대로, 없으면 추가
+    var det=String(mob.personnelDetail).trim();
+    if(det.startsWith('(')&&det.endsWith(')')) perStr+=det;
+    else perStr+=' ('+det+')';
+  }
   if(perStr)fillField('f_personnel','lbl_personnel',perStr);
   if(isValid(mob.totalVehicles))fillField('f_equipment','lbl_equipment',mob.totalVehicles+'대');
   var eqArr=[];
@@ -1471,13 +1476,21 @@ function applyAIResultToForm(parsed){
   if(eqArr.length)fillField('f_equipDetail','lbl_equipDetail',eqArr.join(' / '));
   var tlList=document.getElementById('timelineList');
   if(tlList){
-    if(p.timeline&&p.timeline.length>0){tlList.innerHTML='';timelineCount=0;p.timeline.forEach(function(t){if(isValid(t.time)&&isValid(t.content))addTimelineItem(t);});}
-    else{tlList.innerHTML='';timelineCount=0;}
+    if(p.timeline&&p.timeline.length>0){
+      // AI가 타임라인을 추출했으면 교체
+      tlList.innerHTML='';timelineCount=0;
+      p.timeline.forEach(function(t){if(isValid(t.time)&&isValid(t.content))addTimelineItem(t);});
+    }
+    // AI 타임라인 없으면 기존 입력 유지 (initTimeline 기본값 보존)
   }
   var bldgTbody=document.getElementById('bldgTableBody');
   if(bldgTbody){
-    if(b.floors&&b.floors.length>0){bldgTbody.innerHTML='';bldgRowCount=0;b.floors.forEach(function(fl){if(isValid(fl.floor))addBldgRow({floor:fl.floor||'',struct:isValid(fl.structure)?fl.structure:'',size:isValid(fl.area)?fl.area:'',use:isValid(fl.use)?fl.use:'',note:isValid(fl.note)?fl.note:''});});}
-    else{bldgTbody.innerHTML='';bldgRowCount=0;}
+    if(b.floors&&b.floors.length>0){
+      // AI가 건축물 정보를 추출했으면 교체
+      bldgTbody.innerHTML='';bldgRowCount=0;
+      b.floors.forEach(function(fl){if(isValid(fl.floor))addBldgRow({floor:fl.floor||'',struct:isValid(fl.structure)?fl.structure:'',size:isValid(fl.area)?fl.area:'',use:isValid(fl.use)?fl.use:'',note:isValid(fl.note)?fl.note:'',});});
+    }
+    // AI 건축물 정보 없으면 기존 테이블 유지 (initBldgTable 기본값 보존)
   }
   var banner=document.getElementById('rptAiFillBanner');if(banner)banner.style.display='flex';
 }
@@ -1535,17 +1548,39 @@ function renderReportPreview(){
   if(tlItems.length){var leftCol='',rightCol='';tlItems.forEach(function(item,i){if(i%2===0)leftCol+=item;else rightCol+=item;});timelineHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 16px;"><div>'+leftCol+'</div><div>'+rightCol+'</div></div>';}
   function filterZeroEquip(raw){
     if(!raw)return '';
+    // 단위 중복 제거
     raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
     var sections=raw.split('/').map(function(s){return s.trim();}).filter(Boolean);
     var result=[];
     sections.forEach(function(sec){
+      // 괄호 미닫힘 보정: "소방기관: 1대 (지휘 0, 펌프 1" → 닫는 ) 추가
+      var openCount=(sec.match(/\(/g)||[]).length;
+      var closeCount=(sec.match(/\)/g)||[]).length;
+      if(openCount>closeCount) sec+=')'.repeat(openCount-closeCount);
+
       var m=sec.match(/^([\w가-힣\/\s]+:\s*\d+[대명]?)\s*\((.+)\)$/);
-      if(m){var header=m[1].trim();var totalMatch=header.match(/(\d+)[대명]/);if(totalMatch&&parseInt(totalMatch[1])===0)return;var kept=m[2].split(',').map(function(s){return s.trim();}).filter(function(it){return!/\s0$/.test(it)&&!/\s0[대명]$/.test(it);});result.push(kept.length?header+' ('+kept.join(', ')+')':header);}
-      else{var tm=sec.match(/:\s*(\d+)[대명]/);if(tm&&parseInt(tm[1])===0)return;result.push(sec);}
+      if(m){
+        var header=m[1].trim();
+        var totalMatch=header.match(/(\d+)[대명]/);
+        if(totalMatch&&parseInt(totalMatch[1])===0)return;
+        var kept=m[2].split(',').map(function(s){return s.trim();}).filter(function(it){
+          return!/\s0$/.test(it)&&!/\s0[대명]$/.test(it);
+        });
+        result.push(kept.length?header+' ('+kept.join(', ')+')':header);
+      } else {
+        var tm=sec.match(/:\s*(\d+)[대명]/);
+        if(tm&&parseInt(tm[1])===0)return;
+        result.push(sec);
+      }
     });
     return result.join(' / ');
   }
-  var personnelFmt=personnel;
+  // 인원 표시 정규화: "명명" → "명", "((" → "(" 중복 제거
+  var personnelFmt=personnel
+    .replace(/명\s*명/g,'명')
+    .replace(/\(\s*\(/g,'(')
+    .replace(/\)\s*\)/g,')')
+    .trim();
   var equipFmt=equipment.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
   var equipDetailFmt=filterZeroEquip(equipDetail);
   var fireDetail='',agencyDetail='';
