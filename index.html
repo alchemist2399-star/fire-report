@@ -1584,6 +1584,29 @@ function _collectReportData(){
   var summary=v('f_summary');
   var typeNames={fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
   var reportTitle=summary||(addr?extractDong(addr):'')+(target||(typeNames[rptCurrentType]||'기타'))+'발생보고';
+  // 인원 상세: "소방 0명, 경찰 0명, 군 3명" → "군 3명" (0인 항목 제거)
+  function filterZeroPersonnel(raw){
+    if(!raw)return '';
+    // 괄호 내부 추출
+    var m=raw.match(/\(([^)]+)\)/);
+    var prefix=raw.replace(/\s*\([^)]*\)\s*/,'').trim(); // "38명" 부분
+    if(!m) return raw;
+    var items=m[1].split(',').map(function(s){return s.trim();});
+    var kept=items.filter(function(it){
+      // "소방 0명", "군 0명" 등 숫자가 0인 항목 제거
+      return !/\s0명?$/.test(it) && it!=='0';
+    });
+    if(!kept.length) return prefix; // 전부 0이면 합계만
+    return prefix+' ('+kept.join(', ')+')';
+  }
+
+  var personnelFmt=personnelRaw
+    .replace(/명\s*명/g,'명')
+    .replace(/\(\s*\(/g,'(')
+    .replace(/\)\s*\)/g,')')
+    .trim();
+  personnelFmt=filterZeroPersonnel(personnelFmt);
+
   return {
     station:   v('f_station')||'서산소방서',
     manager:   v('f_manager'),
@@ -1597,7 +1620,7 @@ function _collectReportData(){
     summary:   summary,
     casualty:  v('f_casualty'),
     damage:    v('f_damage'),
-    personnel: personnelRaw.replace(/명\s*명/g,'명').replace(/\(\s*\(/g,'(').replace(/\)\s*\)/g,')').trim(),
+    personnel: personnelFmt,
     equipment: v('f_equipment').replace(/명\s*명/g,'명').replace(/대\s*대/g,'대'),
     fireDetail:   fireDetail,
     agencyDetail: agencyDetail,
@@ -1609,8 +1632,9 @@ function _collectReportData(){
 
 // 비공개 헤더 배너
 function _buildSectionBanner(){
-  return '<div style="border:1.5px solid #cc0000;margin:0 0 6px 0;padding:3px 8px;text-align:center;border-radius:3px;">'+
-    '<span style="color:#cc0000;font-size:10px;font-weight:500;">'+
+  // 높이 최소화: padding 줄이고 font-size 9px로 축소
+  return '<div style="border:1px solid #cc0000;margin:0 0 4px 0;padding:1px 6px;text-align:center;border-radius:2px;">'+
+    '<span style="color:#cc0000;font-size:9px;font-weight:500;line-height:1.4;">'+
     '공공기관의 정보공개에 관한 법률 제9조제1항제6호(개인정보)에 의한 비공개 대상 정보임'+
     '</span></div>';
 }
@@ -1700,14 +1724,18 @@ function _buildSection2(d){
 function _buildSection3(d){
   try {
     var S='font-size:11px;';
+    // 소방기관/유관기관 상세: 빈 값이면 행 숨김 (_subrow가 이미 처리)
     var detailHtml=(d.fireDetail||d.agencyDetail)?
       '<div style="padding-left:8px;margin-top:1px;">'+
         _subrow('소방기관',d.fireDetail)+
         _subrow('유관기관',d.agencyDetail)+
       '</div>':'';
+    // 인원 합계가 "0명"만 남으면 행 숨김
+    var personnelDisplay=d.personnel;
+    if(/^0명$/.test(personnelDisplay.trim())||personnelDisplay.trim()==='0') personnelDisplay='';
     return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">3. 자원동원</span></div>'+
       '<div style="padding-left:4px;margin-bottom:8px;'+S+'">'+
-        _row('인 원',d.personnel)+
+        _row('인 원',personnelDisplay)+
         _row('장 비',d.equipment)+
         detailHtml+
       '</div>';
