@@ -1263,7 +1263,7 @@ async function rptRunScanAI(){
       });
     }));
 
-    var prompt='당신은 소방 문서 OCR 전문가입니다. 업로드된 사진 속 텍스트를 정확하게 읽어서 정보를 추출하세요.\n\n【문서 종류】\n- P119 현장지원시스템 화면 캡처 (재난현황 브리핑 형태)\n- 건축물대장(일반건축물대장) 캡처\n\n【절대 규칙 - 매우 중요】\n1. 사진에서 직접 보이는 텍스트만 그대로 옮기세요\n2. 절대로 추측, 예시, 임의 값을 넣지 마세요\n3. 사진에서 확인할 수 없는 항목은 반드시 null을 반환하세요\n4. 건축물대장이 없으면 buildings는 빈 배열 []로 반환하세요\n5. P119 화면이 없으면 p119 하위 값 모두 null로 반환하세요\n6. 숫자, 이름, 주소는 보이는 그대로만 작성하세요\n\n아래 JSON 형식으로만 응답하세요 (마크다운, 설명 없이 순수 JSON만):\n\n{"p119":{"reportTitle":null,"reportDatetime":null,"disasterType":null,"incidentDatetime":null,"location":null,"mainContent":null,"casualty":{"death":null,"injured":null,"missing":null,"total":null},"property":{"damageAmount":null,"damageArea":null,"damageField":null},"mobilization":{"totalPersonnel":null,"personnelDetail":null,"totalVehicles":null,"fireVehicles":null,"fireVehicleDetail":null,"agencyVehicles":null,"agencyDetail":null},"timeline":[]},"building":{"floors":[],"totalFloors":null,"mainStructure":null,"mainUse":null,"buildingArea":null}}';
+    var prompt='당신은 소방 문서 OCR 전문가입니다. 업로드된 사진 속 텍스트를 정확하게 읽어서 정보를 추출하세요.\n\n【문서 종류】\n- P119 현장지원시스템 화면 캡처 (재난현황 브리핑 형태)\n- 건축물대장(일반건축물대장 (갑)) 캡처\n\n【절대 규칙 - 매우 중요】\n1. 사진에서 직접 보이는 텍스트만 그대로 옮기세요\n2. 절대로 추측, 예시, 임의 값을 넣지 마세요\n3. 사진에서 확인할 수 없는 항목은 반드시 null을 반환하세요\n4. 건축물대장이 없으면 buildings.floors는 빈 배열 []로 반환하세요\n5. P119 화면이 없으면 p119 하위 값 모두 null로 반환하세요\n6. 숫자, 이름, 주소는 보이는 그대로만 작성하세요\n\n【건축물대장 추출 방법】\n- "건축물 현황" 표에서 구분(층별), 구조, 용도, 면적(㎡)을 행별로 읽으세요\n- 예: 구분=주3, 층별=1층, 구조=철근콘크리트구조, 용도=공공업무시설, 면적=460\n- floor 필드에는 "1층","2층" 등 층 정보를 넣으세요\n- structure 필드에는 구조 정보를 넣으세요\n- use 필드에는 용도를 넣으세요\n- area 필드에는 면적 숫자만 넣으세요\n- note 필드에는 구분(주3 등) 또는 특이사항을 넣으세요\n\n아래 JSON 형식으로만 응답하세요 (마크다운, 설명 없이 순수 JSON만):\n\n{"p119":{"reportTitle":null,"reportDatetime":null,"disasterType":null,"incidentDatetime":null,"location":null,"mainContent":null,"casualty":{"death":null,"injured":null,"missing":null,"total":null},"property":{"damageAmount":null,"damageArea":null,"damageField":null},"mobilization":{"totalPersonnel":null,"personnelDetail":null,"totalVehicles":null,"fireVehicles":null,"fireVehicleDetail":null,"agencyVehicles":null,"agencyDetail":null},"timeline":[]},"building":{"floors":[{"floor":"1층","structure":"철근콘크리트구조","area":"460","use":"공공업무시설","note":"주3"}],"totalFloors":null,"mainStructure":null,"mainUse":null,"buildingArea":null}}';
 
     var parts=[{text:prompt}].concat(imgParts);
     var res=await fetch(
@@ -1490,53 +1490,53 @@ function buildPhotoSection(){
   var hasScene=scenePhotos.length>0;
   if(!hasMap&&!hasScene)return '';
 
-  var PHOTO_H=160; // 고정 높이(px) — 위치도·현장사진 동일 높이
+  var H=140; // 위치도·현장사진 동일 고정 높이
 
-  var out='<h3>5. 위치도 및 현장사진</h3>';
+  var out='<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
 
   if(hasMap&&hasScene){
-    // 나란히: 좌 위치도 / 우 현장사진
-    out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-left:12px;margin-top:6px;">';
+    // 좌: 위치도 / 우: 현장사진 — 동일 높이 나란히
+    out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-left:4px;">';
 
-    // 위치도 (1장)
+    // 위치도
     out+='<div>'+
-      '<div style="font-size:11px;font-weight:700;color:#6B7280;margin-bottom:4px;">위치도</div>'+
-      '<div style="height:'+PHOTO_H+'px;border:1px solid #E4E7EE;border-radius:6px;overflow:hidden;background:#f0f4ff;">'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div>'+
+      '<div style="height:'+H+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">'+
         '<img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:contain;display:block;"/>'+
-      '</div>'+
-    '</div>';
+      '</div></div>';
 
-    // 현장사진 (최대 6장 — 그리드)
-    var cols=scenePhotos.length===1?1:2;
-    var rowH=scenePhotos.length<=2?PHOTO_H:Math.floor(PHOTO_H/2)-3;
+    // 현장사진 — 장수에 따라 내부 그리드
+    var n=scenePhotos.length;
+    var cols=n===1?1:2;
+    var rows=Math.ceil(n/cols);
+    var cellH=Math.floor((H-(rows-1)*3)/rows);
     out+='<div>'+
-      '<div style="font-size:11px;font-weight:700;color:#6B7280;margin-bottom:4px;">현장사진 ('+scenePhotos.length+'장)</div>'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진 ('+n+'장)</div>'+
       '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
     scenePhotos.forEach(function(f){
-      out+='<div style="height:'+rowH+'px;border:1px solid #E4E7EE;border-radius:4px;overflow:hidden;background:#f8f9fb;">'+
+      out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;background:#f8f9fb;">'+
         '<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
       '</div>';
     });
-    out+='</div></div>';
-    out+='</div>';
+    out+='</div></div></div>';
 
   }else if(hasMap){
-    out+='<div style="padding-left:12px;margin-top:6px;">'+
-      '<div style="font-size:11px;font-weight:700;color:#6B7280;margin-bottom:4px;">위치도</div>'+
-      '<div style="height:'+(PHOTO_H+40)+'px;border:1px solid #E4E7EE;border-radius:6px;overflow:hidden;background:#f0f4ff;">'+
+    out+='<div style="padding-left:4px;">'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div>'+
+      '<div style="height:'+(H+20)+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">'+
         '<img src="'+URL.createObjectURL(mapPhoto)+'" style="width:100%;height:100%;object-fit:contain;display:block;"/>'+
-      '</div>'+
-    '</div>';
+      '</div></div>';
 
   }else{
-    // 현장사진만
-    var cols=Math.min(scenePhotos.length,3);
-    var rowH=scenePhotos.length<=3?PHOTO_H:Math.floor(PHOTO_H/2)-3;
-    out+='<div style="padding-left:12px;margin-top:6px;">'+
-      '<div style="font-size:11px;font-weight:700;color:#6B7280;margin-bottom:4px;">현장사진 ('+scenePhotos.length+'장)</div>'+
-      '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:4px;">';
+    var n=scenePhotos.length;
+    var cols=Math.min(n,3);
+    var rows=Math.ceil(n/cols);
+    var cellH=Math.floor((H-(rows-1)*3)/rows);
+    out+='<div style="padding-left:4px;">'+
+      '<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진 ('+n+'장)</div>'+
+      '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
     scenePhotos.forEach(function(f){
-      out+='<div style="height:'+rowH+'px;border:1px solid #E4E7EE;border-radius:4px;overflow:hidden;">'+
+      out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">'+
         '<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;display:block;"/>'+
       '</div>';
     });
@@ -1639,7 +1639,44 @@ function renderReportPreview(){
     return str.trim();
   }
 
-  // 장비 상세 0 필터
+  // 장비 상세 0 필터 — 괄호 내 개별 항목 중 숫자 0인 것 완전 제거
+  function filterZeroEquip(raw){
+    if(!raw)return '';
+    raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
+    // "소방: 1대 (지휘 0, 펌프 0, 구급 1, ...)" → 섹션별 처리
+    var sections=raw.split('/').map(function(s){return s.trim();}).filter(Boolean);
+    var result=[];
+    sections.forEach(function(sec){
+      // 헤더 + 괄호 패턴 매칭
+      var m=sec.match(/^([\w가-힣\/\s]+:\s*\d+[대명]?)\s*\((.+)\)$/);
+      if(m){
+        var header=m[1].trim();
+        // 총 대수가 0이면 섹션 전체 숨김
+        var totalMatch=header.match(/(\d+)[대명]/);
+        if(totalMatch&&parseInt(totalMatch[1])===0)return;
+        // 괄호 안 항목 중 "항목명 0" 패턴 제거 (숫자만 0인 것)
+        var items=m[2].split(',').map(function(s){return s.trim();});
+        var kept=items.filter(function(it){
+          // "지휘 0", "고가 0", "고가/굴절 0" 등 → 제거
+          // "구급 1", "펌프 2" 등 → 유지
+          var numMatch=it.match(/(\d+)$/);
+          if(!numMatch)return true; // 숫자 없으면 유지
+          return parseInt(numMatch[1])!==0;
+        });
+        if(kept.length>0){
+          result.push(header+' ('+kept.join(', ')+')');
+        }else{
+          result.push(header); // 내용이 모두 0이면 헤더만
+        }
+      }else{
+        // 괄호 없는 단순 섹션 — 총 대수가 0이면 숨김
+        var tm=sec.match(/:\s*(\d+)[대명]/);
+        if(tm&&parseInt(tm[1])===0)return;
+        result.push(sec);
+      }
+    });
+    return result.join(' / ');
+  }
   function filterZeroEquip(raw){
     if(!raw)return '';
     raw=raw.replace(/명\s*명/g,'명').replace(/대\s*대/g,'대');
