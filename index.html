@@ -672,9 +672,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:10px;">{"msg":"공지내용", "level":"info"}</code>
           <span style="margin-left:4px;">level: <b>info</b>파랑 / <b>warn</b>노랑 / <b>urgent</b>빨강</span>
         </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.saveUrl()">💾 저장 + 바로 적용</button>
-          <button class="btn" style="flex:1;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.fetchNow()">🔄 다시 불러오기</button>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn btn-primary" style="flex:3;border-radius:var(--r2);padding:12px 8px;font-size:13px;font-weight:900;" onclick="APP.notice.saveUrl()">💾 저장 + 바로 적용</button>
+          <button class="btn" style="flex:1;border-radius:var(--r2);padding:12px 4px;font-size:11px;font-weight:700;white-space:nowrap;" onclick="APP.notice.fetchNow()">🔄 다시<br/>불러오기</button>
         </div>
         <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:6px 10px;border-radius:var(--r3);"></div>
       </div>
@@ -689,13 +689,13 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           </div>
         </div>
         <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:8px;"/>
-        <!-- 레벨 선택 + 저장 버튼 한 줄 -->
-        <div style="display:flex;gap:6px;">
-          <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
-          <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
-          <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
-          <button class="btn btn-primary" style="flex:2;border-radius:var(--r3);padding:8px;font-size:11px;font-weight:800;" onclick="APP.notice.saveLocal()">📢 적용</button>
+        <!-- 레벨 선택 (한 줄) + 적용 버튼 (전체 너비) -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:10px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
+          <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:10px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
+          <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:10px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
         </div>
+        <button class="btn btn-primary btn-full" style="border-radius:var(--r2);padding:12px;font-size:13px;font-weight:900;" onclick="APP.notice.saveLocal()">📢 이 기기에 공지 적용</button>
       </div>
     </div>
     <div class="card">
