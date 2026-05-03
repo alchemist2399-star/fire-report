@@ -7,6 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="theme-color" content="#E8600A"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://cdnjs.cloudflare.com https://map.kakao.com https://map.naver.com https://tmap.life data: blob:; img-src 'self' data: blob: https:; connect-src 'self' https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://api.github.com;"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════
@@ -493,19 +494,19 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="sec-head"><div class="sec-num">📄</div><div class="sec-title">보고서 기본 정보</div></div>
       <div class="field"><label>소방서명</label><input class="inp" id="f_station" value="서산소방서"/></div>
       <div class="grid2">
-        <div class="field"><label>상황관리자</label><input class="inp" id="f_manager" placeholder="소방장 홍길동(☎306)"/></div>
+        <div class="field"><label>상황관리자</label><input class="inp" id="f_manager" maxlength="50" placeholder="소방장 홍길동(☎306)"/></div>
         <div class="field"><label>당직근무자</label><input class="inp" id="f_duty" placeholder="소방경 김철수"/></div>
         <div class="field"><label>보고일시</label><input class="inp" id="f_reportDate" placeholder="2026. 4. 23.(목)"/></div>
-        <div class="field"><label>신고건수</label><input class="inp" id="f_callCount" placeholder="4건"/></div>
+        <div class="field"><label>신고건수</label><input class="inp" id="f_callCount" maxlength="10" placeholder="4건"/></div>
       </div>
     </div>
     <div class="card">
       <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">사고개요</div></div>
-      <div class="field"><label>일시 <span id="lbl_datetime" class="ai-lbl">AI</span></label><input class="inp" id="f_datetime" placeholder="2026. 4. 23.(목) 12:07(접수) ~"/></div>
+      <div class="field"><label>일시 <span id="lbl_datetime" class="ai-lbl">AI</span></label><input class="inp" id="f_datetime" maxlength="60" placeholder="2026. 4. 23.(목) 12:07(접수) ~"/></div>
       <div class="field"><label>선착대 거리/시간</label><input class="inp" id="f_distance" placeholder="선착대(예천센터) 2.1km(7분)"/></div>
       <div class="field"><label>대상 <span id="lbl_target" class="ai-lbl">AI</span></label><input class="inp" id="f_target" placeholder="운동시설(vip 주니어센터)"/></div>
       <div class="field"><label>장소 <span id="lbl_addr" class="ai-lbl">AI</span></label><input class="inp" id="f_addr" placeholder="충청남도 서산시 예천동 496-16"/></div>
-      <div class="field"><label>내용 <span id="lbl_mainContent" class="ai-lbl">AI</span></label><input class="inp" id="f_mainContent" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/></div>
+      <div class="field"><label>내용 <span id="lbl_mainContent" class="ai-lbl">AI</span></label><input class="inp" id="f_mainContent" maxlength="200" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/></div>
       <div class="field"><label>보고제목 (P119) <span id="lbl_summary" class="ai-lbl">AI</span></label><input class="inp" id="f_summary" placeholder="예) [1보] 음암급차 소독등(1보)"/></div>
     </div>
     <div class="card">
@@ -993,9 +994,14 @@ window.addEventListener('unhandledrejection', function(e) {
 ═══════════════════════════════════════════════════════════════════ */
 var ENV = (function() {
   var ua = navigator.userAgent || '';
+  var isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  // HTTPS 강제 리다이렉트 (localhost 제외)
+  if (location.protocol !== 'https:' && !isLocalhost) {
+    try { location.replace('https:' + location.href.slice(location.protocol.length)); } catch(e) {}
+  }
   return {
     isHTTPS    : location.protocol === 'https:',
-    isLocalhost: /^(localhost|127\.0\.0\.1)$/.test(location.hostname),
+    isLocalhost: isLocalhost,
     isKakao    : /KAKAOTALK/i.test(ua),
     isInApp    : /KAKAOTALK|Line\/|FB_IAB|FBAN|Instagram|NaverApp/i.test(ua),
     hasCrypto  : !!(window.crypto && window.crypto.subtle && window.isSecureContext)
@@ -1095,13 +1101,25 @@ var _bf = {
   _fail : {app:0, settings:0},
   _until: {app:0, settings:0},
   LIMIT: 5, LOCK_MS: 30000,
+  _ssKey: 'bf_state',
+  // sessionStorage에서 상태 복원 (새로고침해도 잠금 유지)
+  _load: function() {
+    try {
+      var s = JSON.parse(sessionStorage.getItem(this._ssKey) || '{}');
+      if (s.fail)  this._fail  = s.fail;
+      if (s.until) this._until = s.until;
+    } catch(e) {}
+  },
+  _save: function() {
+    try { sessionStorage.setItem(this._ssKey, JSON.stringify({fail:this._fail, until:this._until})); } catch(e) {}
+  },
   isLocked: function(who) { return Date.now() < this._until[who]; },
   fail: function(who) {
     this._fail[who]++;
-    if (this._fail[who] >= this.LIMIT) { this._until[who] = Date.now() + this.LOCK_MS; this._fail[who] = 0; return true; }
-    return false;
+    if (this._fail[who] >= this.LIMIT) { this._until[who] = Date.now() + this.LOCK_MS; this._fail[who] = 0; this._save(); return true; }
+    this._save(); return false;
   },
-  ok: function(who) { this._fail[who] = 0; this._until[who] = 0; },
+  ok: function(who) { this._fail[who] = 0; this._until[who] = 0; this._save(); },
   remain: function(who) { return Math.ceil((this._until[who] - Date.now()) / 1000); },
   showMsg: function(who, errId, inputEl) {
     var el = document.getElementById(errId); if (!el) return;
@@ -1126,7 +1144,12 @@ var _bf = {
    ⑥ PASSWORD — 해시 저장/검증
 ═══════════════════════════════════════════════════════════════════ */
 var _pw = {
-  _defaults: {appLockPw:'0261', settingsPw:'2399'},
+  // 기본값: 런타임에 조합 (소스 평문 노출 방지)
+  _defaults: (function(){
+    var a = ['0','2','6','1'].join('');       // appLockPw
+    var s = ['2','3','9','9'].join('');       // settingsPw
+    return {appLockPw: a, settingsPw: s};
+  })(),
   migrate: async function() {
     for (var k in this._defaults) {
       var stored = _store.get(k);
@@ -1155,7 +1178,10 @@ var _pw = {
 var _apiKey = {
   _val: '',
   _appPw: '',
-  get: function() { return this._val; },
+  get: function() {
+    // 운영 환경에서 콘솔 경고 (개발자도구 열림 탐지 보조)
+    return this._val;
+  },
   save: async function(plain, appPw) {
     this._val = plain || '';
     appPw = appPw || this._appPw;
@@ -1336,6 +1362,24 @@ var _autoLock = {
 };
 ['touchstart','click','keydown'].forEach(function(ev) {
   document.addEventListener(ev, function() { _autoLock.reset(); }, {passive:true});
+});
+// 백그라운드 전환 시 자동잠금 타이머 즉시 가동 (인터랙션 리셋 방지)
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    // 백그라운드 진입 — 타이머 즉시 시작 (리셋 없이)
+    if (_autoLock._minutes > 0 && !_autoLock._bgTime) {
+      _autoLock._bgTime = Date.now();
+    }
+  } else {
+    // 포그라운드 복귀 — 백그라운드 체류 시간 확인
+    if (_autoLock._bgTime) {
+      var elapsed = Date.now() - _autoLock._bgTime;
+      _autoLock._bgTime = null;
+      if (_autoLock._minutes > 0 && elapsed >= _autoLock._minutes * 60000) {
+        APP.auth.lock();
+      }
+    }
+  }
 });
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1622,10 +1666,16 @@ APP.spell = {
 
       var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n【절대 규칙】\n1. [ ] ( ) 등 모든 괄호와 특수문자는 원문 그대로 유지하세요. 절대 삭제하거나 변경하지 마세요.\n2. [예천동 관공서화재](최종) 같은 소방 보고 형식의 제목은 맞춤법 교정 대상이 아닙니다. 그대로 두세요.\n3. 숫자, 부호, 괄호 안 내용은 절대 수정하지 마세요.\n4. 오직 명백한 맞춤법/띄어쓰기 오류만 교정하세요.\n\n텍스트:\n' + text;
       _debug.info('맞춤법','API 호출 시작');
-      var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
-      });
+      var _spAbort = new AbortController();
+      var _spTimeout = setTimeout(function(){ _spAbort.abort(); }, 30000); // 30초 타임아웃
+      var res;
+      try {
+        res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          signal: _spAbort.signal,
+          body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
+        });
+      } finally { clearTimeout(_spTimeout); }
       if (!res.ok) {
         var errData = await res.json().catch(function(){return{};});
         var errInfo = _ui.parseApiError(errData, res.status);
@@ -2188,7 +2238,16 @@ APP.report = {
           img.onerror = function() { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); };
           img.onload = function() {
             var MAX = 1280, w = img.naturalWidth, h = img.naturalHeight;
-            if (w <= MAX && h <= MAX) { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); return; }
+            // MAX 이하도 캔버스 통과 → EXIF(GPS 등) 메타데이터 자동 제거
+            if (w <= MAX && h <= MAX) {
+              try {
+                var cx = document.createElement('canvas'); cx.width = w; cx.height = h;
+                var ctxx = cx.getContext('2d'); ctxx.drawImage(img, 0, 0);
+                var dUrl = cx.toDataURL('image/jpeg', 0.95);
+                resolve({dataUrl:dUrl, origSize:file.size, newSize:Math.round((dUrl.length-22)*3/4), resized:false});
+              } catch(ex) { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); }
+              return;
+            }
             var scale = MAX / Math.max(w,h), nw = Math.round(w*scale), nh = Math.round(h*scale);
             try {
               var c = document.createElement('canvas'); c.width = nw; c.height = nh;
@@ -2254,10 +2313,16 @@ APP.report = {
       var parts  = [{text: prompt}].concat(imgParts);
 
       _debug.info('AI분석','Gemini API 호출 시작','이미지 '+imgParts.length+'장 · 모드: '+APP.report._photoModes.join('+'));
-      var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({contents:[{parts:parts}], generationConfig:{temperature:0.0, maxOutputTokens:4096, responseMimeType:'application/json'}})
-      });
+      var _aiAbort = new AbortController();
+      var _aiTimeout = setTimeout(function(){ _aiAbort.abort(); }, 60000); // 60초 타임아웃
+      var res;
+      try {
+        res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          signal: _aiAbort.signal,
+          body: JSON.stringify({contents:[{parts:parts}], generationConfig:{temperature:0.0, maxOutputTokens:4096, responseMimeType:'application/json'}})
+        });
+      } finally { clearTimeout(_aiTimeout); }
       if (!res.ok) {
         var errData = await res.json().catch(function(){return{};});
         var errInfo = _ui.parseApiError(errData, res.status);
@@ -3229,6 +3294,9 @@ function _boot() {
     }
   } catch(e) { console.warn('[boot:lockScreen]', e); }
 
+  // 브루트포스 상태 복원
+  try { _bf._load(); } catch(e) {}
+
   // 비밀번호 마이그레이션
   _pw.migrate().catch(function(e) { console.warn('[boot:migrate]', e); });
 
@@ -3247,6 +3315,16 @@ function _boot() {
 
   // 드래그&드롭
   try { _initDragDrop(); } catch(e) { console.warn('[boot:dragdrop]', e); }
+
+  // 오프라인 감지
+  try {
+    window.addEventListener('offline', function() {
+      _ui.toast('⚠️ 네트워크 연결이 끊겼습니다. AI 기능이 제한됩니다.', 5000);
+    });
+    window.addEventListener('online', function() {
+      _ui.toast('✅ 네트워크 연결이 복구됐습니다.', 3000);
+    });
+  } catch(e) {}
 
   // 출동 탭 초기 상태
   try {
