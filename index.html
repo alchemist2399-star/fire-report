@@ -261,14 +261,14 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
      탭: 출동
 ══════════════════════════════════════════ -->
 <div class="screen on" id="tab-dispatch">
-  <!-- 공지 배너 -->
-  <div id="noticeBanner" style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.25);border-radius:var(--r2);padding:11px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-    <span style="font-size:20px;">📢</span>
+  <!-- 공지 배너 (level: info=파란색 / warn=노란색 / urgent=빨간색) -->
+  <div id="noticeBanner" style="display:none;border-radius:var(--r2);padding:11px 14px;margin-bottom:10px;align-items:center;gap:10px;">
+    <span id="noticeIcon" style="font-size:20px;">📢</span>
     <div style="flex:1;">
-      <div style="font-size:12px;font-weight:800;color:var(--blue);">서산소방서 상황보고 시스템</div>
-      <div style="font-size:11px;color:var(--ink4);margin-top:2px;" id="noticeMsg">정상 운영 중입니다.</div>
+      <div style="font-size:12px;font-weight:800;" id="noticeTitle">서산소방서 상황보고 시스템</div>
+      <div style="font-size:11px;margin-top:2px;" id="noticeMsg">정상 운영 중입니다.</div>
     </div>
-    <button onclick="_ui.hide('noticeBanner')" style="font-size:18px;color:var(--ink4);background:none;border:none;cursor:pointer;">✕</button>
+    <button onclick="_ui.hide('noticeBanner')" style="font-size:18px;background:none;border:none;cursor:pointer;color:inherit;opacity:0.6;">✕</button>
   </div>
 
   <!-- 출동 유형 -->
@@ -646,9 +646,43 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
   <div id="settingsContent" style="display:none;">
     <div class="card">
       <div class="card-head"><span class="badge badge-blue">공지</span><span class="card-title">공지 관리</span></div>
-      <div class="sec-lbl">공지 내용</div>
-      <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:12px;"/>
-      <button class="btn btn-primary btn-full" onclick="APP.settings.saveNotice()">📢 공지 저장 및 적용</button>
+
+      <!-- GitHub Raw URL 방식 -->
+      <div style="margin-bottom:12px;">
+        <div class="sec-lbl">GitHub Raw 공지 URL <span style="font-weight:400;letter-spacing:0;text-transform:none;">(외부에서 공지 관리)</span></div>
+        <input type="url" id="cfg_noticeUrl" class="inp" placeholder="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/notice.json" style="margin-bottom:6px;font-size:11px;"/>
+        <div style="background:var(--surface2);border-radius:var(--r3);padding:8px 11px;font-size:10px;color:var(--ink4);line-height:1.8;margin-bottom:8px;">
+          📌 <b>사용 방법:</b><br/>
+          1. GitHub <code style="background:var(--border);padding:1px 4px;border-radius:3px;">alchemist2399-star/fire-report</code> 저장소에<br/>
+          &nbsp;&nbsp;&nbsp;<code style="background:var(--border);padding:1px 4px;border-radius:3px;">notice.json</code> 파일을 만드세요<br/>
+          2. 파일 내용 예시:<br/>
+          &nbsp;&nbsp;&nbsp;<code style="background:var(--border);padding:1px 4px;border-radius:3px;">{"msg":"공지 내용","level":"info"}</code><br/>
+          3. level: <b>info</b>(파랑) / <b>warn</b>(노랑) / <b>urgent</b>(빨강)<br/>
+          4. 공지 변경 시 GitHub에서 파일만 수정하면 자동 반영
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:10px;" onclick="APP.notice.saveUrl()">💾 URL 저장</button>
+          <button class="btn" style="flex:1;border-radius:var(--r2);padding:10px;" onclick="APP.notice.fetchNow()">🔄 지금 불러오기</button>
+        </div>
+        <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);"></div>
+      </div>
+
+      <!-- 구분선 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span style="font-size:10px;color:var(--ink4);font-weight:700;">또는 직접 입력</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+
+      <!-- 직접 입력 -->
+      <div class="sec-lbl">공지 내용 직접 입력</div>
+      <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:6px;"/>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
+        <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
+        <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="APP.notice.saveLocal()">📢 공지 저장 및 적용</button>
     </div>
     <div class="card">
       <div class="card-head"><span class="badge badge-red">잠금</span><span class="card-title">기능 잠금 관리</span></div>
@@ -790,7 +824,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
       <button class="btn btn-full" style="color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="APP.settings.clearAll()">🗑️ 모든 데이터 초기화</button>
     </div>
-    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v8.0&nbsp;·&nbsp;서산소방서</div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v9.0&nbsp;·&nbsp;서산소방서</div>
   </div>
 </div>
 
@@ -1078,6 +1112,41 @@ var _ui = {
     var clean = String(text).replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
     try { return JSON.parse(clean); } catch(e) { return fallback; }
   },
+  // ── API 오류 코드 분류 (Gemini API 오류 → 사용자 친화적 메시지) ──
+  _API_ERRORS: {
+    'API_KEY_INVALID'        : { msg:'🔑 API Key가 유효하지 않습니다. 설정 탭에서 Key를 다시 확인해주세요.', retry:false },
+    'API_KEY_SERVICE_BLOCKED': { msg:'🔑 API Key가 차단됐습니다. Google AI Studio에서 확인해주세요.', retry:false },
+    'QUOTA_EXCEEDED'         : { msg:'📊 오늘 API 할당량을 모두 사용했습니다. 내일 다시 시도해주세요.', retry:false },
+    'RESOURCE_EXHAUSTED'     : { msg:'📊 API 호출 한도 초과. 잠시 후 다시 시도해주세요.', retry:true },
+    'RATE_LIMIT_EXCEEDED'    : { msg:'⏳ 요청이 너무 빠릅니다. 10~30초 후 다시 시도해주세요.', retry:true },
+    'INVALID_ARGUMENT'       : { msg:'📷 이미지 형식이 지원되지 않거나 너무 큽니다. 다른 사진으로 시도해주세요.', retry:false },
+    'SAFETY'                 : { msg:'🚫 AI 안전 필터에 의해 처리가 제한됐습니다. 다른 사진으로 시도해주세요.', retry:false },
+    'INTERNAL'               : { msg:'🔧 Gemini 서버에 일시적 문제가 있습니다. 잠시 후 다시 시도해주세요.', retry:true },
+    'UNAVAILABLE'            : { msg:'🔧 Gemini 서비스가 일시적으로 중단됐습니다. 잠시 후 다시 시도해주세요.', retry:true },
+    'DEADLINE_EXCEEDED'      : { msg:'⏱️ 응답 시간이 초과됐습니다. 잠시 후 다시 시도해주세요.', retry:true },
+  },
+  parseApiError: function(errData, httpStatus) {
+    // Gemini API 오류 구조: { error: { code, message, status } }
+    var status = (errData && errData.error && errData.error.status) ? errData.error.status : '';
+    var rawMsg = (errData && errData.error && errData.error.message) ? errData.error.message : '';
+    // status 코드 직접 매칭
+    if (this._API_ERRORS[status]) return this._API_ERRORS[status];
+    // rawMsg 패턴 매칭
+    if (/API.?KEY.?INVALID|api key/i.test(rawMsg))           return this._API_ERRORS['API_KEY_INVALID'];
+    if (/QUOTA|quota.*exceed|Resource.*exhaust/i.test(rawMsg))return this._API_ERRORS['QUOTA_EXCEEDED'];
+    if (/RATE.?LIMIT|rate.*limit/i.test(rawMsg))             return this._API_ERRORS['RATE_LIMIT_EXCEEDED'];
+    if (/SAFETY/i.test(rawMsg))                              return this._API_ERRORS['SAFETY'];
+    if (/INTERNAL/i.test(rawMsg))                            return this._API_ERRORS['INTERNAL'];
+    if (/UNAVAILABLE/i.test(rawMsg))                         return this._API_ERRORS['UNAVAILABLE'];
+    // HTTP 상태코드 폴백
+    if (httpStatus === 400) return { msg:'⚠️ 잘못된 요청 (400). API Key 또는 요청 형식을 확인해주세요.', retry:false };
+    if (httpStatus === 401) return { msg:'🔑 인증 실패 (401). API Key를 다시 확인해주세요.', retry:false };
+    if (httpStatus === 403) return { msg:'🔑 접근 권한 없음 (403). API Key 권한을 확인해주세요.', retry:false };
+    if (httpStatus === 429) return { msg:'⏳ 요청 한도 초과 (429). 잠시 후 다시 시도해주세요.', retry:true };
+    if (httpStatus >= 500)  return { msg:'🔧 Gemini 서버 오류 (' + httpStatus + '). 잠시 후 다시 시도해주세요.', retry:true };
+    return { msg:'❌ API 오류: ' + (rawMsg || 'HTTP ' + httpStatus).slice(0, 50), retry:true };
+  },
+
   // 클립보드 복사 (3단계 폴백)
   copy: async function(text, successMsg) {
     text = String(text || '');
@@ -1205,6 +1274,8 @@ APP.auth = {
         }
         // 사용량 대시보드 자동 새로고침
         try { APP.usage.refresh(); } catch(ue) {}
+        // 공지 관리 UI 복원
+        try { APP.notice._restoreSettingsUI(); } catch(ue) {}
       } else {
         var locked = _bf.fail('settings');
         _bf.showMsg('settings', errId, inp);
@@ -1428,9 +1499,13 @@ APP.spell = {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
       });
-      if (!res.ok) throw new Error('API HTTP ' + res.status);
+      if (!res.ok) {
+        var errData = await res.json().catch(function(){return{};});
+        var errInfo = _ui.parseApiError(errData, res.status);
+        throw new Error(errInfo.msg);
+      }
       var data = await res.json();
-      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다');
+      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인해주세요.');
       var parsed = _ui.safeJSON((data.candidates[0].content.parts[0].text || ''), {});
       var corrected = parsed.corrected || '';
       if (corrected) {
@@ -2056,14 +2131,16 @@ APP.report = {
       });
       if (!res.ok) {
         var errData = await res.json().catch(function(){return{};});
-        var em = errData.error && errData.error.message ? errData.error.message : 'HTTP ' + res.status;
-        if (/API_KEY_INVALID|api key/i.test(em)) em = 'API Key가 유효하지 않습니다. 설정에서 확인해주세요.';
-        else if (/QUOTA/i.test(em)) em = 'API 할당량 초과. 잠시 후 다시 시도하세요.';
-        else if (/network|fetch/i.test(em)) em = '네트워크 오류. 인터넷 연결을 확인해주세요.';
-        throw new Error(em.slice(0, 70));
+        var errInfo = _ui.parseApiError(errData, res.status);
+        throw new Error(errInfo.msg + (errInfo.retry ? '\n(잠시 후 다시 시도할 수 있습니다)' : ''));
       }
       var data = await res.json();
-      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인하세요.');
+      if (!data.candidates || !data.candidates[0]) {
+        // finishReason 확인 (SAFETY, MAX_TOKENS 등)
+        var reason = data.candidates && data.candidates[0] && data.candidates[0].finishReason;
+        if (reason === 'SAFETY') throw new Error(_ui._API_ERRORS['SAFETY'].msg);
+        throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인해주세요.');
+      }
 
       var rawText = (data.candidates[0].content.parts[0].text || '');
       var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
@@ -2531,19 +2608,12 @@ APP.report = {
 /* ── settings: 설정 탭 ────────────────────────────────────────────── */
 APP.settings = {
   saveNotice: function() {
-    try {
-      var msg = _ui.val('cfg_noticeMsg') || '정상 운영 중입니다.';
-      _store.setJSON('appNotice', {msg:msg});
-      var el = document.getElementById('noticeMsg'); if (el) el.textContent = msg;
-      var bn = document.getElementById('noticeBanner'); if (bn) bn.style.display = 'flex';
-      _ui.toast('공지가 저장됐습니다');
-    } catch(e) { console.error('[settings.saveNotice]', e); }
+    // 하위 호환 래퍼 — APP.notice.saveLocal() 위임
+    try { APP.notice.saveLocal(); } catch(e) { console.error('[settings.saveNotice]', e); }
   },
   loadNotice: function() {
-    try {
-      var n = _store.getJSON('appNotice', {});
-      if (n.msg) { var el=document.getElementById('noticeMsg'); if(el) el.textContent=n.msg; var cfg=document.getElementById('cfg_noticeMsg'); if(cfg) cfg.value=n.msg; }
-    } catch(e) {}
+    // 하위 호환 래퍼 — APP.notice.init() 위임
+    try { APP.notice.init(); } catch(e) { console.error('[settings.loadNotice]', e); }
   },
   toggleLock: function(tab) {
     try {
@@ -2606,7 +2676,195 @@ APP.settings = {
       _ui.toast('🔐 API Key가 암호화 저장됐습니다');
       if (inp) { inp.value=''; inp.placeholder='저장됨 (변경하려면 새로 입력)'; }
     } catch(e) { _ui.toast('❌ 저장 실패: ' + e.message.slice(0,30)); }
+  }
+};
+
+/* ── notice: 공지사항 관리 (GitHub Raw + 로컬 이중 방식) ────────── */
+APP.notice = {
+  KEY_URL   : 'noticeGithubUrl',  // GitHub Raw URL 저장
+  KEY_LOCAL : 'appNotice',        // 로컬 직접 입력 저장
+  KEY_LEVEL : 'noticeLevel',      // 로컬 공지 level
+  _level    : 'info',             // 현재 선택된 레벨
+
+  // ── 레벨별 스타일 정의 ─────────────────────────────────────────
+  _STYLES: {
+    info  : { bg:'var(--blue-lt)',   border:'rgba(26,110,232,0.25)',  titleColor:'var(--blue)',  icon:'📢' },
+    warn  : { bg:'#fff9e6',          border:'rgba(255,193,7,0.4)',    titleColor:'#856404',      icon:'⚠️' },
+    urgent: { bg:'var(--red-lt)',    border:'rgba(217,48,37,0.35)',   titleColor:'var(--red)',   icon:'🚨' }
   },
+
+  // ── 배너 표시 핵심 함수 ────────────────────────────────────────
+  _showBanner: function(msg, level, title) {
+    try {
+      if (!msg || !msg.trim()) return;
+      var s = this._STYLES[level] || this._STYLES.info;
+      var banner = document.getElementById('noticeBanner');
+      var iconEl = document.getElementById('noticeIcon');
+      var titleEl = document.getElementById('noticeTitle');
+      var msgEl   = document.getElementById('noticeMsg');
+      if (!banner) return;
+      banner.style.cssText = [
+        'display:flex', 'align-items:center', 'gap:10px',
+        'background:'+s.bg, 'border:1.5px solid '+s.border,
+        'border-radius:var(--r2)', 'padding:11px 14px', 'margin-bottom:10px'
+      ].join(';');
+      if (iconEl)  iconEl.textContent  = s.icon;
+      if (titleEl) { titleEl.textContent = title || '서산소방서 상황보고 시스템'; titleEl.style.color = s.titleColor; }
+      if (msgEl)   { msgEl.textContent   = msg; msgEl.style.color = s.titleColor; msgEl.style.opacity = '0.85'; }
+    } catch(e) { console.warn('[notice._showBanner]', e); }
+  },
+
+  // ── 초기화 (앱 부팅 시 호출) ────────────────────────────────────
+  init: function() {
+    try {
+      // 1) 저장된 GitHub URL이 있으면 fetch 시도
+      var url = _store.get(this.KEY_URL);
+      if (url && url.trim()) {
+        this._fetchFromUrl(url, true); // silent=true (부팅 시)
+      }
+      // 2) 로컬 저장된 공지도 표시 (fetch 전까지 fallback)
+      this._applyLocal();
+      // 3) 설정 UI 복원
+      this._restoreSettingsUI();
+    } catch(e) { console.warn('[notice.init]', e); }
+  },
+
+  // ── 로컬 공지 적용 ──────────────────────────────────────────────
+  _applyLocal: function() {
+    try {
+      var n = _store.getJSON(this.KEY_LOCAL, {});
+      if (n.msg) this._showBanner(n.msg, n.level || 'info', n.title);
+    } catch(e) {}
+  },
+
+  // ── GitHub Raw URL에서 공지 fetch ───────────────────────────────
+  _fetchFromUrl: function(url, silent) {
+    var self = this;
+    var statusEl = document.getElementById('noticeFetchStatus');
+    if (!silent && statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--blue-lt);color:var(--blue);';
+      statusEl.textContent = '🔄 공지를 불러오는 중...';
+    }
+    // GitHub Raw URL 캐시 무력화 (매번 최신 파일 가져오기)
+    var fetchUrl = url.trim();
+    if (fetchUrl.indexOf('?') < 0) fetchUrl += '?t=' + Date.now();
+    else fetchUrl += '&t=' + Date.now();
+
+    fetch(fetchUrl, {cache: 'no-store'})
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(text) {
+        var data = _ui.safeJSON(text, null);
+        if (data && data.msg) {
+          // JSON 형식: {"msg":"...", "level":"info", "title":"..."}
+          self._showBanner(data.msg, data.level || 'info', data.title);
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
+            statusEl.textContent = '✅ 공지를 성공적으로 불러왔습니다!';
+            setTimeout(function() { statusEl.style.display='none'; }, 3000);
+          }
+        } else if (text.trim()) {
+          // 평문 텍스트인 경우
+          self._showBanner(text.trim(), 'info');
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
+            statusEl.textContent = '✅ 공지를 불러왔습니다!';
+            setTimeout(function() { statusEl.style.display='none'; }, 3000);
+          }
+        } else {
+          if (!silent) _ui.toast('⚠️ 공지 내용이 비어있습니다 (파일을 확인해주세요)');
+        }
+      })
+      .catch(function(e) {
+        console.warn('[notice._fetchFromUrl]', e);
+        if (!silent) {
+          if (statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--red-lt);color:var(--red);';
+            statusEl.textContent = '❌ 불러오기 실패: ' + String(e.message).slice(0,40) + ' (URL을 확인해주세요)';
+          }
+        }
+        // fetch 실패 시 로컬 공지 유지 (이미 _applyLocal로 표시됨)
+      });
+  },
+
+  // ── 설정 UI 복원 ────────────────────────────────────────────────
+  _restoreSettingsUI: function() {
+    try {
+      var url = _store.get(this.KEY_URL, '');
+      var urlEl = document.getElementById('cfg_noticeUrl'); if (urlEl) urlEl.value = url || '';
+      var n = _store.getJSON(this.KEY_LOCAL, {});
+      var msgEl = document.getElementById('cfg_noticeMsg'); if (msgEl) msgEl.value = n.msg || '';
+      var savedLevel = _store.get(this.KEY_LEVEL, 'info');
+      this._level = savedLevel;
+      this._renderLevelBtns(savedLevel);
+    } catch(e) {}
+  },
+
+  // ── 레벨 버튼 렌더링 ────────────────────────────────────────────
+  _renderLevelBtns: function(level) {
+    var styles = this._STYLES;
+    document.querySelectorAll('.notice-level-btn').forEach(function(btn) {
+      var lv = btn.dataset.level;
+      var s  = styles[lv] || styles.info;
+      var isOn = lv === level;
+      btn.style.borderColor  = isOn ? s.border       : 'var(--border)';
+      btn.style.background   = isOn ? s.bg            : 'var(--surface2)';
+      btn.style.color        = isOn ? s.titleColor    : 'var(--ink3)';
+    });
+  },
+
+  // ── 레벨 선택 (버튼 클릭) ───────────────────────────────────────
+  setLevel: function(level, btn) {
+    try {
+      this._level = level;
+      _store.set(this.KEY_LEVEL, level);
+      this._renderLevelBtns(level);
+    } catch(e) {}
+  },
+
+  // ── URL 저장 ────────────────────────────────────────────────────
+  saveUrl: function() {
+    try {
+      var urlEl = document.getElementById('cfg_noticeUrl');
+      var url = urlEl ? urlEl.value.trim() : '';
+      if (!url) { _ui.toast('URL을 입력해주세요'); return; }
+      // GitHub Raw URL 형식 가이드
+      if (url.indexOf('github.com') >= 0 && url.indexOf('raw.githubusercontent.com') < 0) {
+        // github.com → raw.githubusercontent.com 자동 변환
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        if (urlEl) urlEl.value = url;
+        _ui.toast('GitHub URL을 Raw 형식으로 자동 변환했습니다', 3500);
+      }
+      _store.set(this.KEY_URL, url);
+      _ui.toast('✅ URL이 저장됐습니다. 앱 시작 시 자동으로 공지를 불러옵니다.');
+    } catch(e) { _ui.toast('저장 실패: ' + e.message.slice(0,30)); }
+  },
+
+  // ── 지금 바로 fetch ─────────────────────────────────────────────
+  fetchNow: function() {
+    try {
+      var urlEl = document.getElementById('cfg_noticeUrl');
+      var url = urlEl ? urlEl.value.trim() : _store.get(this.KEY_URL, '');
+      if (!url) { _ui.toast('먼저 GitHub Raw URL을 입력해주세요'); return; }
+      this._fetchFromUrl(url, false);
+    } catch(e) { _ui.toast('오류: ' + e.message.slice(0,30)); }
+  },
+
+  // ── 로컬 직접 입력 저장 ─────────────────────────────────────────
+  saveLocal: function() {
+    try {
+      var msg = _ui.val('cfg_noticeMsg') || '정상 운영 중입니다.';
+      var level = this._level || 'info';
+      _store.setJSON(this.KEY_LOCAL, {msg:msg, level:level});
+      this._showBanner(msg, level);
+      _ui.toast('공지가 저장됐습니다');
+    } catch(e) { console.error('[notice.saveLocal]', e); }
+  }
+};
+
 /* ── usage: API 사용량 모니터링 ────────────────────────────────── */
 APP.usage = {
   // ── 상수 ──────────────────────────────────────────────────────
