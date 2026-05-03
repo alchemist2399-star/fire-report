@@ -204,6 +204,14 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 @keyframes bop{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── 효율성 v6 추가 스타일 ── */
+.photo-mode-btn{padding:10px 6px 8px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);color:var(--ink3);font-family:var(--font);cursor:pointer;display:flex;flex-direction:column;align-items:center;box-shadow:var(--shadow);transition:all .15s;width:100%;}
+.photo-mode-btn.on{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);}
+.conf-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:100px;flex-shrink:0;}
+.conf-ok{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);}
+.conf-warn{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+.conf-miss{background:var(--surface2);color:var(--ink4);border:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -399,6 +407,36 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
         <span class="card-title">AI 현장사진 분석</span>
         <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--ink4);">최대 10장</span>
       </div>
+      <!-- ① 사진 종류 선택 -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:7px;">📂 사진 종류 선택 <span style="font-weight:400;">(복수 선택 가능 — 선택할수록 정확도 향상)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <button class="photo-mode-btn on" id="pmBtn-p119" onclick="APP.report.togglePhotoMode('p119',this)">
+            <span style="font-size:18px;">🖥️</span>
+            <span style="font-size:11px;font-weight:800;display:block;margin-top:3px;">P119 화면</span>
+            <span style="font-size:10px;opacity:0.8;display:block;">접수·동원 정보</span>
+          </button>
+          <button class="photo-mode-btn" id="pmBtn-bldg" onclick="APP.report.togglePhotoMode('bldg',this)">
+            <span style="font-size:18px;">🏗️</span>
+            <span style="font-size:11px;font-weight:800;display:block;margin-top:3px;">건축물대장</span>
+            <span style="font-size:10px;opacity:0.8;display:block;">층별 구조·용도</span>
+          </button>
+          <button class="photo-mode-btn" id="pmBtn-scene" onclick="APP.report.togglePhotoMode('scene',this)">
+            <span style="font-size:18px;">📷</span>
+            <span style="font-size:11px;font-weight:800;display:block;margin-top:3px;">현장사진</span>
+            <span style="font-size:10px;opacity:0.8;display:block;">상황·피해 추정</span>
+          </button>
+        </div>
+        <div id="photoModeHint" style="margin-top:7px;font-size:11px;color:var(--blue);font-weight:700;background:var(--blue-lt);border-radius:var(--r3);padding:7px 11px;line-height:1.6;"></div>
+      </div>
+      <!-- ② 캐시 알림 -->
+      <div id="cacheNotice" style="display:none;background:var(--purple-lt);border:1px solid rgba(124,58,237,0.2);border-radius:var(--r3);padding:8px 11px;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px;">
+        ⚡ 동일 사진의 이전 분석 결과가 있습니다
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="APP.report.applyCached()" style="flex:1;padding:6px;border:none;border-radius:var(--r3);background:var(--purple);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚡ 캐시 결과 적용</button>
+          <button onclick="APP.report.clearCache()" style="flex:1;padding:6px;border:1.5px solid rgba(124,58,237,0.3);border-radius:var(--r3);background:transparent;color:var(--purple);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🔄 새로 분석</button>
+        </div>
+      </div>
       <label id="rptDropZone" class="drop-zone">
         <input type="file" id="rptFileInput" accept="image/*" multiple onchange="APP.report.handleFiles(this.files)" style="display:none;"/>
         <div style="font-size:28px;">📷</div>
@@ -414,20 +452,24 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
       <div class="scan-done" id="rptScanDone">
         <div style="font-size:13px;font-weight:800;color:var(--green);">✅ AI 분석 완료 — 아래에서 추출된 정보를 확인하세요</div>
+        <div id="scanSummaryLine" style="font-size:11px;color:var(--ink4);margin-top:4px;"></div>
       </div>
-      <!-- AI 결과 카드 -->
+      <!-- ③ AI 결과 카드 (신뢰도 뱃지) -->
       <div id="rptScanResult" style="display:none;margin-bottom:10px;background:var(--surface2);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);overflow:hidden;">
         <div style="background:var(--navy);padding:9px 14px;display:flex;align-items:center;gap:8px;">
           <span style="font-size:18px;">🤖</span>
           <span style="font-size:12px;font-weight:900;color:#fff;">AI 현장 분석 결과</span>
+          <span id="scanModeLabel" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.65);"></span>
         </div>
         <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">🔥</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고유형</div><div id="scanType" style="font-size:14px;font-weight:900;color:var(--orange);"></div></div></div>
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">📍</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">추정 주소</div><div id="scanAddr" style="font-size:13px;color:var(--ink);"></div></div></div>
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">📄</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 대상물</div><div id="scanTarget" style="font-size:13px;color:var(--ink);"></div></div></div>
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">📝</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">사고 경위</div><div id="scanSummary" style="font-size:13px;color:var(--ink);line-height:1.7;"></div></div></div>
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">👤</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">인명피해</div><div id="scanCasualty" style="font-size:13px;color:var(--ink);"></div></div></div>
-          <div style="display:flex;gap:10px;"><span style="font-size:20px;flex-shrink:0;">⏱️</span><div><div style="font-size:10px;font-weight:800;color:var(--ink4);margin-bottom:2px;">타임라인</div><div id="scanTimeline" style="font-size:12px;color:var(--ink);line-height:1.8;font-family:var(--mono);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">🔥</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">사고유형</span><span id="conf_type" class="conf-badge"></span></div><div id="scanType" style="font-size:14px;font-weight:900;color:var(--orange);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📍</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">추정 주소</span><span id="conf_addr" class="conf-badge"></span></div><div id="scanAddr" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📄</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">사고 대상물</span><span id="conf_target" class="conf-badge"></span></div><div id="scanTarget" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📝</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">보고제목</span><span id="conf_summary" class="conf-badge"></span></div><div id="scanSummary" style="font-size:13px;color:var(--ink);line-height:1.7;"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">👤</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">인명피해</span><span id="conf_casualty" class="conf-badge"></span></div><div id="scanCasualty" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">🚒</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">자원동원</span><span id="conf_mob" class="conf-badge"></span></div><div id="scanMob" style="font-size:12px;color:var(--ink);line-height:1.7;font-family:var(--mono);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">⏱️</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">타임라인</span><span id="conf_timeline" class="conf-badge"></span></div><div id="scanTimeline" style="font-size:12px;color:var(--ink);line-height:1.8;font-family:var(--mono);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;" id="scanBldgRow"><span style="font-size:20px;flex-shrink:0;">🏗️</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">건물 층별 현황</span><span id="conf_bldg" class="conf-badge"></span></div><div id="scanBldg" style="font-size:12px;color:var(--ink);font-family:var(--mono);"></div></div></div>
         </div>
       </div>
       <button id="rptAiBtn" class="ai-btn" onclick="APP.report.runAI()" disabled>🤖 AI 분석 시작</button>
@@ -674,7 +716,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
       <button class="btn btn-full" style="color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="APP.settings.clearAll()">🗑️ 모든 데이터 초기화</button>
     </div>
-    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v5.0&nbsp;·&nbsp;서산소방서</div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v6.0&nbsp;·&nbsp;서산소방서</div>
   </div>
 </div>
 
@@ -1489,6 +1531,130 @@ APP.report = {
   _scenePhotos: [],
   _bldgCount  : 0,
   _tlCount    : 0,
+  // ── 효율성 v6 ──
+  _photoModes : ['p119'],          // 선택된 사진 종류 (복수)
+  _scanCache  : {},                // 캐시: cacheKey → parsed 결과
+  _lastCacheKey: null,             // 마지막 분석 캐시키
+  _lastParsed : null,              // 마지막 분석 결과 (캐시 적용용)
+
+  // ── ① 사진 종류 선택 토글 ─────────────────────────────────────
+  togglePhotoMode: function(mode, btn) {
+    try {
+      var idx = this._photoModes.indexOf(mode);
+      if (idx >= 0) {
+        // 최소 1개는 유지
+        if (this._photoModes.length === 1) { _ui.toast('최소 1개는 선택해야 합니다'); return; }
+        this._photoModes.splice(idx, 1);
+        if (btn) btn.classList.remove('on');
+      } else {
+        this._photoModes.push(mode);
+        if (btn) btn.classList.add('on');
+      }
+      this._updatePhotoModeHint();
+    } catch(e) { console.error('[report.togglePhotoMode]', e); }
+  },
+  _updatePhotoModeHint: function() {
+    try {
+      var hints = {
+        p119  : 'P119 화면 → 사고유형·주소·접수시각·인원·장비·타임라인 추출',
+        bldg  : '건축물대장 → 층별 구조·크기·용도·비고 추출',
+        scene : '현장사진 → 사고 상황·피해 규모·대상물 추정'
+      };
+      var lines = this._photoModes.map(function(m) { return '• ' + (hints[m] || m); });
+      var el = document.getElementById('photoModeHint');
+      if (el) el.textContent = lines.join('\n');
+    } catch(e) {}
+  },
+
+  // ── ② 캐시키 생성 (파일명+크기+수정일 기반) ──────────────────
+  _makeCacheKey: function(files, modes) {
+    try {
+      var filePart = Array.from(files).map(function(f) {
+        return f.name + '_' + f.size + '_' + (f.lastModified || 0);
+      }).sort().join('|');
+      return filePart + '::' + modes.slice().sort().join(',');
+    } catch(e) { return ''; }
+  },
+
+  // ── ③ 프롬프트 생성 (사진 종류별 분리) ──────────────────────
+  _buildPrompt: function(modes) {
+    // 공통 기본 규칙
+    var base = '당신은 소방 문서 OCR 전문가입니다.\n【절대 규칙】사진에서 직접 보이는 텍스트만 추출, 추측 금지, 확인 불가 항목은 반드시 null 반환\n【응답 형식】설명 없이 순수 JSON만\n\n';
+
+    var sections = [];
+    var jsonShape = {};
+
+    if (modes.indexOf('p119') >= 0) {
+      sections.push(
+        '【P119 현장지원시스템 화면】\n' +
+        '- reportTitle: 보고 제목 (예: [1보] 예천동 화재)\n' +
+        '- disasterType: 사고 유형 (예: 화재, 구조)\n' +
+        '- incidentDatetime: 발생/접수 일시 (예: 2026.04.23 12:07)\n' +
+        '- location: 주소 (최대한 상세히)\n' +
+        '- mainContent: 주요 내용/대상물\n' +
+        '- casualty: {death:숫자만, injured:숫자만, missing:숫자만} — 없으면 0\n' +
+        '- mobilization: {totalPersonnel:숫자만, personnelDetail:상세문자열, totalVehicles:숫자만, fireVehicleDetail:소방차량상세, agencyDetail:유관기관상세}\n' +
+        '- timeline: [{time:"HH:MM", content:"내용"}] 배열, 없으면 []'
+      );
+      jsonShape.p119 = {
+        reportTitle:null, disasterType:null, incidentDatetime:null, location:null, mainContent:null,
+        casualty:{death:null,injured:null,missing:null},
+        mobilization:{totalPersonnel:null,personnelDetail:null,totalVehicles:null,fireVehicleDetail:null,agencyDetail:null},
+        timeline:[]
+      };
+    } else {
+      jsonShape.p119 = null;
+    }
+
+    if (modes.indexOf('bldg') >= 0) {
+      sections.push(
+        '【건축물대장 (일반건축물대장 갑)】\n' +
+        '- floors 배열: 건축물 현황 표의 각 행을 읽어 아래 형식으로 추출\n' +
+        '  {floor:"층표시", structure:"구조", area:"면적숫자만", use:"용도", note:"비고"}\n' +
+        '- 건축물대장이 없으면 floors는 빈 배열 []'
+      );
+      jsonShape.building = {floors:[]};
+    } else {
+      jsonShape.building = null;
+    }
+
+    if (modes.indexOf('scene') >= 0) {
+      sections.push(
+        '【현장사진】\n' +
+        '- 사진에서 직접 보이는 상황을 바탕으로 아래 항목을 추정\n' +
+        '- sceneDesc: 현장 상황 설명 (1~2문장)\n' +
+        '- estimatedScale: 피해 규모 추정 (소형/중형/대형 또는 설명)\n' +
+        '- estimatedTarget: 화재/사고 대상물 추정\n' +
+        '- 추정이 불가하면 null'
+      );
+      jsonShape.scene = {sceneDesc:null, estimatedScale:null, estimatedTarget:null};
+    } else {
+      jsonShape.scene = null;
+    }
+
+    var prompt = base;
+    if (sections.length) prompt += '【분석 대상 문서/사진 종류】\n' + sections.join('\n\n') + '\n\n';
+    prompt += '【JSON 스키마】\n' + JSON.stringify(jsonShape);
+    return prompt;
+  },
+
+  // ── 캐시 관련 공개 메서드 ─────────────────────────────────────
+  applyCached: function() {
+    try {
+      if (!this._lastParsed) { _ui.toast('적용할 캐시 결과가 없습니다'); return; }
+      this._applyAI(this._lastParsed);
+      this._showScanResult(this._lastParsed, true);
+      _ui.toast('⚡ 캐시 결과가 적용됐습니다');
+    } catch(e) { console.error('[report.applyCached]', e); }
+  },
+  clearCache: function() {
+    try {
+      _ui.hide('cacheNotice');
+      this._lastCacheKey = null;
+      this._lastParsed = null;
+      _ui.toast('🔄 캐시가 초기화됐습니다. 새로 분석을 시작하세요');
+    } catch(e) {}
+  },
 
   setType: function(btn, type) {
     try {
@@ -1584,7 +1750,18 @@ APP.report = {
         });
       }
       var btn = document.getElementById('rptAiBtn'); if (btn) btn.disabled = !this._scanPhotos.length;
-      _ui.hide('rptScanResult'); _ui.hide('rptScanDone');
+      _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('cacheNotice');
+
+      // ② 캐시 체크 — 동일 파일+모드 조합이면 캐시 알림
+      if (this._scanPhotos.length) {
+        var key = this._makeCacheKey(this._scanPhotos, this._photoModes);
+        if (key && this._scanCache[key]) {
+          this._lastCacheKey = key;
+          this._lastParsed = this._scanCache[key];
+          _ui.show('cacheNotice');
+          if (btn) btn.disabled = false;
+        }
+      }
     } catch(e) { console.error('[report.handleFiles]', e); }
   },
   handleMapFile: function(files) {
@@ -1657,36 +1834,53 @@ APP.report = {
     });
   },
   runAI: async function() {
-    var btn = document.getElementById('rptAiBtn');
+    var btn  = document.getElementById('rptAiBtn');
     var prog = document.getElementById('rptProgress');
     var bar  = document.getElementById('rptProgressBar');
     var sub  = document.getElementById('rptProgressSub');
+    var pint;
     try {
       if (!this._scanPhotos.length) { _ui.toast('사진을 먼저 업로드하세요'); return; }
       var key = _apiKey.get(); if (!key) { _ui.toast('설정 탭에서 Gemini API Key를 먼저 입력해주세요'); return; }
+
+      // ② 캐시 히트 — API 호출 없이 바로 적용
+      var cacheKey = this._makeCacheKey(this._scanPhotos, this._photoModes);
+      if (cacheKey && this._scanCache[cacheKey]) {
+        this._lastParsed = this._scanCache[cacheKey];
+        this._applyAI(this._lastParsed);
+        this._showScanResult(this._lastParsed, true);
+        _ui.toast('⚡ 캐시에서 즉시 적용됐습니다 (API 호출 없음)', 3000);
+        return;
+      }
+
       if (btn) btn.disabled = true;
+      _ui.hide('cacheNotice');
       if (prog) prog.style.display = 'block';
       _ui.hide('rptScanDone'); _ui.hide('rptScanResult');
 
+      // 진행 표시 — 선택된 모드에 맞는 메시지
       var progVal = 0;
-      var msgs = ['P119 텍스트 인식 중...','피해현황 추출 중...','자원동원 파악 중...','건축물 정보 추출 중...','타임라인 구성 중...'];
+      var modeNames = {p119:'P119 텍스트', bldg:'건축물대장', scene:'현장사진'};
+      var msgs = this._photoModes.map(function(m) { return (modeNames[m]||m) + ' 분석 중...'; });
+      msgs.push('데이터 정합성 검증 중...', '폼 항목 매핑 중...');
       var msgIdx = 0;
-      var pint = setInterval(function() {
-        progVal = Math.min(progVal + 1.2, 90);
+      pint = setInterval(function() {
+        progVal = Math.min(progVal + 1.1, 90);
         if (bar) bar.style.width = progVal + '%';
-        if (progVal % 18 < 1.5 && msgIdx < msgs.length) { if (sub) sub.textContent = msgs[msgIdx++]; }
+        if (progVal % 20 < 1.5 && msgIdx < msgs.length) { if (sub) sub.textContent = msgs[msgIdx++]; }
       }, 200);
 
+      // 이미지 최적화
       if (sub) sub.textContent = '이미지 최적화 중...';
       var resized = await Promise.all(this._scanPhotos.map(function(f) { return APP.report._resizeImg(f); }));
-
       var imgParts = resized.filter(function(r) { return r.dataUrl; }).map(function(r, i) {
         return {inlineData:{mimeType: r.resized ? 'image/jpeg' : (APP.report._scanPhotos[i] ? APP.report._scanPhotos[i].type : 'image/jpeg'), data: r.dataUrl.split(',')[1]}};
       });
       if (!imgParts.length) throw new Error('처리 가능한 이미지가 없습니다');
 
-      var prompt = '당신은 소방 문서 OCR 전문가입니다. 사진 속 텍스트를 정확히 읽어 정보를 추출하세요.\n【절대 규칙】사진에서 직접 보이는 텍스트만, 추측 금지, 확인 불가는 null\n아래 JSON으로만 응답(설명 없이):\n{"p119":{"reportTitle":null,"disasterType":null,"incidentDatetime":null,"location":null,"mainContent":null,"casualty":{"death":null,"injured":null,"missing":null},"mobilization":{"totalPersonnel":null,"personnelDetail":null,"totalVehicles":null,"fireVehicleDetail":null,"agencyDetail":null},"timeline":[]},"building":{"floors":[]}}';
-      var parts = [{text:prompt}].concat(imgParts);
+      // ① 모드별 전용 프롬프트 생성
+      var prompt = this._buildPrompt(this._photoModes);
+      var parts  = [{text: prompt}].concat(imgParts);
 
       var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -1695,57 +1889,168 @@ APP.report = {
       if (!res.ok) {
         var errData = await res.json().catch(function(){return{};});
         var em = errData.error && errData.error.message ? errData.error.message : 'HTTP ' + res.status;
-        if (/API_KEY_INVALID|api key/i.test(em)) em = 'API Key가 유효하지 않습니다';
-        else if (/QUOTA/i.test(em)) em = 'API 할당량 초과. 잠시 후 다시 시도하세요';
-        throw new Error(em.slice(0,70));
+        if (/API_KEY_INVALID|api key/i.test(em)) em = 'API Key가 유효하지 않습니다. 설정에서 확인해주세요.';
+        else if (/QUOTA/i.test(em)) em = 'API 할당량 초과. 잠시 후 다시 시도하세요.';
+        else if (/network|fetch/i.test(em)) em = '네트워크 오류. 인터넷 연결을 확인해주세요.';
+        throw new Error(em.slice(0, 70));
       }
       var data = await res.json();
-      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다');
-      var parsed = _ui.safeJSON(data.candidates[0].content.parts[0].text || '', {p119:{},building:{floors:[]}});
+      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인하세요.');
 
-      clearInterval(pint);
+      var rawText = (data.candidates[0].content.parts[0].text || '');
+      var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
+
+      // ④ 부분 적용 보장 + null 정합성 처리
+      parsed = this._sanitizeParsed(parsed);
+
+      clearInterval(pint); pint = null;
       if (bar) bar.style.width = '100%';
 
+      // ② 캐시 저장
+      if (cacheKey) {
+        this._scanCache[cacheKey] = parsed;
+        this._lastCacheKey = cacheKey;
+      }
+      this._lastParsed = parsed;
+
+      // 결과 표시 (약간의 딜레이로 진행바 완료 느낌)
+      var self = this;
       setTimeout(function() {
         try {
           if (prog) prog.style.display = 'none';
-          _ui.show('rptScanDone');
-          _ui.show('rptScanResult');
-          var p = parsed.p119 || {};
-          function sv(id, val) {
-            var el = document.getElementById(id); if (!el) return;
-            var empty = !val || val === 'null';
-            el.textContent = empty ? '— 확인 불가' : String(val).trim();
-            el.style.color = empty ? 'var(--ink4)' : 'var(--ink)';
-            el.style.fontStyle = empty ? 'italic' : 'normal';
-          }
-          sv('scanType', p.disasterType); sv('scanAddr', p.location); sv('scanTarget', p.mainContent);
-          sv('scanSummary', p.reportTitle);
-          var cas = p.casualty || {};
-          var casArr = [];
-          if (cas.death   != null) casArr.push('사망 '+cas.death+'명');
-          if (cas.injured != null) casArr.push('부상 '+cas.injured+'명');
-          if (cas.missing != null) casArr.push('실종 '+cas.missing+'명');
-          sv('scanCasualty', casArr.join(' / ') || null);
-          var tlEl = document.getElementById('scanTimeline');
-          if (tlEl) {
-            if (p.timeline && p.timeline.length) { tlEl.textContent = p.timeline.map(function(t){return '('+t.time+') '+t.content;}).join('\n'); tlEl.style.color='var(--ink)'; tlEl.style.fontStyle='normal'; }
-            else { tlEl.textContent = '— 확인 불가'; tlEl.style.color='var(--ink4)'; tlEl.style.fontStyle='italic'; }
-          }
-          APP.report._applyAI(parsed);
-          var filled = APP.report._countFilled(parsed);
+          self._applyAI(parsed);
+          self._showScanResult(parsed, false);
+          var filled = self._countFilled(parsed);
           _ui.toast('✅ 분석 완료 — ' + filled + '개 항목 추출됨', 3500);
         } catch(e2) { console.error('[runAI result cb]', e2); }
-      }, 400);
+      }, 350);
+
     } catch(e) {
-      if (typeof pint !== 'undefined') clearInterval(pint);
+      if (pint) clearInterval(pint);
       if (prog) prog.style.display = 'none';
       if (bar) bar.style.width = '0%';
-      _ui.toast('❌ ' + String(e.message).slice(0,60), 5000);
+      _ui.toast('❌ ' + String(e.message).slice(0, 60), 5000);
       console.error('[report.runAI]', e);
     } finally {
       if (btn) btn.disabled = !this._scanPhotos.length;
     }
+  },
+
+  // ④ 파싱 결과 정합성 검증 (비정상 값 필터링)
+  _sanitizeParsed: function(parsed) {
+    try {
+      var p = parsed.p119 || {};
+      var b = parsed.building || {};
+      var s = parsed.scene || {};
+      // 숫자 필드 비정상 값 필터 (음수, 너무 큰 값)
+      var cas = p.casualty || {};
+      ['death','injured','missing'].forEach(function(k) {
+        var v = cas[k];
+        if (v !== null && v !== undefined) {
+          var n = parseInt(v);
+          if (isNaN(n) || n < 0 || n > 999) cas[k] = null; // 비정상
+          else cas[k] = n;
+        }
+      });
+      var mob = p.mobilization || {};
+      ['totalPersonnel','totalVehicles'].forEach(function(k) {
+        var v = mob[k];
+        if (v !== null && v !== undefined) {
+          var n = parseInt(v);
+          if (isNaN(n) || n < 0 || n > 9999) mob[k] = null;
+          else mob[k] = n;
+        }
+      });
+      // timeline 배열 검증
+      if (p.timeline && Array.isArray(p.timeline)) {
+        p.timeline = p.timeline.filter(function(t) {
+          return t && typeof t.time === 'string' && typeof t.content === 'string' && t.time.trim() && t.content.trim();
+        });
+      }
+      // floors 배열 검증
+      if (b.floors && Array.isArray(b.floors)) {
+        b.floors = b.floors.filter(function(fl) { return fl && fl.floor; });
+      }
+      return {p119: p, building: b, scene: s};
+    } catch(e) { console.warn('[_sanitizeParsed]', e); return parsed; }
+  },
+
+  // ③ 결과 표시 + 신뢰도 뱃지
+  _showScanResult: function(parsed, fromCache) {
+    try {
+      _ui.show('rptScanDone');
+      _ui.show('rptScanResult');
+      var p = parsed.p119 || {};
+      var b = parsed.building || {};
+      var sc = parsed.scene || {};
+      var modes = this._photoModes;
+
+      // 모드 레이블
+      var modeNames = {p119:'P119',bldg:'건축물대장',scene:'현장사진'};
+      var modeLabel = document.getElementById('scanModeLabel');
+      if (modeLabel) modeLabel.textContent = (fromCache ? '⚡캐시 · ' : '') + modes.map(function(m){return modeNames[m]||m;}).join('+');
+
+      // 신뢰도 뱃지 헬퍼
+      function setBadge(id, val, isNum) {
+        var el = document.getElementById(id); if (!el) return;
+        var empty = val === null || val === undefined || String(val).trim() === '' || String(val) === 'null';
+        if (empty) { el.textContent = '미확인'; el.className = 'conf-badge conf-miss'; }
+        else if (isNum && (parseInt(val) === 0)) { el.textContent = '없음'; el.className = 'conf-badge conf-warn'; }
+        else { el.textContent = '확인됨'; el.className = 'conf-badge conf-ok'; }
+      }
+      // 값 표시 헬퍼
+      function sv(id, val) {
+        var el = document.getElementById(id); if (!el) return;
+        var empty = !val || String(val).trim() === '' || String(val) === 'null';
+        el.textContent = empty ? '— 확인 불가' : String(val).trim();
+        el.style.color = empty ? 'var(--ink4)' : 'var(--ink)';
+        el.style.fontStyle = empty ? 'italic' : 'normal';
+      }
+
+      sv('scanType', p.disasterType);     setBadge('conf_type', p.disasterType);
+      sv('scanAddr', p.location);          setBadge('conf_addr', p.location);
+      // 현장사진 모드면 scene 데이터도 target에 반영
+      var targetVal = p.mainContent || (sc.estimatedTarget ? '(추정) ' + sc.estimatedTarget : null);
+      sv('scanTarget', targetVal);         setBadge('conf_target', targetVal);
+      sv('scanSummary', p.reportTitle);    setBadge('conf_summary', p.reportTitle);
+
+      var cas = p.casualty || {};
+      var casArr = [];
+      if (cas.death   !== null && cas.death   !== undefined) casArr.push('사망 '+cas.death+'명');
+      if (cas.injured !== null && cas.injured !== undefined) casArr.push('부상 '+cas.injured+'명');
+      if (cas.missing !== null && cas.missing !== undefined) casArr.push('실종 '+cas.missing+'명');
+      sv('scanCasualty', casArr.join(' / ') || null); setBadge('conf_casualty', casArr.length ? casArr[0] : null);
+
+      // 자원동원
+      var mob = p.mobilization || {};
+      var mobLines = [];
+      if (mob.totalPersonnel != null) mobLines.push('인원: ' + mob.totalPersonnel + '명' + (mob.personnelDetail ? ' ('+mob.personnelDetail+')' : ''));
+      if (mob.totalVehicles  != null) mobLines.push('차량: ' + mob.totalVehicles  + '대' + (mob.fireVehicleDetail ? ' 소방('+mob.fireVehicleDetail+')' : '') + (mob.agencyDetail ? ' 유관('+mob.agencyDetail+')' : ''));
+      sv('scanMob', mobLines.join('\n') || null); setBadge('conf_mob', mobLines.length ? mobLines[0] : null);
+
+      // 타임라인
+      var tlEl = document.getElementById('scanTimeline');
+      if (tlEl) {
+        if (p.timeline && p.timeline.length) { tlEl.textContent = p.timeline.map(function(t){return '('+t.time+') '+t.content;}).join('\n'); tlEl.style.color='var(--ink)'; tlEl.style.fontStyle='normal'; }
+        else { tlEl.textContent = '— 확인 불가'; tlEl.style.color='var(--ink4)'; tlEl.style.fontStyle='italic'; }
+      }
+      setBadge('conf_timeline', p.timeline && p.timeline.length ? p.timeline[0].content : null);
+
+      // 건물 층별
+      var bldgEl = document.getElementById('scanBldg');
+      if (bldgEl) {
+        if (b.floors && b.floors.length) { bldgEl.textContent = b.floors.map(function(f){return (f.floor||'?')+'층 '+[f.structure,f.use,f.area?f.area+'㎡':''].filter(Boolean).join(' · ');}).join('\n'); bldgEl.style.color='var(--ink)'; bldgEl.style.fontStyle='normal'; }
+        else { bldgEl.textContent = modes.indexOf('bldg') >= 0 ? '— 건축물대장에서 확인 불가' : '— 건축물대장 미선택'; bldgEl.style.color='var(--ink4)'; bldgEl.style.fontStyle='italic'; }
+      }
+      setBadge('conf_bldg', b.floors && b.floors.length ? b.floors[0].floor : null);
+
+      // 요약 줄
+      var filled = this._countFilled(parsed);
+      var total = 10;
+      var sumEl = document.getElementById('scanSummaryLine');
+      if (sumEl) sumEl.textContent = filled + '/' + total + '개 항목 확인됨' + (fromCache ? ' (캐시)' : '') + ' · 녹색 항목은 폼에 자동 채워졌습니다';
+
+    } catch(e) { console.error('[report._showScanResult]', e); }
   },
   _countFilled: function(p) {
     var n = 0, pi = (p.p119 || {}), b = (p.building || {});
@@ -1758,7 +2063,7 @@ APP.report = {
   },
   _applyAI: function(parsed) {
     try {
-      var p = parsed.p119 || {}, b = parsed.building || {};
+      var p = parsed.p119 || {}, b = parsed.building || {}, sc = parsed.scene || {};
       var isV = function(v) { return v !== null && v !== undefined && String(v).trim() !== '' && String(v) !== 'null'; };
       var fill = function(id, lblId, val) {
         if (!isV(val)) return;
@@ -1769,14 +2074,17 @@ APP.report = {
       fill('f_datetime','lbl_datetime', p.incidentDatetime);
       fill('f_addr','lbl_addr', p.location);
       fill('f_summary','lbl_summary', p.reportTitle);
+      // mainContent 없으면 scene.estimatedTarget으로 보완 (④ 부분 적용)
       fill('f_target','lbl_target', p.disasterType);
-      fill('f_mainContent','lbl_mainContent', p.mainContent);
+      fill('f_mainContent','lbl_mainContent', p.mainContent || (sc.estimatedTarget ? '(현장추정) ' + sc.estimatedTarget : null));
       var cas = p.casualty || {};
       var casArr = [];
       if (isV(cas.death))   casArr.push('사망: '+cas.death+'명');
       if (isV(cas.injured)) casArr.push('부상: '+cas.injured+'명');
       if (isV(cas.missing)) casArr.push('실종: '+cas.missing+'명');
       if (casArr.length) fill('f_casualty','lbl_casualty', casArr.join(' / '));
+      // 재산피해 — scene.estimatedScale로 보완
+      if (isV(sc.estimatedScale)) fill('f_damage','lbl_damage', '(현장추정) ' + sc.estimatedScale);
       var mob = p.mobilization || {};
       var perStr = '';
       if (isV(mob.totalPersonnel)) perStr = String(mob.totalPersonnel).replace(/명$/,'') + '명';
@@ -1958,10 +2266,11 @@ APP.report = {
     _ui.confirm('보고서 초기화', '작성된 보고서가 모두 삭제됩니다.', function() {
       try {
         self._scanPhotos=[]; self._mapPhoto=null; self._scenePhotos=[];
+        self._lastParsed=null; self._lastCacheKey=null;
         _blob.revokeAll();
-        var ids = ['rptThumbRow','rptScanResult','rptScanDone','mapThumbWrap','sceneThumbRow','aiFillBanner'];
+        var ids = ['rptThumbRow','rptScanResult','rptScanDone','mapThumbWrap','sceneThumbRow','aiFillBanner','cacheNotice'];
         ids.forEach(function(id) { var el=document.getElementById(id); if(el) el.innerHTML=''; });
-        _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('aiFillBanner');
+        _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('aiFillBanner'); _ui.hide('cacheNotice');
         var mDz = document.getElementById('mapDropZone'); if(mDz) mDz.style.display='flex';
         var aBtn = document.getElementById('rptAiBtn'); if(aBtn) aBtn.disabled=true;
         var fids = ['f_station','f_manager','f_duty','f_reportDate','f_callCount','f_datetime','f_distance','f_target','f_addr','f_summary','f_mainContent','f_casualty','f_damage','f_personnel','f_equipment','f_equipDetail'];
@@ -2148,6 +2457,7 @@ function _boot() {
   // 보고서 탭 초기화
   try { APP.report.initBldgTable(); } catch(e) { console.warn('[boot:bldg]', e); }
   try { APP.report.initTimeline(); } catch(e) { console.warn('[boot:timeline]', e); }
+  try { APP.report._updatePhotoModeHint(); } catch(e) { console.warn('[boot:modeHint]', e); }
 
   // 드래그&드롭
   try { _initDragDrop(); } catch(e) { console.warn('[boot:dragdrop]', e); }
