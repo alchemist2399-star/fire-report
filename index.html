@@ -1,328 +1,3139 @@
-<!--
-  ╔══════════════════════════════════════════════════════════════╗
-  ║   소방 상황보고 시스템 — 디버그 패널 패치                        ║
-  ║   적용 방법: 아래 [STEP 1~4]를 순서대로 원본 HTML에 붙여넣기     ║
-  ╚══════════════════════════════════════════════════════════════╝
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>소방 상황보고 시스템</title>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#E8600A"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   CSS 변수 & 리셋
+═══════════════════════════════════════════ */
+:root{
+  --orange:#E8600A;--orange-lt:#FFF3EC;--orange-md:#FFE0CC;--orange-bd:rgba(232,96,10,0.2);
+  --red:#D93025;--red-lt:#FFF0EF;
+  --blue:#1A6EE8;--blue-lt:#EFF5FF;
+  --green:#0D9B6A;--green-lt:#EDFAF4;
+  --purple:#7C3AED;--purple-lt:#F5F3FF;
+  --navy:#1a3a6b;
+  --bg:#DDE3EF;--surface:#FFF;--surface2:#F8F9FB;
+  --border:#E4E7EE;--border2:#CDD2DE;
+  --ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;
+  --r:14px;--r2:10px;--r3:7px;
+  --shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);
+  --font:'Noto Sans KR',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --hd-h:96px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{background:var(--bg);}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:100vh;padding-bottom:24px;padding-top:var(--hd-h);}
 
-  ──────────────────────────────────────────────────────────────
-  [STEP 1] CSS 추가
-  위치: <style> 블록 맨 끝, </style> 바로 앞에 붙여넣기
-  ──────────────────────────────────────────────────────────────
--->
-<style id="debug-css-patch">
-/* ── 디버그 패널 스타일 ── */
-.dbg-panel{background:var(--surface);border:1.5px solid rgba(124,58,237,0.3);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
-.dbg-toolbar{display:flex;align-items:center;gap:6px;padding:10px 12px;background:#1a1a2e;flex-wrap:wrap;}
-.dbg-filter-btn{padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);background:var(--surface2);color:var(--ink3);transition:all .15s;}
-.dbg-log-wrap{max-height:360px;overflow-y:auto;background:#0d0d1a;}
-.dbg-status-dot{width:8px;height:8px;border-radius:50%;background:#28c840;flex-shrink:0;box-shadow:0 0 6px rgba(40,200,64,0.6);}
-.dbg-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;background:rgba(124,58,237,0.25);color:#c4b5fd;letter-spacing:0.5px;}
+/* ═══════════════════════════════════════════
+   헤더 & 네비게이션
+═══════════════════════════════════════════ */
+.hd{background:var(--orange);position:fixed;top:0;left:0;right:0;z-index:200;height:var(--hd-h);display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(232,96,10,0.28);}
+.hd-row1{display:flex;align-items:center;gap:10px;padding:0 16px;height:56px;}
+.hd-logo{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.hd-title{font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px;}
+.hd-clock{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.22);margin-left:auto;}
+.hd-row2{display:grid;grid-template-columns:repeat(5,1fr);height:40px;background:rgba(0,0,0,0.25);border-top:1px solid rgba(255,255,255,0.18);}
+.nav-btn{display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;font-family:var(--font);color:rgba(255,255,255,0.85);font-size:12px;font-weight:800;transition:all 0.15s;position:relative;height:100%;}
+.nav-btn.on{color:#fff;background:rgba(255,255,255,0.18);}
+.nav-btn.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60%;max-width:50px;height:2.5px;border-radius:3px 3px 0 0;background:rgba(255,255,255,0.9);}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+/* ═══════════════════════════════════════════
+   화면 전환
+═══════════════════════════════════════════ */
+.screen{display:none;padding:14px;}
+.screen.on{display:block;animation:fadeUp .2s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════
+   공통 카드 / 배지 / 버튼
+═══════════════════════════════════════════ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.card-title{font-size:13px;font-weight:700;color:var(--ink2);}
+.badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;}
+.badge-orange{background:var(--orange-lt);color:var(--orange);border:1px solid var(--orange-bd);}
+.badge-blue{background:var(--blue-lt);color:var(--blue);border:1px solid rgba(26,110,232,0.2);}
+.badge-green{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.2);}
+.badge-red{background:var(--red-lt);color:var(--red);border:1px solid rgba(217,48,37,0.2);}
+.badge-purple{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(124,58,237,0.2);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.btn-primary{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 3px 12px rgba(232,96,10,0.3);}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red);}
+.btn-full{width:100%;border-radius:var(--r2);}
+.btn-lg{padding:13px 20px;font-size:14px;font-weight:900;}
+.btn-row{display:flex;gap:8px;margin-top:12px;}
+.sec-lbl{font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:6px;}
+.info-box{font-size:11px;color:var(--ink4);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 11px;margin-bottom:10px;line-height:1.7;}
+
+/* ═══════════════════════════════════════════
+   폼 인풋
+═══════════════════════════════════════════ */
+.inp{width:100%;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;transition:border-color .15s;}
+.inp:focus{border-color:var(--orange);background:#fff;}
+.inp.ai-ok{border-color:rgba(13,155,106,0.5);background:var(--green-lt);}
+.inp-mono{font-family:var(--mono);}
+.inp-highlight{border:2px solid var(--orange-bd);background:var(--orange-lt);}
+.inp-highlight:focus{border-color:var(--orange);background:#fff;}
+.textarea{width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;resize:none;line-height:1.8;transition:border-color .15s;}
+.textarea:focus{border-color:var(--orange);background:#fff;}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:4px;}
+.ai-lbl{display:none;font-size:9px;font-weight:700;background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* ═══════════════════════════════════════════
+   보안 에러 / 경고
+═══════════════════════════════════════════ */
+.sec-err{font-size:12px;font-weight:700;padding:8px 10px;border-radius:var(--r3);margin-top:8px;display:none;}
+.sec-err.show{display:block;}
+.sec-err-red{background:var(--red-lt);color:var(--red);}
+.sec-err-lock{background:#1a1a2e;color:#ff6b6b;font-family:var(--mono);font-size:11px;}
+.env-warn{background:#fff3cd;border:1.5px solid #ffc107;border-radius:var(--r3);padding:10px 14px;font-size:12px;color:#856404;font-weight:700;line-height:1.6;margin-bottom:12px;display:none;}
+
+/* ═══════════════════════════════════════════
+   토스트 / 모달
+═══════════════════════════════════════════ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;color:#fff;padding:11px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;transition:transform 0.25s,opacity 0.2s;opacity:0;white-space:nowrap;pointer-events:none;max-width:88vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--surface);border-radius:var(--r);padding:24px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.modal-title{font-size:15px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+.modal-msg{font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.6;}
+.modal-btns{display:flex;gap:8px;}
+.modal-cancel{flex:1;padding:12px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.modal-ok{flex:1;padding:12px;border-radius:var(--r2);border:none;background:var(--orange);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);}
+.modal-ok.danger{background:var(--red);}
+
+/* ═══════════════════════════════════════════
+   출동 탭
+═══════════════════════════════════════════ */
+.type-btn{flex:1;padding:9px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);font-family:var(--font);font-size:13px;font-weight:800;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:var(--shadow);transition:all .15s;}
+.type-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;}
+.stage-btn{padding:11px 6px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
+.stage-btn.on{border-color:var(--orange);background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(232,96,10,0.3);}
+.stage-btn.final.on{border-color:var(--purple);background:var(--purple);color:#fff;}
+.out-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow);}
+.out-head{background:linear-gradient(135deg,var(--navy),#2a5298);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.out-body{padding:14px 16px;font-size:14px;color:var(--ink);white-space:pre-wrap;line-height:1.9;min-height:80px;font-family:var(--font);word-break:break-all;background:var(--surface2);}
+.out-foot{padding:14px 16px 16px;border-top:1px solid var(--border);}
+.report-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:6px;font-size:12px;}
+
+/* ═══════════════════════════════════════════
+   보고서 탭
+═══════════════════════════════════════════ */
+.rpt-page{display:none;}
+.rpt-page.on{display:block;animation:fadeUp .2s ease both;}
+.rpt-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rpt-type-btn{padding:13px 6px 11px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);color:var(--ink3);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:var(--shadow);transition:all .15s;}
+.rpt-type-btn .ico{font-size:22px;line-height:1;}
+.rpt-type-btn.sel{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);}
+.drop-zone{border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:24px 16px;text-align:center;cursor:pointer;background:var(--orange-lt);margin-bottom:12px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .15s;}
+.drop-zone:hover{border-color:var(--orange);}
+.thumb-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;border:2px solid var(--border);}
+.ai-btn{width:100%;padding:13px;border:none;border-radius:var(--r2);font-size:14px;font-weight:900;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:#fff;box-shadow:0 4px 16px rgba(26,58,107,0.25);}
+.ai-btn:disabled{opacity:0.45;cursor:not-allowed;}
+.prog-wrap{background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r2);padding:14px;display:none;}
+.prog-bar-bg{height:4px;background:var(--orange-md);border-radius:100px;margin-top:10px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--orange);border-radius:100px;width:0%;transition:width .3s;}
+.scan-done{background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);padding:12px 14px;display:none;}
+.ai-fill-banner{display:none;align-items:center;gap:6px;margin-bottom:10px;padding:8px 12px;background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r3);}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid var(--border);}
+.sec-num{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-title{font-size:13px;font-weight:800;color:var(--ink2);}
+.bldg-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
+.bldg-table th{background:var(--navy);color:#fff;padding:7px 6px;font-size:11px;font-weight:700;text-align:center;}
+.bldg-table td{padding:6px;border:1px solid var(--border);text-align:center;background:var(--surface);}
+.bldg-table td input{width:100%;font-size:11px;padding:3px 4px;border:none;background:transparent;font-family:var(--font);color:var(--ink);text-align:center;outline:none;}
+.bldg-table tr:nth-child(even) td{background:var(--surface2);}
+.bldg-table .fire-cell{background:var(--orange-lt)!important;}
+.bldg-add{width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);margin-bottom:8px;}
+.tl-item{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;}
+.tl-time{width:52px;flex-shrink:0;}
+.tl-time input{width:100%;font-size:12px;padding:7px 6px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--orange);font-family:var(--mono);font-weight:700;text-align:center;outline:none;}
+.tl-time input:focus{border-color:var(--orange);}
+.tl-content{flex:1;}
+.tl-content input{width:100%;font-size:12px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface2);color:var(--ink);font-family:var(--font);outline:none;}
+.tl-content input:focus{border-color:var(--orange);}
+.tl-del{width:30px;height:30px;border-radius:50%;background:var(--surface2);color:var(--ink4);border:1.5px solid var(--border);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.preview-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
+.preview-body{padding:16px;font-size:13px;color:var(--ink);line-height:2.0;font-family:var(--font);}
+
+/* ═══════════════════════════════════════════
+   연락처 탭
+═══════════════════════════════════════════ */
+.seg-ctrl{display:grid;grid-template-columns:1fr 1fr;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:14px;}
+.seg-btn{padding:9px 6px;border:none;border-radius:var(--r3);background:transparent;font-family:var(--font);font-size:13px;font-weight:700;color:var(--ink4);cursor:pointer;}
+.seg-btn.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.contact-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
+.contact-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;}
+.contact-tel{font-size:13px;color:var(--blue);font-family:var(--mono);font-weight:600;}
+.contact-memo{font-size:11px;color:var(--ink4);margin-top:2px;}
+.contact-call{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;border:none;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;}
+.contact-edit{width:38px;height:38px;border-radius:50%;background:var(--blue-lt);color:var(--blue);border:1.5px solid rgba(26,110,232,0.3);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.contact-del{width:38px;height:38px;border-radius:50%;background:var(--surface2);color:var(--ink4);border:1.5px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.empty{text-align:center;padding:28px 16px;color:var(--ink4);font-size:13px;}
+
+/* ═══════════════════════════════════════════
+   설정 탭
+═══════════════════════════════════════════ */
+.lock-overlay{position:absolute;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;min-height:60vh;}
+.auto-lock-btn{padding:11px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;}
+.auto-lock-btn.on{border-color:var(--purple);background:var(--purple-lt);color:var(--purple);}
+
+/* ═══════════════════════════════════════════
+   맞춤법 / 스크롤바
+═══════════════════════════════════════════ */
+.spell-section{display:none;margin-top:10px;}
+.loading-dots{display:inline-flex;gap:3px;align-items:center;}
+.loading-dots span{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bop 1s infinite;}
+.loading-dots span:nth-child(2){animation-delay:.15s;}
+.loading-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes bop{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── 효율성 v6 추가 스타일 ── */
+.photo-mode-btn{padding:10px 6px 8px;border-radius:var(--r2);border:2px solid var(--border);background:var(--surface);color:var(--ink3);font-family:var(--font);cursor:pointer;display:flex;flex-direction:column;align-items:center;box-shadow:var(--shadow);transition:all .15s;width:100%;}
+.photo-mode-btn.on{border-color:var(--orange);background:var(--orange-lt);color:var(--orange);}
+.conf-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:100px;flex-shrink:0;}
+.conf-ok{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);}
+.conf-warn{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+.conf-miss{background:var(--surface2);color:var(--ink4);border:1px solid var(--border);}
 </style>
+</head>
+<body>
 
-<!--
-  ──────────────────────────────────────────────────────────────
-  [STEP 2] 디버그 패널 UI
-  위치: 설정 탭 <div id="settingsContent"> 안, 맨 마지막 카드
-        (버전 표시 div 바로 위에) 붙여넣기
-  ──────────────────────────────────────────────────────────────
--->
-<div class="card dbg-panel" id="debugPanel" style="display:none;">
-  <div class="dbg-toolbar">
-    <div class="dbg-status-dot"></div>
-    <span style="font-size:12px;font-weight:900;color:#fff;">🛠️ 디버그 로그</span>
-    <span class="dbg-tag">LIVE</span>
-    <!-- 필터 버튼 -->
-    <button class="dbg-filter-btn" data-filter="all"  onclick="_debug.setFilter('all')"  style="background:var(--navy);color:#fff;">전체</button>
-    <button class="dbg-filter-btn" data-filter="err"  onclick="_debug.setFilter('err')">오류만</button>
-    <button class="dbg-filter-btn" data-filter="warn" onclick="_debug.setFilter('warn')">경고만</button>
-    <!-- 오른쪽 버튼들 -->
-    <button onclick="_debug.copyLogs()" style="margin-left:auto;padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.12);color:#fff;font-family:var(--font);">📋 복사</button>
-    <button onclick="_debug.clear()" style="padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;background:rgba(217,48,37,0.3);color:#ff8888;font-family:var(--font);">🗑️ 지우기</button>
-  </div>
-  <!-- 로그 목록 -->
-  <div class="dbg-log-wrap" id="debugLogContainer">
-    <div style="padding:14px;text-align:center;color:#555;font-size:11px;">아직 기록이 없습니다</div>
-  </div>
-  <!-- 요약 바 -->
-  <div style="display:flex;gap:12px;padding:8px 14px;background:#111;border-top:1px solid #222;">
-    <span style="font-size:10px;color:#0D9B6A;font-weight:700;" id="dbg_okCount">✅ 성공 0</span>
-    <span style="font-size:10px;color:#D93025;font-weight:700;" id="dbg_errCount">❌ 오류 0</span>
-    <span style="font-size:10px;color:#856404;font-weight:700;" id="dbg_warnCount">⚠️ 경고 0</span>
-    <span style="font-size:10px;color:#9CA3AF;margin-left:auto;font-family:monospace;" id="dbg_totalCount">총 0건</span>
+<!-- ══════════════════════════════════════════
+     앱 진입 잠금 화면
+══════════════════════════════════════════ -->
+<div id="lockScreen" style="display:none;position:fixed;inset:0;background:var(--orange);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:380px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:72px;height:72px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;">🚨</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;">소방 상황보고</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:24px;">
+      <div id="lockEnvWarn" style="display:none;background:rgba(255,200,0,0.2);border:1px solid rgba(255,200,0,0.4);border-radius:8px;padding:9px 12px;font-size:11px;color:#fff;margin-bottom:12px;line-height:1.6;">
+        ⚠️ HTTP 또는 인앱브라우저 환경입니다. 일부 보안 기능이 제한될 수 있습니다. Chrome/Safari로 열어주세요.
+      </div>
+      <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:12px;text-align:center;">🔒 비밀번호를 입력하세요</div>
+      <input type="password" id="lockInput" placeholder="비밀번호" autocomplete="current-password"
+        style="width:100%;font-size:16px;text-align:center;letter-spacing:4px;padding:14px;border:2px solid rgba(255,255,255,0.3);border-radius:10px;background:rgba(255,255,255,0.15);color:#fff;font-family:var(--mono);outline:none;margin-bottom:12px;"/>
+      <button id="lockBtn" onclick="APP.auth.checkLock()"
+        style="width:100%;padding:15px;background:#fff;color:var(--orange);border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);">🔓 입장</button>
+      <div id="lockError" class="sec-err" style="margin-top:10px;background:rgba(0,0,0,0.2);color:#fff;border-radius:8px;"></div>
+    </div>
   </div>
 </div>
 
-<!-- 디버그 토글 버튼 (설정 탭 잠금 해제 후 하단에 표시) -->
-<div id="debugToggleWrap" style="display:none;margin-bottom:12px;">
-  <button onclick="_debug.toggle()" style="width:100%;padding:12px;border-radius:var(--r2);border:1.5px solid rgba(124,58,237,0.3);background:var(--purple-lt);color:var(--purple);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;">
-    🛠️ 디버그 패널 열기/닫기
-    <span style="font-size:10px;font-weight:700;background:rgba(124,58,237,0.15);padding:2px 8px;border-radius:100px;">개발자 전용</span>
-  </button>
+<!-- ══════════════════════════════════════════
+     헤더
+══════════════════════════════════════════ -->
+<header class="hd">
+  <div class="hd-row1">
+    <div class="hd-logo">🚨</div>
+    <div class="hd-title">상황보고</div>
+    <div class="hd-clock" id="clock">00:00:00</div>
+  </div>
+  <div class="hd-row2">
+    <button class="nav-btn on" id="nav-dispatch" onclick="APP.nav.go('dispatch',this)">출동</button>
+    <button class="nav-btn" id="nav-report"   onclick="APP.nav.go('report',this)">보고서</button>
+    <button class="nav-btn" id="nav-map"      onclick="APP.nav.go('map',this)">지도</button>
+    <button class="nav-btn" id="nav-contacts" onclick="APP.nav.go('contacts',this)">연락처</button>
+    <button class="nav-btn" id="nav-settings" onclick="APP.nav.go('settings',this)">설정</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     탭: 출동
+══════════════════════════════════════════ -->
+<div class="screen on" id="tab-dispatch">
+  <!-- 공지 배너 (level: info=파란색 / warn=노란색 / urgent=빨간색) -->
+  <div id="noticeBanner" style="display:none;border-radius:var(--r2);padding:11px 14px;margin-bottom:10px;align-items:center;gap:10px;">
+    <span id="noticeIcon" style="font-size:20px;">📢</span>
+    <div style="flex:1;">
+      <div style="font-size:12px;font-weight:800;" id="noticeTitle">서산소방서 상황보고 시스템</div>
+      <div style="font-size:11px;margin-top:2px;" id="noticeMsg">정상 운영 중입니다.</div>
+    </div>
+    <button onclick="_ui.hide('noticeBanner')" style="font-size:18px;background:none;border:none;cursor:pointer;color:inherit;opacity:0.6;">✕</button>
+  </div>
+
+  <!-- 출동 유형 -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button class="type-btn" id="typeBtn-fire"   onclick="APP.dispatch.setType('fire',this)">🔥 화재</button>
+    <button class="type-btn" id="typeBtn-rescue" onclick="APP.dispatch.setType('rescue',this)">🔧 구조</button>
+    <button class="type-btn" id="typeBtn-ems"    onclick="APP.dispatch.setType('ems',this)">🚑 구급</button>
+  </div>
+
+  <!-- 기본정보 카드 -->
+  <div style="background:linear-gradient(135deg,var(--navy),#2a5298);border-radius:var(--r);margin-bottom:12px;box-shadow:0 4px 16px rgba(26,58,107,0.2);overflow:hidden;">
+    <div style="padding:11px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">🚨</span><span style="font-size:13px;font-weight:900;color:#fff;">출동 기본정보</span></div>
+      <button onclick="APP.dispatch.reset()" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">↺ 초기화</button>
+    </div>
+    <div style="background:var(--surface);padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">📋 접수번호</div>
+      <input id="receiptNo" class="inp inp-mono" placeholder="예) 2026-화재-0042" oninput="APP.dispatch.render()" style="margin-bottom:10px;"/>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--orange);">📍</span>
+        <span style="font-size:11px;font-weight:700;color:var(--ink4);">출동 장소</span>
+        <span style="font-size:9px;font-weight:800;padding:2px 6px;background:var(--orange-lt);color:var(--orange);border-radius:3px;">필수</span>
+      </div>
+      <input id="dispLocation" class="inp inp-highlight" placeholder="예) 충남 서산시 예천동 496-16" maxlength="100"
+        oninput="APP.dispatch.render();APP.map.updateLinks();" style="margin-bottom:10px;"/>
+      <div class="grid2">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">🔥 발화 대상물</div>
+          <input id="fireObject" class="inp" placeholder="단독주택, 공장" maxlength="30" oninput="APP.dispatch.render()"/>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">📄 화재 규모</div>
+          <input id="fireScale" class="inp" placeholder="소형, 반소" maxlength="20" oninput="APP.dispatch.render()"/>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">👤 인명 피해</div>
+          <input id="fireCasualty" class="inp" placeholder="대피완료, 없음" maxlength="30" oninput="APP.dispatch.render()"/>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink4);margin-bottom:4px;">📸 발송자</div>
+          <input id="sigName" class="inp" placeholder="서산소방서 상황실" maxlength="30" oninput="APP.dispatch.render()"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상황 내용 추가 -->
+  <div style="background:var(--orange);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:0 4px 16px rgba(232,96,10,0.2);">
+    <div style="padding:11px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><span>📄</span><span style="font-size:13px;font-weight:900;color:#fff;">상황 내용 추가</span></div>
+      <button onclick="APP.dispatch.clearReports()" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">↺ 초기화</button>
+    </div>
+    <div style="background:var(--surface);padding:14px;">
+      <textarea id="reportContent" class="textarea" rows="4" placeholder="현장 상황을 입력하세요"></textarea>
+      <button onclick="APP.dispatch.addReport()" class="btn btn-primary btn-full btn-lg" style="margin-top:10px;">+ 상황 추가</button>
+    </div>
+  </div>
+
+  <!-- 추가된 상황 목록 -->
+  <div id="reportListCard" class="card" style="display:none;">
+    <div style="font-size:12px;font-weight:800;color:var(--ink4);margin-bottom:8px;">추가된 상황 목록</div>
+    <div id="reportList"></div>
+  </div>
+
+  <!-- 보고 순서 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;"><span style="font-size:13px;">📄</span><span style="font-size:12px;font-weight:800;color:var(--ink3);">보고 순서</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      <button class="stage-btn" data-stage="출동" onclick="APP.dispatch.setStage('출동',this)">📣 출동</button>
+      <button class="stage-btn" data-stage="2보"  onclick="APP.dispatch.setStage('2보',this)">2보</button>
+      <button class="stage-btn" data-stage="3보"  onclick="APP.dispatch.setStage('3보',this)">3보</button>
+      <button class="stage-btn final" data-stage="최종" onclick="APP.dispatch.setStage('최종',this)">✅ 최종</button>
+    </div>
+  </div>
+
+  <!-- 보고문 출력 -->
+  <div class="out-wrap">
+    <div class="out-head">
+      <span style="font-size:13px;font-weight:900;color:#fff;">📨 생성된 보고문</span>
+      <div style="display:flex;gap:5px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div>
+      </div>
+    </div>
+    <div class="out-body" id="outputBox">정보를 입력하면 자동 생성됩니다.</div>
+    <div class="out-foot">
+      <button class="btn btn-primary btn-full btn-lg" onclick="APP.dispatch.send()" style="margin-bottom:8px;">📨 전파하기</button>
+      <button class="btn btn-full" onclick="APP.dispatch.copyText()" style="justify-content:center;">📋 텍스트만 복사</button>
+    </div>
+    <!-- 맞춤법 검사 -->
+    <div style="border-top:1px solid var(--border);padding:12px 14px 14px;">
+      <button onclick="APP.spell.toggle()" style="width:100%;padding:10px;font-size:12px;font-weight:800;background:var(--green-lt);color:var(--green);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;">✓ 전파 전 맞춤법 검사</button>
+      <div id="spellSection" class="spell-section">
+        <textarea id="spellInput" class="textarea" rows="6" style="margin-top:10px;" placeholder="보고문이 자동 입력됩니다..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button id="spellRunBtn" onclick="APP.spell.run()" style="flex:2;padding:10px;font-size:13px;font-weight:800;background:var(--green);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--font);">✓ 검사 시작</button>
+          <button onclick="APP.spell.load()" style="flex:1;padding:10px;font-size:12px;font-weight:700;background:var(--surface2);color:var(--ink3);border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;font-family:var(--font);">↺ 불러오기</button>
+        </div>
+        <div id="spellStatus" style="display:none;font-size:12px;color:var(--green);margin-top:8px;text-align:center;font-weight:700;padding:8px;background:var(--green-lt);border-radius:var(--r3);">🔵 검사 중...</div>
+        <div id="spellResultWrap" style="display:none;margin-top:10px;">
+          <div style="background:var(--green-lt);border:1.5px solid rgba(13,155,106,0.25);border-radius:var(--r2);padding:12px 13px;margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:800;color:var(--green);margin-bottom:5px;">✏️ 교정된 텍스트</div>
+            <div id="spellCorrected" style="font-size:13px;color:var(--ink);line-height:1.9;word-break:break-all;white-space:pre-wrap;font-family:var(--mono);"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="APP.spell.sendCorrected()" class="btn btn-primary" style="flex:1;border-radius:var(--r2);justify-content:center;">📨 교정본 전파</button>
+            <button onclick="APP.spell.copyCorrected()" class="btn btn-full" style="flex:1;justify-content:center;">📋 복사</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!--
-  ──────────────────────────────────────────────────────────────
-  [STEP 3] JavaScript — _debug 모듈
-  위치: <script> 태그 맨 위, 'use strict'; 바로 다음 줄에 추가
-  ──────────────────────────────────────────────────────────────
--->
-<script id="debug-js-patch">
-/* ═══ 🛠️ DEBUG MODULE ═══════════════════════════════════════════
-   보안 원칙:
-   · API Key / 비밀번호 절대 로깅 금지 (자동 마스킹)
-   · 설정 탭 비밀번호 인증 후에만 패널 진입
-   · 로그는 메모리에만 저장, 외부 전송 없음
-   · 앱 잠금 시 자동 초기화
-═══════════════════════════════════════════════════════════════ */
-var _debug = {
-  _logs : [],
-  MAX   : 200,
+<!-- ══════════════════════════════════════════
+     탭: 보고서
+══════════════════════════════════════════ -->
+<div id="tab-report" class="screen">
+  <!-- STEP 0: 유형선택 + AI 분석 -->
+  <div class="rpt-page on" id="rptPage0">
+    <div class="card">
+      <div class="card-head"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><span class="card-title">보고서 유형 선택</span></div>
+      <div class="rpt-type-grid">
+        <button class="rpt-type-btn sel" onclick="APP.report.setType(this,'fire')"><span class="ico">🔥</span>화재</button>
+        <button class="rpt-type-btn" onclick="APP.report.setType(this,'rescue')"><span class="ico">🚑</span>구조</button>
+        <button class="rpt-type-btn" onclick="APP.report.setType(this,'ems')"><span class="ico">🏥</span>구급</button>
+        <button class="rpt-type-btn" onclick="APP.report.setType(this,'hazmat')"><span class="ico">☢️</span>위험물</button>
+        <button class="rpt-type-btn" onclick="APP.report.setType(this,'misc')"><span class="ico">⚡</span>기타</button>
+        <button class="rpt-type-btn" onclick="APP.report.setType(this,'training')"><span class="ico">🎓</span>훈련</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+        <span class="card-title">AI 현장사진 분석</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--ink4);">최대 10장</span>
+      </div>
+      <!-- ① 사진 종류 선택 (P119 / 건축물대장 2종) -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:7px;">📂 분석할 문서 선택 <span style="font-weight:400;">(복수 선택 가능)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="photo-mode-btn on" id="pmBtn-p119" onclick="APP.report.togglePhotoMode('p119',this)">
+            <span style="font-size:22px;">🖥️</span>
+            <span style="font-size:12px;font-weight:900;display:block;margin-top:4px;">P119 화면</span>
+            <span style="font-size:10px;opacity:0.75;display:block;margin-top:2px;line-height:1.4;">사건개요·피해상황·자원동원·조치사항</span>
+          </button>
+          <button class="photo-mode-btn" id="pmBtn-bldg" onclick="APP.report.togglePhotoMode('bldg',this)">
+            <span style="font-size:22px;">🏗️</span>
+            <span style="font-size:12px;font-weight:900;display:block;margin-top:4px;">건축물대장</span>
+            <span style="font-size:10px;opacity:0.75;display:block;margin-top:2px;line-height:1.4;">층별 구조·용도·면적·비고</span>
+          </button>
+        </div>
+        <div id="photoModeHint" style="margin-top:8px;font-size:11px;color:var(--blue);font-weight:700;background:var(--blue-lt);border-radius:var(--r3);padding:8px 12px;line-height:1.8;"></div>
+        <div id="photoQualityGuide" style="margin-top:6px;font-size:10px;color:var(--ink4);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);padding:7px 11px;line-height:1.7;display:none;"></div>
+      </div>
+      <!-- ② 캐시 알림 -->
+      <div id="cacheNotice" style="display:none;background:var(--purple-lt);border:1px solid rgba(124,58,237,0.2);border-radius:var(--r3);padding:8px 11px;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px;">
+        ⚡ 동일 사진의 이전 분석 결과가 있습니다
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="APP.report.applyCached()" style="flex:1;padding:6px;border:none;border-radius:var(--r3);background:var(--purple);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚡ 캐시 결과 적용</button>
+          <button onclick="APP.report.clearCache()" style="flex:1;padding:6px;border:1.5px solid rgba(124,58,237,0.3);border-radius:var(--r3);background:transparent;color:var(--purple);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🔄 새로 분석</button>
+        </div>
+      </div>
+      <label id="rptDropZone" class="drop-zone">
+        <input type="file" id="rptFileInput" accept="image/*" multiple onchange="APP.report.handleFiles(this.files)" style="display:none;"/>
+        <div style="font-size:28px;">📷</div>
+        <div style="font-size:14px;font-weight:800;color:var(--orange);">현장사진 선택 또는 드래그</div>
+        <div style="font-size:11px;color:var(--ink4);">JPG · PNG · WEBP · AI가 자동으로 내용을 추출합니다</div>
+      </label>
+      <div class="thumb-row" id="rptThumbRow"></div>
+      <!-- 진행 표시 -->
+      <div class="prog-wrap" id="rptProgress">
+        <div style="font-size:12px;font-weight:800;color:var(--orange);text-align:center;margin-bottom:4px;">AI 분석 중... <span class="loading-dots"><span></span><span></span><span></span></span></div>
+        <div style="font-size:11px;color:var(--ink4);text-align:center;margin-bottom:6px;" id="rptProgressSub">사진에서 현장 정보를 추출하고 있습니다</div>
+        <div class="prog-bar-bg"><div class="prog-bar" id="rptProgressBar"></div></div>
+      </div>
+      <div class="scan-done" id="rptScanDone">
+        <div style="font-size:13px;font-weight:800;color:var(--green);">✅ AI 분석 완료 — 아래에서 추출된 정보를 확인하세요</div>
+        <div id="scanSummaryLine" style="font-size:11px;color:var(--ink4);margin-top:4px;"></div>
+      </div>
+      <!-- ③ AI 결과 카드 (신뢰도 뱃지) -->
+      <div id="rptScanResult" style="display:none;margin-bottom:10px;background:var(--surface2);border:1.5px solid rgba(13,155,106,0.3);border-radius:var(--r2);overflow:hidden;">
+        <div style="background:var(--navy);padding:9px 14px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">🤖</span>
+          <span style="font-size:12px;font-weight:900;color:#fff;">AI 현장 분석 결과</span>
+          <span id="scanModeLabel" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.65);"></span>
+        </div>
+        <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">🔥</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">사고유형</span><span id="conf_type" class="conf-badge"></span></div><div id="scanType" style="font-size:14px;font-weight:900;color:var(--orange);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📍</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">추정 주소</span><span id="conf_addr" class="conf-badge"></span></div><div id="scanAddr" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📄</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">사고 대상물</span><span id="conf_target" class="conf-badge"></span></div><div id="scanTarget" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">📝</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">보고제목</span><span id="conf_summary" class="conf-badge"></span></div><div id="scanSummary" style="font-size:13px;color:var(--ink);line-height:1.7;"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">👤</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">인명피해</span><span id="conf_casualty" class="conf-badge"></span></div><div id="scanCasualty" style="font-size:13px;color:var(--ink);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">🚒</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">자원동원</span><span id="conf_mob" class="conf-badge"></span></div><div id="scanMob" style="font-size:12px;color:var(--ink);line-height:1.7;font-family:var(--mono);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">⏱️</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">타임라인</span><span id="conf_timeline" class="conf-badge"></span></div><div id="scanTimeline" style="font-size:12px;color:var(--ink);line-height:1.8;font-family:var(--mono);"></div></div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;" id="scanBldgRow"><span style="font-size:20px;flex-shrink:0;">🏗️</span><div style="flex:1;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;"><span style="font-size:10px;font-weight:800;color:var(--ink4);">건물 층별 현황</span><span id="conf_bldg" class="conf-badge"></span></div><div id="scanBldg" style="font-size:12px;color:var(--ink);font-family:var(--mono);"></div></div></div>
+        </div>
+      </div>
+      <button id="rptAiBtn" class="ai-btn" onclick="APP.report.runAI()" disabled>🤖 AI 분석 시작</button>
+    </div>
+    <button onclick="APP.report.goPage(1)" class="btn btn-primary btn-full btn-lg" style="margin-bottom:8px;">📋 보고서 작성하기 →</button>
+    <div style="text-align:center;font-size:11px;color:var(--ink4);">AI 분석 없이도 직접 입력 가능합니다</div>
+  </div>
 
-  /* 로그 기록 */
-  log: function(module, step, status, detail) {
-    try {
-      var n = new Date();
-      var t = [n.getHours(), n.getMinutes(), n.getSeconds()]
-               .map(function(v){ return String(v).padStart(2,'0'); }).join(':') + '.' +
-               String(n.getMilliseconds()).padStart(3,'0');
-      var entry = {
-        time:t, module:String(module||'').slice(0,20),
-        step:String(step||'').slice(0,50), status:status,
-        detail:this._mask(String(detail||'')).slice(0,200)
-      };
-      this._logs.unshift(entry);
-      if (this._logs.length > this.MAX) this._logs.pop();
-      var icon = {ok:'✅',err:'❌',warn:'⚠️',info:'🔵'}[status]||'▪';
-      console.log('[DBG]['+module+'] '+icon+' '+step+(detail?' — '+this._mask(String(detail)):''));
-      this._render(); this._updateCounts();
-    } catch(e){}
+  <!-- STEP 1: 입력 폼 -->
+  <div class="rpt-page" id="rptPage1">
+    <div id="aiFillBanner" class="ai-fill-banner">
+      <span style="font-size:18px;">🤖</span>
+      <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--green);">AI 분석 결과가 자동으로 채워졌습니다</div><div style="font-size:11px;color:var(--ink4);">녹색 항목 확인 후 빈 칸을 직접 입력해주세요</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">📄</div><div class="sec-title">보고서 기본 정보</div></div>
+      <div class="field"><label>소방서명</label><input class="inp" id="f_station" value="서산소방서"/></div>
+      <div class="grid2">
+        <div class="field"><label>상황관리자</label><input class="inp" id="f_manager" placeholder="소방장 홍길동(☎306)"/></div>
+        <div class="field"><label>당직근무자</label><input class="inp" id="f_duty" placeholder="소방경 김철수"/></div>
+        <div class="field"><label>보고일시</label><input class="inp" id="f_reportDate" placeholder="2026. 4. 23.(목)"/></div>
+        <div class="field"><label>신고건수</label><input class="inp" id="f_callCount" placeholder="4건"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">사고개요</div></div>
+      <div class="field"><label>일시 <span id="lbl_datetime" class="ai-lbl">AI</span></label><input class="inp" id="f_datetime" placeholder="2026. 4. 23.(목) 12:07(접수) ~"/></div>
+      <div class="field"><label>선착대 거리/시간</label><input class="inp" id="f_distance" placeholder="선착대(예천센터) 2.1km(7분)"/></div>
+      <div class="field"><label>대상 <span id="lbl_target" class="ai-lbl">AI</span></label><input class="inp" id="f_target" placeholder="운동시설(vip 주니어센터)"/></div>
+      <div class="field"><label>장소 <span id="lbl_addr" class="ai-lbl">AI</span></label><input class="inp" id="f_addr" placeholder="충청남도 서산시 예천동 496-16"/></div>
+      <div class="field"><label>내용 <span id="lbl_mainContent" class="ai-lbl">AI</span></label><input class="inp" id="f_mainContent" placeholder="음암급차 / 업무운행 / 소독 및 산소충전"/></div>
+      <div class="field"><label>보고제목 (P119) <span id="lbl_summary" class="ai-lbl">AI</span></label><input class="inp" id="f_summary" placeholder="예) [1보] 음암급차 소독등(1보)"/></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">피해상황</div></div>
+      <div class="grid2" style="margin-bottom:10px;">
+        <div class="field" style="margin-bottom:0;"><label>인명피해 <span id="lbl_casualty" class="ai-lbl">AI</span></label><input class="inp" id="f_casualty" placeholder="없음"/></div>
+        <div class="field" style="margin-bottom:0;"><label>재산피해</label><input class="inp" id="f_damage" placeholder="4층 보일러실 화재 추정"/></div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">🏗️ 건물 현황</div>
+      <div style="overflow-x:auto;">
+        <table class="bldg-table" id="bldgTable">
+          <thead><tr><th>구분</th><th>구조</th><th>크기(㎡)</th><th>용도</th><th>비고</th></tr></thead>
+          <tbody id="bldgBody"></tbody>
+        </table>
+      </div>
+      <button class="bldg-add" onclick="APP.report.addBldgRow()">+ 층 추가</button>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">자원동원</div></div>
+      <div class="grid2">
+        <div class="field"><label>인원 <span id="lbl_personnel" class="ai-lbl">AI</span></label><input class="inp" id="f_personnel" placeholder="38명(소방38)"/></div>
+        <div class="field"><label>장비 (대)</label><input class="inp" id="f_equipment" placeholder="14대"/></div>
+      </div>
+      <div class="field"><label>장비 상세</label><input class="inp" id="f_equipDetail" placeholder="펌프4, 탱크3, 구조2, 구급2"/></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">4</div><div class="sec-title">주요 조치사항</div>
+        <button onclick="APP.report.addTlItem()" style="margin-left:auto;padding:5px 12px;border-radius:100px;border:1.5px solid var(--orange-bd);background:var(--orange-lt);color:var(--orange);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">+ 추가</button>
+      </div>
+      <div id="tlList"></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div class="sec-num">5</div><div class="sec-title">위치도 및 현장사진</div></div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;">🗺️ 위치도 (1장)</div>
+      <label id="mapDropZone" style="border:2px dashed rgba(26,110,232,0.35);border-radius:var(--r2);padding:14px;text-align:center;cursor:pointer;background:var(--blue-lt);margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <input type="file" id="mapFileInput" accept="image/*" onchange="APP.report.handleMapFile(this.files)" style="display:none;"/>
+        <div style="font-size:22px;">🗺️</div>
+        <div style="font-size:13px;font-weight:800;color:var(--blue);">위치도 사진 선택</div>
+      </label>
+      <div id="mapThumbWrap" style="display:none;margin-bottom:10px;position:relative;">
+        <img id="mapThumb" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.3);background:#f0f4ff;"/>
+        <button onclick="APP.report.removeMapPhoto()" style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:13px;cursor:pointer;">✕</button>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:6px;margin-top:4px;">📷 현장사진 (최대 6장)</div>
+      <label id="sceneDropZone" style="border:2px dashed var(--orange-bd);border-radius:var(--r2);padding:14px;text-align:center;cursor:pointer;background:var(--orange-lt);margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <input type="file" id="sceneFileInput" accept="image/*" multiple onchange="APP.report.handleSceneFiles(this.files)" style="display:none;"/>
+        <div style="font-size:22px;">📷</div>
+        <div style="font-size:13px;font-weight:800;color:var(--orange);">현장사진 선택</div>
+      </label>
+      <div id="sceneThumbRow" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button onclick="APP.report.goPage(0)" class="btn" style="flex:1;">← 뒤로</button>
+      <button onclick="APP.report.goPage(2)" class="btn btn-primary btn-lg" style="flex:2;">📄 미리보기 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 미리보기 -->
+  <div class="rpt-page" id="rptPage2">
+    <div class="card">
+      <div class="card-head">
+        <span class="badge badge-orange">완성</span>
+        <span class="card-title">공식 상황보고서</span>
+        <button onclick="APP.report.goPage(1)" style="margin-left:auto;font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;">✏️ 수정</button>
+      </div>
+      <div class="preview-wrap"><div class="preview-body" id="previewBody">보고서를 작성하면 여기에 미리보기가 표시됩니다.</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <button onclick="APP.report.exportJPG()" style="padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid var(--orange-bd);background:var(--orange-lt);color:var(--orange);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);"><span style="font-size:20px;">📷</span>JPG 저장</button>
+      <button onclick="APP.report.share()" style="padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid rgba(26,110,232,0.3);background:var(--blue-lt);color:var(--blue);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);"><span style="font-size:20px;">📨</span>공유하기</button>
+      <button onclick="APP.report.copyText()" style="padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid rgba(13,155,106,0.3);background:var(--green-lt);color:var(--green);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);"><span style="font-size:20px;">📋</span>텍스트 복사</button>
+      <button onclick="APP.report.reset()" style="padding:13px 8px;border-radius:var(--r2);font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font);"><span style="font-size:20px;">🔄</span>초기화</button>
+    </div>
+    <button onclick="APP.report.goPage(1)" class="btn btn-full">← 수정하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     탭: 지도
+══════════════════════════════════════════ -->
+<div id="tab-map" class="screen">
+  <div class="card">
+    <div class="card-head"><span class="badge badge-orange">지도 앱으로 열기</span><span class="card-title">외부 지도 앱</span></div>
+    <div id="mapAddrBanner" style="display:none;background:var(--orange-lt);border:1.5px solid var(--orange-bd);border-radius:var(--r3);padding:9px 13px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--orange);">📍 <span id="mapAddrText"></span></div>
+    <button onclick="APP.map.openKakao()" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;cursor:pointer;margin-bottom:10px;width:100%;box-shadow:var(--shadow);">
+      <div style="width:52px;height:52px;border-radius:14px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🗺️</div>
+      <div style="flex:1;text-align:left;"><div style="font-size:17px;font-weight:900;color:var(--ink);">카카오맵</div><div style="font-size:12px;color:var(--ink4);margin-top:4px;" id="kakaoLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">›</div>
+    </button>
+    <button onclick="APP.map.openNaver()" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;cursor:pointer;margin-bottom:10px;width:100%;box-shadow:var(--shadow);">
+      <div style="width:52px;height:52px;border-radius:14px;background:#03C75A;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🌿</div>
+      <div style="flex:1;text-align:left;"><div style="font-size:17px;font-weight:900;color:var(--ink);">네이버 지도</div><div style="font-size:12px;color:var(--ink4);margin-top:4px;" id="naverLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">›</div>
+    </button>
+    <button onclick="APP.map.openTmap()" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:20px 18px;cursor:pointer;width:100%;box-shadow:var(--shadow);">
+      <div style="width:52px;height:52px;border-radius:14px;background:#E30C16;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🚗</div>
+      <div style="flex:1;text-align:left;"><div style="font-size:17px;font-weight:900;color:var(--ink);">T맵</div><div style="font-size:12px;color:var(--ink4);margin-top:4px;" id="tmapLoc">주소를 입력하면 연결됩니다</div></div>
+      <div style="font-size:26px;color:var(--ink4);">›</div>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     탭: 연락처
+══════════════════════════════════════════ -->
+<div id="tab-contacts" class="screen">
+  <div class="seg-ctrl">
+    <button class="seg-btn on" id="ctSeg-dispatch" onclick="APP.contacts.switchTab('dispatch')">🚒 출동대</button>
+    <button class="seg-btn" id="ctSeg-agency" onclick="APP.contacts.switchTab('agency')">🏛️ 유관기관</button>
+  </div>
+  <div id="contactForm" style="display:none;" class="card">
+    <div class="card-head"><span class="badge badge-orange" id="contactFormBadge">연락처 추가</span></div>
+    <input type="hidden" id="editContactId"/>
+    <input type="text" id="newName" class="inp" placeholder="이름 / 직책" style="margin-bottom:8px;"/>
+    <input type="tel" id="newTel" class="inp inp-mono" placeholder="전화번호" style="margin-bottom:8px;"/>
+    <input type="text" id="newMemo" class="inp" placeholder="메모 (부서, 차량번호 등)" style="margin-bottom:12px;"/>
+    <div class="btn-row">
+      <button class="btn btn-primary" style="flex:1;" id="contactSaveBtn" onclick="APP.contacts.save()">저장</button>
+      <button class="btn" onclick="APP.contacts.hideForm()">취소</button>
+    </div>
+  </div>
+  <div id="ctPanel-dispatch">
+    <div class="top-bar"><div style="font-size:13px;font-weight:800;color:var(--ink2);">🚒 출동대 연락처</div><button class="btn" style="padding:6px 12px;font-size:11px;" onclick="APP.contacts.showForm('dispatch')">+ 추가</button></div>
+    <div id="ctList-dispatch"><div class="empty">📭 출동대 연락처가 없습니다</div></div>
+  </div>
+  <div id="ctPanel-agency" style="display:none;">
+    <div class="top-bar"><div style="font-size:13px;font-weight:800;color:var(--ink2);">🏛️ 유관기관 연락처</div><button class="btn" style="padding:6px 12px;font-size:11px;" onclick="APP.contacts.showForm('agency')">+ 추가</button></div>
+    <div id="ctList-agency"><div class="empty">📭 유관기관 연락처가 없습니다</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     탭: 설정
+══════════════════════════════════════════ -->
+<div id="tab-settings" class="screen" style="position:relative;">
+  <div id="settingsLock" class="lock-overlay">
+    <div style="width:100%;max-width:360px;text-align:center;">
+      <div style="width:64px;height:64px;background:var(--orange);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;">🔑</div>
+      <div style="font-size:18px;font-weight:900;color:var(--ink);margin-bottom:6px;">설정 잠금</div>
+      <div style="font-size:13px;color:var(--ink4);margin-bottom:24px;">비밀번호를 입력하면 설정을 변경할 수 있습니다</div>
+      <input type="password" id="settingsLockInput" class="inp inp-mono" placeholder="설정 비밀번호 입력" style="font-size:16px;text-align:center;letter-spacing:4px;margin-bottom:10px;"
+        onkeydown="if(event.key==='Enter')APP.auth.checkSettingsLock()"/>
+      <button onclick="APP.auth.checkSettingsLock()" class="btn btn-primary btn-full btn-lg">🔓 확인</button>
+      <div id="settingsLockError" class="sec-err sec-err-red" style="margin-top:10px;"></div>
+    </div>
+  </div>
+  <div id="settingsContent" style="display:none;">
+    <div class="card">
+      <div class="card-head"><span class="badge badge-blue">공지</span><span class="card-title">공지 관리</span></div>
+
+      <!-- ① 전체 기기 공지 (GitHub) -->
+      <div style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);border-radius:var(--r2);padding:12px 14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:16px;">🌐</span>
+          <div>
+            <div style="font-size:12px;font-weight:900;color:var(--blue);">전체 기기 공지</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:1px;">GitHub 파일 수정 → 모든 기기에 자동 반영</div>
+          </div>
+        </div>
+        <input type="url" id="cfg_noticeUrl" class="inp" placeholder="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/notice.json" style="font-size:11px;margin-bottom:8px;border-color:rgba(26,110,232,0.3);background:#fff;"/>
+        <!-- 한 줄 사용 가이드 -->
+        <div style="background:#fff;border-radius:var(--r3);padding:8px 10px;font-size:10px;color:var(--ink4);margin-bottom:8px;line-height:1.7;">
+          <b style="color:var(--blue);">notice.json</b> 파일 내용 →
+          <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:10px;">{"msg":"공지내용", "level":"info"}</code>
+          <span style="margin-left:4px;">level: <b>info</b>파랑 / <b>warn</b>노랑 / <b>urgent</b>빨강</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.saveUrl()">💾 저장 + 바로 적용</button>
+          <button class="btn" style="flex:1;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.fetchNow()">🔄 다시 불러오기</button>
+        </div>
+        <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:6px 10px;border-radius:var(--r3);"></div>
+      </div>
+
+      <!-- ② 이 기기만 공지 (로컬) -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:16px;">📱</span>
+          <div>
+            <div style="font-size:12px;font-weight:900;color:var(--ink2);">이 기기만 공지</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:1px;">이 기기에서만 보임 · GitHub 연동 안 됨</div>
+          </div>
+        </div>
+        <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:8px;"/>
+        <!-- 레벨 선택 + 저장 버튼 한 줄 -->
+        <div style="display:flex;gap:6px;">
+          <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
+          <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
+          <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r3);padding:8px;font-size:11px;font-weight:800;" onclick="APP.notice.saveLocal()">📢 적용</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="badge badge-red">잠금</span><span class="card-title">기능 잠금 관리</span></div>
+      <div class="info-box">🔒 잠금 시 해당 탭이 비활성화됩니다.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📋</span><div><div style="font-size:13px;font-weight:800;">보고서 탭</div><div style="font-size:11px;color:var(--ink4);">AI 현장사진 스캔 및 보고서 생성</div></div></div>
+          <button id="lockBtn-report" onclick="APP.settings.toggleLock('report')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">🗺️</span><div><div style="font-size:13px;font-weight:800;">지도 탭</div><div style="font-size:11px;color:var(--ink4);">외부 지도 앱 연동</div></div></div>
+          <button id="lockBtn-map" onclick="APP.settings.toggleLock('map')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📞</span><div><div style="font-size:13px;font-weight:800;">연락처 탭</div><div style="font-size:11px;color:var(--ink4);">출동대 및 유관기관 연락처</div></div></div>
+          <button id="lockBtn-contacts" onclick="APP.settings.toggleLock('contacts')" style="padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);">해제됨</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="badge badge-red">보안</span><span class="card-title">비밀번호 관리</span></div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">🔓 앱 진입 비밀번호 변경</div>
+      <div class="sec-lbl">현재 비밀번호</div>
+      <input type="password" id="cfg_curPw" class="inp inp-mono" placeholder="현재 앱 비밀번호" style="margin-bottom:8px;"/>
+      <div class="sec-lbl">새 비밀번호</div>
+      <input type="password" id="cfg_newPw" class="inp inp-mono" placeholder="새 비밀번호 (4자리 이상)" style="margin-bottom:8px;"/>
+      <div class="sec-lbl">새 비밀번호 확인</div>
+      <input type="password" id="cfg_confirmPw" class="inp inp-mono" placeholder="비밀번호 재입력" style="margin-bottom:12px;"/>
+      <button class="btn btn-navy btn-full" onclick="APP.settings.changePw()" style="margin-bottom:8px;">🔒 앱 비밀번호 변경</button>
+      <div id="pwMsg" style="margin-bottom:16px;"></div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink4);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">⚙️ 설정 탭 비밀번호 변경</div>
+      <div class="sec-lbl">현재 설정 비밀번호</div>
+      <input type="password" id="cfg_curSetPw" class="inp inp-mono" placeholder="현재 설정 비밀번호" style="margin-bottom:8px;"/>
+      <div class="sec-lbl">새 설정 비밀번호</div>
+      <input type="password" id="cfg_newSetPw" class="inp inp-mono" placeholder="새 비밀번호 (4자리 이상)" style="margin-bottom:8px;"/>
+      <div class="sec-lbl">새 설정 비밀번호 확인</div>
+      <input type="password" id="cfg_confirmSetPw" class="inp inp-mono" placeholder="비밀번호 재입력" style="margin-bottom:12px;"/>
+      <button class="btn btn-navy btn-full" onclick="APP.settings.changeSettingsPw()">⚙️ 설정 비밀번호 변경</button>
+      <div id="setPwMsg" style="margin-top:8px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="badge badge-purple">자동잠금</span><span class="card-title">앱 자동 잠금 시간</span></div>
+      <div class="info-box">⏰ 설정한 시간 동안 앱을 사용하지 않으면 자동으로 잠금됩니다.</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px;">
+        <button class="auto-lock-btn" data-min="0" onclick="APP.settings.setAutoLock(0)">🔓 사용 안 함</button>
+        <button class="auto-lock-btn" data-min="5" onclick="APP.settings.setAutoLock(5)">5분</button>
+        <button class="auto-lock-btn" data-min="10" onclick="APP.settings.setAutoLock(10)">10분</button>
+        <button class="auto-lock-btn" data-min="30" onclick="APP.settings.setAutoLock(30)">30분</button>
+      </div>
+      <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
+    </div>
+    <!-- ══ 사용량 모니터링 카드 ══ -->
+    <div class="card" id="usageCard">
+      <div class="card-head">
+        <span class="badge" style="background:#e8f4fd;color:#1a6ee8;border:1px solid rgba(26,110,232,0.2);">📊 사용량</span>
+        <span class="card-title">API 사용량 현황</span>
+        <button onclick="APP.usage.refresh()" style="margin-left:auto;font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-weight:700;">↺ 새로고침</button>
+      </div>
+      <!-- 오늘 사용량 요약 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--orange);" id="usage_todayTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">오늘 총 호출</div>
+        </div>
+        <div style="background:var(--blue-lt);border:1px solid rgba(26,110,232,0.2);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--blue);" id="usage_weekTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">이번 주</div>
+        </div>
+        <div style="background:var(--green-lt);border:1px solid rgba(13,155,106,0.2);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--green);" id="usage_allTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">누적</div>
+        </div>
+      </div>
+      <!-- 기능별 분류 -->
+      <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:6px;">기능별 오늘 사용량</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+        <!-- AI 사진 분석 -->
+        <div style="background:var(--surface2);border-radius:var(--r3);padding:9px 12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">🤖</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink2);">AI 사진 분석</span>
+              <span style="font-size:9px;color:var(--ink4);background:var(--border);padding:1px 5px;border-radius:3px;">gemini-2.5-flash</span>
+            </div>
+            <span style="font-size:14px;font-weight:900;color:var(--orange);" id="usage_aiScan">0</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+            <div id="usage_aiScanBar" style="height:100%;background:var(--orange);border-radius:100px;width:0%;transition:width .5s;"></div>
+          </div>
+        </div>
+        <!-- 맞춤법 검사 -->
+        <div style="background:var(--surface2);border-radius:var(--r3);padding:9px 12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">✓</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink2);">맞춤법 검사</span>
+              <span style="font-size:9px;color:var(--ink4);background:var(--border);padding:1px 5px;border-radius:3px;">gemini-2.5-flash-lite</span>
+            </div>
+            <span style="font-size:14px;font-weight:900;color:var(--green);" id="usage_spell">0</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+            <div id="usage_spellBar" style="height:100%;background:var(--green);border-radius:100px;width:0%;transition:width .5s;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 최근 사용 기록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:6px;">최근 사용 기록 (최대 10건)</div>
+      <div id="usage_log" style="background:var(--surface2);border-radius:var(--r3);padding:4px 0;max-height:180px;overflow-y:auto;font-size:11px;">
+        <div style="padding:10px;text-align:center;color:var(--ink4);">사용 기록이 없습니다</div>
+      </div>
+      <!-- 할당량 경고 임계값 설정 -->
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:11px;font-weight:700;color:var(--ink3);">⚠️ 일일 경고 임계값</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" id="usage_threshold" min="1" max="9999" value="50"
+              style="width:64px;font-size:12px;padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;text-align:center;"
+              onchange="APP.usage.saveThreshold(this.value)"/>
+            <span style="font-size:11px;color:var(--ink4);">회 초과 시 알림</span>
+          </div>
+        </div>
+        <div id="usage_warningBanner" style="display:none;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.3);border-radius:var(--r3);padding:8px 11px;font-size:12px;color:var(--red);font-weight:700;">
+          🚨 오늘 API 호출이 임계값을 초과했습니다!
+        </div>
+      </div>
+      <!-- 초기화 버튼 -->
+      <button onclick="APP.usage.resetStats()" style="width:100%;margin-top:10px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🗑️ 사용량 기록 초기화</button>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="badge badge-green">Gemini AI</span><span class="card-title">AI API 설정</span></div>
+      <div class="info-box">🔒 API Key는 AES-256-GCM으로 암호화되어 저장됩니다.</div>
+      <div class="sec-lbl">Gemini API Key</div>
+      <input type="password" id="cfg_geminiKey" class="inp inp-mono" placeholder="AIza..." style="margin-bottom:12px;"/>
+      <button class="btn btn-primary btn-full" onclick="APP.settings.saveApiKey()">💾 저장 (암호화)</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="badge badge-red">위험</span><span class="card-title">데이터 초기화</span></div>
+      <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
+      <button class="btn btn-full" style="color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="APP.settings.clearAll()">🗑️ 모든 데이터 초기화</button>
+    </div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v9.0&nbsp;·&nbsp;서산소방서</div>
+  </div>
+</div>
+
+<!-- 모달 -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="modalCancel">취소</button>
+      <button class="modal-ok" id="modalOk">확인</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     JavaScript — 완전 방어 구조
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════════
+   ① CORE — 전역 오류 핸들러 (가장 먼저 등록)
+   모든 예외를 잡아서 앱이 완전히 죽지 않도록 보호
+═══════════════════════════════════════════════════════════════════ */
+window.onerror = function(msg, src, line, col, err) {
+  // 외부 리소스(폰트, CDN) 오류는 무시
+  if (src && /fonts\.google|html2canvas|cdnjs/i.test(src)) return false;
+  var detail = err ? (err.message || msg) : msg;
+  _ui.toast('⚠️ ' + String(detail).slice(0, 50), 4000);
+  console.error('[GlobalErr]', msg, src + ':' + line, err);
+  return true;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  var msg = e.reason ? (e.reason.message || String(e.reason)) : 'Promise 오류';
+  if (/abort|user cancel|AbortError/i.test(msg)) return;
+  _ui.toast('⚠️ ' + msg.slice(0, 50), 4000);
+  console.error('[UnhandledRejection]', e.reason);
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   ② ENVIRONMENT — 브라우저 환경 감지
+═══════════════════════════════════════════════════════════════════ */
+var ENV = (function() {
+  var ua = navigator.userAgent || '';
+  return {
+    isHTTPS    : location.protocol === 'https:',
+    isLocalhost: /^(localhost|127\.0\.0\.1)$/.test(location.hostname),
+    isKakao    : /KAKAOTALK/i.test(ua),
+    isInApp    : /KAKAOTALK|Line\/|FB_IAB|FBAN|Instagram|NaverApp/i.test(ua),
+    hasCrypto  : !!(window.crypto && window.crypto.subtle && window.isSecureContext)
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   ③ STORAGE — 안전한 localStorage (실패 시 메모리 폴백)
+═══════════════════════════════════════════════════════════════════ */
+var _store = {
+  _mem: {},
+  _warned: false,
+  get: function(k, def) {
+    try { var v = localStorage.getItem(k); return v !== null ? v : (def !== undefined ? def : null); }
+    catch(e) { return this._mem.hasOwnProperty(k) ? this._mem[k] : (def !== undefined ? def : null); }
   },
-  ok  :function(m,s,d){this.log(m,s,'ok',d);},
-  err :function(m,s,d){this.log(m,s,'err',d);},
-  warn:function(m,s,d){this.log(m,s,'warn',d);},
-  info:function(m,s,d){this.log(m,s,'info',d);},
-
-  /* 민감 정보 마스킹 */
-  _mask:function(s){
-    return s.replace(/AIza[A-Za-z0-9_\-]{10,}/g,'AIza***[MASKED]')
-            .replace(/"?(password|pw|secret|token)"?\s*:\s*"[^"]+"/gi,'"$1":"[MASKED]"');
+  set: function(k, v) {
+    try { localStorage.setItem(k, v); return true; }
+    catch(e) {
+      this._mem[k] = v;
+      if (!this._warned) { this._warned = true; _ui.toast('⚠️ 저장공간 제한: 앱 종료 시 데이터가 소실될 수 있습니다', 5000); }
+      return false;
+    }
   },
-
-  /* 패널 토글 */
-  _open:false,
-  toggle:function(){
-    this._open=!this._open;
-    var p=document.getElementById('debugPanel');
-    if(p) p.style.display=this._open?'block':'none';
-    if(this._open){this._render();this._updateCounts();}
+  remove: function(k) {
+    try { localStorage.removeItem(k); } catch(e) { delete this._mem[k]; }
   },
-
-  /* 로그 초기화 */
-  clear:function(){
-    this._logs=[];
-    this._render();this._updateCounts();
-    this.info('Debug','로그 초기화됨');
+  getJSON: function(k, def) {
+    try { return JSON.parse(this.get(k, 'null')) || def; }
+    catch(e) { return def; }
   },
-
-  /* 카운트 업데이트 */
-  _updateCounts:function(){
-    try{
-      var ok=0,err=0,warn=0;
-      this._logs.forEach(function(e){
-        if(e.status==='ok')ok++;
-        else if(e.status==='err')err++;
-        else if(e.status==='warn')warn++;
-      });
-      var s=function(id,v){var el=document.getElementById(id);if(el)el.textContent=v;};
-      s('dbg_okCount','✅ 성공 '+ok);
-      s('dbg_errCount','❌ 오류 '+err);
-      s('dbg_warnCount','⚠️ 경고 '+warn);
-      s('dbg_totalCount','총 '+this._logs.length+'건');
-    }catch(e){}
+  setJSON: function(k, v) {
+    try { this.set(k, JSON.stringify(v)); return true; }
+    catch(e) { return false; }
   },
-
-  /* 필터 */
-  _filter:'all',
-  setFilter:function(f){
-    this._filter=f;
-    document.querySelectorAll('.dbg-filter-btn').forEach(function(b){
-      b.style.background=b.dataset.filter===f?'var(--navy)':'var(--surface2)';
-      b.style.color=b.dataset.filter===f?'#fff':'var(--ink3)';
-    });
-    this._render();
-  },
-
-  /* 렌더링 */
-  _render:function(){
-    try{
-      var wrap=document.getElementById('debugLogContainer');
-      if(!wrap) return;
-      var f=this._filter;
-      var filtered=f==='all'?this._logs:this._logs.filter(function(e){return e.status===f;});
-      if(!filtered.length){
-        wrap.innerHTML='<div style="padding:14px;text-align:center;color:#555;font-size:11px;">'+(f==='all'?'아직 기록이 없습니다':'해당 로그 없음')+'</div>';
-        return;
-      }
-      var BG  ={ok:'rgba(13,155,106,0.08)',err:'rgba(217,48,37,0.08)',warn:'rgba(133,100,4,0.08)',info:'rgba(26,110,232,0.08)'};
-      var CLR ={ok:'#4ade80',err:'#f87171',warn:'#fbbf24',info:'#60a5fa'};
-      var ICO ={ok:'✅',err:'❌',warn:'⚠️',info:'🔵'};
-      wrap.innerHTML=filtered.map(function(e){
-        var bg=BG[e.status]||'transparent';
-        var c=CLR[e.status]||'#9CA3AF';
-        var i=ICO[e.status]||'▪';
-        return '<div style="display:flex;gap:8px;padding:7px 10px;border-bottom:1px solid #1a1a2e;background:'+bg+';align-items:flex-start;">'+
-          '<span style="font-size:11px;flex-shrink:0;margin-top:1px;">'+i+'</span>'+
-          '<div style="flex:1;min-width:0;">'+
-            '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">'+
-              '<span style="font-size:10px;font-weight:900;color:'+c+';">['+e.module+']</span>'+
-              '<span style="font-size:10px;font-weight:700;color:#d1d5db;">'+e.step+'</span>'+
-              '<span style="font-size:9px;color:#6B7280;margin-left:auto;font-family:monospace;flex-shrink:0;">'+e.time+'</span>'+
-            '</div>'+
-            (e.detail?'<div style="font-size:10px;color:#9CA3AF;font-family:monospace;word-break:break-all;margin-top:2px;">'+e.detail+'</div>':'')+'</div></div>';
-      }).join('');
-    }catch(e){}
-  },
-
-  /* 로그 복사 */
-  copyLogs:async function(){
-    try{
-      var text=this._logs.map(function(e){
-        return '['+e.time+']['+e.module+'] '+e.step+(e.detail?' — '+e.detail:'');
-      }).join('\n');
-      await _ui.copy(text,'📋 디버그 로그 복사됨');
-    }catch(e){}
+  clearKeep: function(keepKeys) {
+    var kept = {};
+    (keepKeys || []).forEach(function(k) { kept[k] = _store.get(k); });
+    try { localStorage.clear(); } catch(e) { _store._mem = {}; }
+    Object.keys(kept).forEach(function(k) { if (kept[k] !== null) _store.set(k, kept[k]); });
   }
 };
-</script>
 
-<!--
-  ──────────────────────────────────────────────────────────────
-  [STEP 4] 기존 함수에 디버그 로그 삽입
+/* ═══════════════════════════════════════════════════════════════════
+   ④ CRYPTO — SHA-256 / AES-256-GCM (환경별 폴백 포함)
+═══════════════════════════════════════════════════════════════════ */
+var _crypto = {
+  // 폴백: djb2 해시 (Web Crypto 미지원 환경 전용)
+  _fbHash: function(str) {
+    var h = 5381;
+    for (var i = 0; i < str.length; i++) { h = ((h << 5) + h) + str.charCodeAt(i); h = h & h; }
+    return 'fbk:' + Math.abs(h).toString(16).padStart(8, '0');
+  },
+  sha256: async function(str) {
+    if (!ENV.hasCrypto) return this._fbHash(str);
+    try {
+      var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
+    } catch(e) { console.warn('[sha256 fb]', e); return this._fbHash(str); }
+  },
+  _deriveKey: async function(pw, salt) {
+    var km = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      {name:'PBKDF2', salt:salt, iterations:100000, hash:'SHA-256'},
+      km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']
+    );
+  },
+  encrypt: async function(plain, pw) {
+    if (!ENV.hasCrypto) return 'plain:' + btoa(unescape(encodeURIComponent(plain)));
+    try {
+      var salt = crypto.getRandomValues(new Uint8Array(16));
+      var iv   = crypto.getRandomValues(new Uint8Array(12));
+      var key  = await this._deriveKey(pw, salt);
+      var enc  = await crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(plain));
+      var out  = new Uint8Array(16 + 12 + enc.byteLength);
+      out.set(salt, 0); out.set(iv, 16); out.set(new Uint8Array(enc), 28);
+      return btoa(String.fromCharCode.apply(null, out));
+    } catch(e) { console.warn('[encrypt fb]', e); return 'plain:' + btoa(unescape(encodeURIComponent(plain))); }
+  },
+  decrypt: async function(b64, pw) {
+    if (!b64) return null;
+    if (b64.startsWith('plain:')) { try { return decodeURIComponent(escape(atob(b64.slice(6)))); } catch(e) { return null; } }
+    if (!ENV.hasCrypto) return null;
+    try {
+      var bytes = Uint8Array.from(atob(b64), function(c) { return c.charCodeAt(0); });
+      var key   = await this._deriveKey(pw, bytes.slice(0, 16));
+      var dec   = await crypto.subtle.decrypt({name:'AES-GCM', iv:bytes.slice(16, 28)}, key, bytes.slice(28));
+      return new TextDecoder().decode(dec);
+    } catch(e) { return null; }
+  }
+};
 
-  아래 코드들을 원본 JS에서 찾아서 교체하세요.
-  각각 "찾기" 텍스트로 검색 후 "교체" 내용으로 바꾸면 됩니다.
-  ──────────────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════════
+   ⑤ BRUTE-FORCE 방어
+═══════════════════════════════════════════════════════════════════ */
+var _bf = {
+  _fail : {app:0, settings:0},
+  _until: {app:0, settings:0},
+  LIMIT: 5, LOCK_MS: 30000,
+  isLocked: function(who) { return Date.now() < this._until[who]; },
+  fail: function(who) {
+    this._fail[who]++;
+    if (this._fail[who] >= this.LIMIT) { this._until[who] = Date.now() + this.LOCK_MS; this._fail[who] = 0; return true; }
+    return false;
+  },
+  ok: function(who) { this._fail[who] = 0; this._until[who] = 0; },
+  remain: function(who) { return Math.ceil((this._until[who] - Date.now()) / 1000); },
+  showMsg: function(who, errId, inputEl) {
+    var el = document.getElementById(errId); if (!el) return;
+    el.className = 'sec-err show';
+    if (this.isLocked(who)) {
+      el.className = 'sec-err sec-err-lock show';
+      if (inputEl) inputEl.disabled = true;
+      var self = this;
+      var t = setInterval(function() {
+        if (!self.isLocked(who)) { clearInterval(t); el.className = 'sec-err'; if (inputEl) { inputEl.disabled = false; inputEl.focus(); } }
+        else { el.textContent = '⛔ ' + self.remain(who) + '초 후 다시 시도하세요'; }
+      }, 1000);
+      el.textContent = '⛔ ' + this.remain(who) + '초 후 다시 시도하세요';
+    } else {
+      el.className = 'sec-err sec-err-red show';
+      el.textContent = '❌ 비밀번호가 틀렸습니다 — 남은 횟수: ' + (this.LIMIT - this._fail[who]) + '회';
+    }
+  }
+};
 
-  ★ 4-A. auth.checkLock 성공 직후 — API Key 로드 후
-  찾기:   _ui.hide('lockScreen');
-  교체:   _ui.hide('lockScreen'); _debug.info('Auth','앱 잠금 해제됨');
+/* ═══════════════════════════════════════════════════════════════════
+   ⑥ PASSWORD — 해시 저장/검증
+═══════════════════════════════════════════════════════════════════ */
+var _pw = {
+  _defaults: {appLockPw:'0261', settingsPw:'2399'},
+  migrate: async function() {
+    for (var k in this._defaults) {
+      var stored = _store.get(k);
+      if (!stored) { _store.set(k, 'sha256:' + await _crypto.sha256(this._defaults[k])); }
+      else if (!stored.startsWith('sha256:') && !stored.startsWith('fbk:')) {
+        _store.set(k, 'sha256:' + await _crypto.sha256(stored));
+      }
+    }
+  },
+  check: async function(storageKey, input) {
+    var def = this._defaults[storageKey] || '';
+    var stored = _store.get(storageKey) || ('sha256:' + await _crypto.sha256(def));
+    var h = await _crypto.sha256(input);
+    if (stored.startsWith('sha256:')) return h === stored.slice(7);
+    if (stored.startsWith('fbk:'))   return _crypto._fbHash(input) === stored;
+    return input === stored;
+  },
+  save: async function(storageKey, newPlain) {
+    _store.set(storageKey, 'sha256:' + await _crypto.sha256(newPlain));
+  }
+};
 
-  ★ 4-B. auth.lock 함수 맨 위
-  찾기:   lock: function() {
+/* ═══════════════════════════════════════════════════════════════════
+   ⑦ API KEY — 암호화 저장 (메모리 보관)
+═══════════════════════════════════════════════════════════════════ */
+var _apiKey = {
+  _val: '',
+  _appPw: '',
+  get: function() { return this._val; },
+  save: async function(plain, appPw) {
+    this._val = plain || '';
+    appPw = appPw || this._appPw;
+    if (!plain) { _store.remove('encApiKey'); return; }
+    _store.set('encApiKey', await _crypto.encrypt(plain, appPw));
+  },
+  load: async function(appPw) {
+    this._appPw = appPw;
+    // 레거시 평문 마이그레이션
+    try {
+      var s = _store.getJSON('appSettings', {});
+      if (s.geminiKey) { await this.save(s.geminiKey, appPw); s.geminiKey = ''; _store.setJSON('appSettings', s); return; }
+    } catch(e) {}
+    var enc = _store.get('encApiKey');
+    if (!enc) return;
+    var dec = await _crypto.decrypt(enc, appPw);
+    if (dec !== null) this._val = dec;
+    else _ui.toast('⚠️ API Key 복호화 실패 — 설정에서 재입력 필요', 4000);
+  },
+  clear: function() { this._val = ''; }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑧ BLOB URL — 메모리 누수 방지
+═══════════════════════════════════════════════════════════════════ */
+var _blob = {
+  _urls: [],
+  create: function(file) {
+    try { var u = URL.createObjectURL(file); this._urls.push(u); return u; }
+    catch(e) { console.warn('[blob.create]', e); return ''; }
+  },
+  revokeAll: function() {
+    this._urls.forEach(function(u) { try { URL.revokeObjectURL(u); } catch(e) {} });
+    this._urls = [];
+  }
+};
+window.addEventListener('beforeunload', function() { _blob.revokeAll(); });
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑨ UI 유틸 (토스트, 모달, 헬퍼)
+═══════════════════════════════════════════════════════════════════ */
+var _ui = {
+  _toastTimer: null,
+  toast: function(msg, dur) {
+    try {
+      dur = dur || 2400;
+      var el = document.getElementById('toast'); if (!el) return;
+      if (this._toastTimer) clearTimeout(this._toastTimer);
+      el.textContent = String(msg).slice(0, 80);
+      el.classList.add('show');
+      var self = this;
+      this._toastTimer = setTimeout(function() { el.classList.remove('show'); self._toastTimer = null; }, dur);
+    } catch(e) { console.warn('[toast]', e); }
+  },
+  confirm: function(title, msg, onOk, isDanger) {
+    try {
+      var overlay = document.getElementById('modal'); if (!overlay) { if (confirm(title + '\n' + msg) && onOk) onOk(); return; }
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalMsg').textContent = msg;
+      var okBtn = document.getElementById('modalOk');
+      okBtn.className = 'modal-ok' + (isDanger ? ' danger' : '');
+      overlay.classList.add('show');
+      okBtn.onclick = function() { overlay.classList.remove('show'); if (onOk) try { onOk(); } catch(e) { console.error('[modal.onOk]', e); } };
+      document.getElementById('modalCancel').onclick = function() { overlay.classList.remove('show'); };
+    } catch(e) { console.error('[confirm]', e); if (confirm(title) && onOk) onOk(); }
+  },
+  hide: function(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; },
+  show: function(id, display) { var el = document.getElementById(id); if (el) el.style.display = display || 'block'; },
+  val: function(id) { var el = document.getElementById(id); return el ? (el.value || el.textContent || '').trim() : ''; },
+  setVal: function(id, v) { var el = document.getElementById(id); if (el && el.tagName !== 'DIV') el.value = v || ''; },
+  escHtml: function(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  },
+  safeJSON: function(text, fallback) {
+    if (!text) return fallback;
+    var clean = String(text).replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+    try { return JSON.parse(clean); } catch(e) { return fallback; }
+  },
+  // ── API 오류 코드 분류 (Gemini API 오류 → 사용자 친화적 메시지) ──
+  _API_ERRORS: {
+    'API_KEY_INVALID'        : { msg:'🔑 API Key가 유효하지 않습니다. 설정 탭에서 Key를 다시 확인해주세요.', retry:false },
+    'API_KEY_SERVICE_BLOCKED': { msg:'🔑 API Key가 차단됐습니다. Google AI Studio에서 확인해주세요.', retry:false },
+    'QUOTA_EXCEEDED'         : { msg:'📊 오늘 API 할당량을 모두 사용했습니다. 내일 다시 시도해주세요.', retry:false },
+    'RESOURCE_EXHAUSTED'     : { msg:'📊 API 호출 한도 초과. 잠시 후 다시 시도해주세요.', retry:true },
+    'RATE_LIMIT_EXCEEDED'    : { msg:'⏳ 요청이 너무 빠릅니다. 10~30초 후 다시 시도해주세요.', retry:true },
+    'INVALID_ARGUMENT'       : { msg:'📷 이미지 형식이 지원되지 않거나 너무 큽니다. 다른 사진으로 시도해주세요.', retry:false },
+    'SAFETY'                 : { msg:'🚫 AI 안전 필터에 의해 처리가 제한됐습니다. 다른 사진으로 시도해주세요.', retry:false },
+    'INTERNAL'               : { msg:'🔧 Gemini 서버에 일시적 문제가 있습니다. 잠시 후 다시 시도해주세요.', retry:true },
+    'UNAVAILABLE'            : { msg:'🔧 Gemini 서비스가 일시적으로 중단됐습니다. 잠시 후 다시 시도해주세요.', retry:true },
+    'DEADLINE_EXCEEDED'      : { msg:'⏱️ 응답 시간이 초과됐습니다. 잠시 후 다시 시도해주세요.', retry:true },
+  },
+  parseApiError: function(errData, httpStatus) {
+    // Gemini API 오류 구조: { error: { code, message, status } }
+    var status = (errData && errData.error && errData.error.status) ? errData.error.status : '';
+    var rawMsg = (errData && errData.error && errData.error.message) ? errData.error.message : '';
+    // status 코드 직접 매칭
+    if (this._API_ERRORS[status]) return this._API_ERRORS[status];
+    // rawMsg 패턴 매칭
+    if (/API.?KEY.?INVALID|api key/i.test(rawMsg))           return this._API_ERRORS['API_KEY_INVALID'];
+    if (/QUOTA|quota.*exceed|Resource.*exhaust/i.test(rawMsg))return this._API_ERRORS['QUOTA_EXCEEDED'];
+    if (/RATE.?LIMIT|rate.*limit/i.test(rawMsg))             return this._API_ERRORS['RATE_LIMIT_EXCEEDED'];
+    if (/SAFETY/i.test(rawMsg))                              return this._API_ERRORS['SAFETY'];
+    if (/INTERNAL/i.test(rawMsg))                            return this._API_ERRORS['INTERNAL'];
+    if (/UNAVAILABLE/i.test(rawMsg))                         return this._API_ERRORS['UNAVAILABLE'];
+    // HTTP 상태코드 폴백
+    if (httpStatus === 400) return { msg:'⚠️ 잘못된 요청 (400). API Key 또는 요청 형식을 확인해주세요.', retry:false };
+    if (httpStatus === 401) return { msg:'🔑 인증 실패 (401). API Key를 다시 확인해주세요.', retry:false };
+    if (httpStatus === 403) return { msg:'🔑 접근 권한 없음 (403). API Key 권한을 확인해주세요.', retry:false };
+    if (httpStatus === 429) return { msg:'⏳ 요청 한도 초과 (429). 잠시 후 다시 시도해주세요.', retry:true };
+    if (httpStatus >= 500)  return { msg:'🔧 Gemini 서버 오류 (' + httpStatus + '). 잠시 후 다시 시도해주세요.', retry:true };
+    return { msg:'❌ API 오류: ' + (rawMsg || 'HTTP ' + httpStatus).slice(0, 50), retry:true };
+  },
+
+  // 클립보드 복사 (3단계 폴백)
+  copy: async function(text, successMsg) {
+    text = String(text || '');
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        this.toast(successMsg || '📋 복사됐습니다'); return true;
+      }
+    } catch(e) {}
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      this.toast(successMsg || '📋 복사됐습니다'); return true;
+    } catch(e) {}
+    this.toast('⚠️ 복사 실패: 텍스트를 직접 선택해주세요', 4000); return false;
+  },
+  // 공유 (share → 클립보드 폴백)
+  share: async function(text, successMsg) {
+    if (navigator.share && !ENV.isInApp) {
+      try { await navigator.share({text:text}); this.toast(successMsg || '📨 전파됐습니다'); return true; }
+      catch(e) { if (e.name === 'AbortError') return false; }
+    }
+    return this.copy(text, successMsg || '📋 복사됐습니다');
+  },
+  // 메시지 박스 (성공/에러)
+  msgBox: function(elId, type, text) {
+    var el = document.getElementById(elId); if (!el) return;
+    var color = type === 'ok' ? 'var(--green)' : 'var(--red)';
+    var bg    = type === 'ok' ? 'var(--green-lt)' : 'var(--red-lt)';
+    el.innerHTML = text ? '<div style="font-size:12px;color:'+color+';font-weight:700;padding:8px;background:'+bg+';border-radius:var(--r3);">' + this.escHtml(text) + '</div>' : '';
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑩ AUTO-LOCK — 자동 잠금
+═══════════════════════════════════════════════════════════════════ */
+var _autoLock = {
+  _timer: null,
+  _minutes: 0,
+  load: function() {
+    this._minutes = parseInt(_store.get('autoLockMin', '0')) || 0;
+    this._renderBtns(); this.reset();
+  },
+  set: function(min) {
+    this._minutes = min; _store.set('autoLockMin', min);
+    this._renderBtns(); this.reset();
+    _ui.toast(min === 0 ? '자동 잠금 해제됨' : min + '분 후 자동 잠금');
+  },
+  reset: function() {
+    if (this._timer) clearTimeout(this._timer);
+    if (this._minutes <= 0) return;
+    var self = this;
+    this._timer = setTimeout(function() { APP.auth.lock(); }, this._minutes * 60000);
+  },
+  _renderBtns: function() {
+    var m = this._minutes;
+    document.querySelectorAll('.auto-lock-btn').forEach(function(btn) {
+      btn.classList.toggle('on', parseInt(btn.dataset.min) === m);
+    });
+    var s = document.getElementById('autoLockStatus');
+    if (s) s.textContent = m === 0 ? '현재: 자동 잠금 사용 안 함' : '현재: ' + m + '분 후 자동 잠금';
+  }
+};
+['touchstart','click','keydown'].forEach(function(ev) {
+  document.addEventListener(ev, function() { _autoLock.reset(); }, {passive:true});
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑪ APP 네임스페이스 — 모든 탭 기능을 독립 모듈로 격리
+   각 모듈은 try-catch로 감싸서 한 모듈이 죽어도 앱 전체에 영향 없음
+═══════════════════════════════════════════════════════════════════ */
+var APP = {};
+
+/* ── auth: 잠금/해제 ─────────────────────────────────────────────── */
+APP.auth = {
+  checkLock: async function() {
+    var inp = document.getElementById('lockInput');
+    var errId = 'lockError';
+    if (!inp) return;
+    var val = (inp.value || '').trim();
+    if (!val) { inp.focus(); return; }
+    if (_bf.isLocked('app')) { _bf.showMsg('app', errId, inp); return; }
+    try {
+      var ok = await _pw.check('appLockPw', val);
+      if (ok) {
+        _bf.ok('app');
+        await _apiKey.load(val);
+        _ui.hide('lockScreen');
+        var errEl = document.getElementById(errId); if (errEl) errEl.className = 'sec-err';
+        inp.value = '';
+        APP.nav.go('dispatch');
+      } else {
+        var locked = _bf.fail('app');
+        _bf.showMsg('app', errId, inp);
+        inp.value = '';
+        if (!locked) setTimeout(function() { inp.focus(); }, 100);
+      }
+    } catch(e) {
+      console.error('[auth.checkLock]', e);
+      var el = document.getElementById(errId);
+      if (el) { el.className = 'sec-err sec-err-red show'; el.textContent = '⚠️ 오류: ' + String(e.message).slice(0,40); }
+      inp.value = '';
+    }
+  },
+  checkSettingsLock: async function() {
+    var inp = document.getElementById('settingsLockInput');
+    var errId = 'settingsLockError';
+    if (!inp) return;
+    var val = (inp.value || '').trim();
+    if (!val) { inp.focus(); return; }
+    if (_bf.isLocked('settings')) { _bf.showMsg('settings', errId, inp); return; }
+    try {
+      var ok = await _pw.check('settingsPw', val);
+      if (ok) {
+        _bf.ok('settings');
+        _ui.hide('settingsLock');
+        _ui.show('settingsContent');
+        var errEl = document.getElementById(errId); if (errEl) errEl.className = 'sec-err';
+        inp.value = '';
+        if (_apiKey.get()) {
+          var keyEl = document.getElementById('cfg_geminiKey');
+          if (keyEl) keyEl.placeholder = '저장됨 (변경하려면 새로 입력)';
+        }
+        // 사용량 대시보드 자동 새로고침
+        try { APP.usage.refresh(); } catch(ue) {}
+        // 공지 관리 UI 복원
+        try { APP.notice._restoreSettingsUI(); } catch(ue) {}
+      } else {
+        var locked = _bf.fail('settings');
+        _bf.showMsg('settings', errId, inp);
+        inp.value = '';
+        if (!locked) setTimeout(function() { inp.focus(); }, 100);
+      }
+    } catch(e) {
+      console.error('[auth.checkSettingsLock]', e);
+      var el = document.getElementById(errId);
+      if (el) { el.className = 'sec-err sec-err-red show'; el.textContent = '⚠️ 오류: ' + String(e.message).slice(0,40); }
+      inp.value = '';
+    }
+  },
+  lock: function() {
+    try {
+      _apiKey.clear();
+      APP.report._scanPhotos = []; APP.report._mapPhoto = null; APP.report._scenePhotos = [];
+      _blob.revokeAll();
+      var ls = document.getElementById('lockScreen');
+      var inp = document.getElementById('lockInput');
+      if (ls) ls.style.display = 'flex';
+      if (inp) { inp.value = ''; setTimeout(function() { inp.focus(); }, 100); }
+      _ui.toast('🔒 자동 잠금됐습니다');
+    } catch(e) { console.error('[auth.lock]', e); }
+  }
+};
+
+/* ── nav: 탭 전환 ─────────────────────────────────────────────────── */
+APP.nav = {
+  _locks: {},
+  go: function(tab, btnEl) {
+    try {
+      if (this._locks[tab]) { _ui.toast('🔒 잠금된 탭입니다'); return; }
+      document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('on'); });
+      document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('on'); });
+      var screen = document.getElementById('tab-' + tab);
+      if (screen) screen.classList.add('on');
+      var btn = btnEl || document.getElementById('nav-' + tab);
+      if (btn) btn.classList.add('on');
+      if (tab === 'settings') {
+        _ui.show('settingsLock', 'flex');
+        _ui.hide('settingsContent');
+        var sinp = document.getElementById('settingsLockInput');
+        var serr = document.getElementById('settingsLockError');
+        if (sinp) { sinp.value = ''; setTimeout(function() { if (!_bf.isLocked('settings')) sinp.focus(); }, 100); }
+        if (serr) serr.className = 'sec-err';
+      }
+    } catch(e) { console.error('[nav.go]', e); }
+  },
+  setLock: function(tab, locked) {
+    this._locks[tab] = locked;
+    var nav = document.getElementById('nav-' + tab);
+    if (nav) { nav.style.opacity = locked ? '0.35' : '1'; nav.disabled = locked; }
+  }
+};
+
+/* ── dispatch: 출동 탭 ────────────────────────────────────────────── */
+APP.dispatch = {
+  _type  : 'fire',
+  _stage : '출동',
+  _reports: [],
+  _rCount : 0,
+
+  setType: function(type, btn) {
+    try {
+      this._type = type;
+      document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('on'); });
+      if (btn) btn.classList.add('on');
+      this.render();
+    } catch(e) { console.error('[dispatch.setType]', e); }
+  },
+  setStage: function(stage, btn) {
+    try {
+      this._stage = stage;
+      document.querySelectorAll('.stage-btn').forEach(function(b) { b.classList.remove('on'); });
+      if (btn) btn.classList.add('on');
+      this.render();
+    } catch(e) { console.error('[dispatch.setStage]', e); }
+  },
+  render: function() {
+    try {
+      var loc  = _ui.val('dispLocation');
+      var obj  = _ui.val('fireObject');
+      var scale= _ui.val('fireScale');
+      var cas  = _ui.val('fireCasualty');
+      var sig  = _ui.val('sigName');
+      var box  = document.getElementById('outputBox'); if (!box) return;
+      if (!loc && !obj) { box.textContent = '정보를 입력하면 자동 생성됩니다.'; return; }
+      var dong = _util.extractDong(loc);
+      var types = {fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'출동',training:'훈련'};
+      var typeLbl = types[this._type] || '화재';
+      var titleObj = obj ? obj + typeLbl : typeLbl;
+      var header = '[' + (dong ? dong + ' ' : '') + titleObj + '](' + this._stage + ')';
+      var shortAddr = loc.replace(/^.*?(?:시|군|구)\s*/,'') || loc;
+      var parts = [];
+      if (shortAddr) parts.push(shortAddr);
+      if (this._reports.length) parts.push(this._reports.map(function(r) { return r.text; }).join(', '));
+      if (cas) parts.push(cas);
+      if (scale) parts.push(scale);
+      var lines = [header, parts.join(' / ')];
+      if (sig) lines.push(sig);
+      box.textContent = lines.join('\n');
+    } catch(e) { console.error('[dispatch.render]', e); }
+  },
+  addReport: function() {
+    try {
+      var ta = document.getElementById('reportContent');
+      if (!ta || !ta.value.trim()) { _ui.toast('내용을 입력하세요'); return; }
+      var now = new Date();
+      var time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+      this._rCount++;
+      var id = this._rCount;
+      this._reports.push({id:id, time:time, text:ta.value.trim()});
+      var list = document.getElementById('reportList');
+      if (list) {
+        var div = document.createElement('div'); div.className = 'report-item'; div.id = 'ri-' + id;
+        var s1 = document.createElement('span'); s1.style.cssText = 'color:var(--orange);font-family:var(--mono);flex-shrink:0;'; s1.textContent = time;
+        var s2 = document.createElement('span'); s2.style.flex = '1'; s2.textContent = ta.value.trim();
+        var db = document.createElement('button'); db.textContent = '✕'; db.style.cssText = 'font-size:13px;background:none;border:none;cursor:pointer;flex-shrink:0;color:var(--ink4);';
+        db.onclick = (function(rid) { return function() { APP.dispatch.removeReport(rid); }; })(id);
+        div.appendChild(s1); div.appendChild(s2); div.appendChild(db); list.appendChild(div);
+      }
+      _ui.show('reportListCard');
+      ta.value = ''; this.render(); _ui.toast('상황이 추가됐습니다');
+    } catch(e) { console.error('[dispatch.addReport]', e); }
+  },
+  removeReport: function(id) {
+    try {
+      this._reports = this._reports.filter(function(r) { return r.id !== id; });
+      var el = document.getElementById('ri-' + id); if (el) el.remove();
+      if (!this._reports.length) _ui.hide('reportListCard');
+      this.render();
+    } catch(e) { console.error('[dispatch.removeReport]', e); }
+  },
+  clearReports: function() {
+    try {
+      this._reports = []; this._rCount = 0;
+      var el = document.getElementById('reportContent'); if (el) el.value = '';
+      var list = document.getElementById('reportList'); if (list) list.innerHTML = '';
+      _ui.hide('reportListCard'); this.render();
+    } catch(e) { console.error('[dispatch.clearReports]', e); }
+  },
+  reset: function() {
+    var self = this;
+    _ui.confirm('출동보고 초기화', '작성 중인 내용이 모두 삭제됩니다.', function() {
+      try {
+        self.clearReports();
+        ['dispLocation','fireObject','fireScale','fireCasualty','sigName','receiptNo'].forEach(function(id) { _ui.setVal(id,''); });
+        document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('on'); });
+        self._type = 'fire'; self._stage = '출동';
+        document.querySelectorAll('.stage-btn').forEach(function(b) { b.classList.remove('on'); if (b.dataset.stage === '출동') b.classList.add('on'); });
+        var box = document.getElementById('outputBox'); if (box) box.textContent = '정보를 입력하면 자동 생성됩니다.';
+        _ui.toast('초기화됐습니다');
+      } catch(e) { console.error('[dispatch.reset cb]', e); }
+    });
+  },
+  send: async function() {
+    try {
+      var box = document.getElementById('outputBox');
+      if (!box || box.textContent.indexOf('정보를 입력하면') >= 0) { _ui.toast('보고서를 먼저 작성하세요'); return; }
+      var ok = await _ui.share(box.textContent, '📨 전파됐습니다');
+      if (ok) {
+        try {
+          var h = _store.getJSON('dispatchHistory', []);
+          h.unshift({text:box.textContent, time:new Date().toISOString()});
+          if (h.length > 50) h.splice(50);
+          _store.setJSON('dispatchHistory', h);
+        } catch(e) { console.warn('[dispatch.send history]', e); }
+      }
+    } catch(e) { console.error('[dispatch.send]', e); }
+  },
+  copyText: async function() {
+    try {
+      var box = document.getElementById('outputBox');
+      if (box) await _ui.copy(box.textContent);
+    } catch(e) { console.error('[dispatch.copyText]', e); }
+  }
+};
+
+/* ── spell: 맞춤법 검사 ───────────────────────────────────────────── */
+APP.spell = {
+  _cache: {},
+  toggle: function() {
+    try {
+      var sec = document.getElementById('spellSection'); if (!sec) return;
+      var hidden = sec.style.display === 'none' || !sec.style.display;
+      sec.style.display = hidden ? 'block' : 'none';
+      if (hidden) this.load();
+    } catch(e) { console.error('[spell.toggle]', e); }
+  },
+  load: function() {
+    try {
+      var out = document.getElementById('outputBox');
+      var inp = document.getElementById('spellInput');
+      if (out && inp) inp.value = out.textContent;
+    } catch(e) { console.error('[spell.load]', e); }
+  },
+  run: async function() {
+    var btn = document.getElementById('spellRunBtn');
+    var status = document.getElementById('spellStatus');
+    var resultWrap = document.getElementById('spellResultWrap');
+    var corrEl = document.getElementById('spellCorrected');
+    try {
+      var inp = document.getElementById('spellInput');
+      if (!inp || !inp.value.trim()) { _ui.toast('검사할 텍스트가 없습니다'); return; }
+      var text = inp.value.trim();
+      // 캐시 히트
+      if (this._cache[text]) {
+        if (corrEl) corrEl.textContent = this._cache[text];
+        if (resultWrap) resultWrap.style.display = 'block';
+        _ui.toast('✅ 캐시에서 불러왔습니다'); return;
+      }
+      var key = _apiKey.get();
+      if (!key) { _ui.toast('설정에서 Gemini API Key를 입력해주세요'); return; }
+      if (btn) btn.disabled = true;
+      if (status) status.style.display = 'block';
+      if (resultWrap) resultWrap.style.display = 'none';
+
+      var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n' + text;
+      var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
+      });
+      if (!res.ok) {
+        var errData = await res.json().catch(function(){return{};});
+        var errInfo = _ui.parseApiError(errData, res.status);
+        throw new Error(errInfo.msg);
+      }
+      var data = await res.json();
+      if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인해주세요.');
+      var parsed = _ui.safeJSON((data.candidates[0].content.parts[0].text || ''), {});
+      var corrected = parsed.corrected || '';
+      if (corrected) {
+        this._cache[text] = corrected;
+        try { APP.usage.record('spell'); } catch(ue) {}  // 사용량 기록
+      }
+      if (corrEl) corrEl.textContent = corrected || '(교정 결과 없음)';
+      if (resultWrap) resultWrap.style.display = 'block';
+    } catch(e) {
+      _ui.toast('❌ 검사 실패: ' + String(e.message).slice(0,40));
+      console.error('[spell.run]', e);
+    } finally {
+      if (btn) btn.disabled = false;
+      if (status) status.style.display = 'none';
+    }
+  },
+  sendCorrected: async function() {
+    try {
+      var el = document.getElementById('spellCorrected');
+      if (!el || !el.textContent.trim()) { _ui.toast('교정된 텍스트가 없습니다'); return; }
+      await _ui.share(el.textContent, '📨 전파됐습니다');
+    } catch(e) { console.error('[spell.sendCorrected]', e); }
+  },
+  copyCorrected: async function() {
+    try {
+      var el = document.getElementById('spellCorrected');
+      if (el) await _ui.copy(el.textContent);
+    } catch(e) { console.error('[spell.copyCorrected]', e); }
+  }
+};
+
+/* ── map: 지도 탭 ─────────────────────────────────────────────────── */
+APP.map = {
+  updateLinks: function() {
+    try {
+      var addr = _ui.val('dispLocation');
+      var ids = ['kakaoLoc','naverLoc','tmapLoc'];
+      var banner = document.getElementById('mapAddrBanner');
+      var addrText = document.getElementById('mapAddrText');
+      if (addr) {
+        if (banner) banner.style.display = 'block';
+        if (addrText) addrText.textContent = addr;
+        ids.forEach(function(id) { var el = document.getElementById(id); if (el) { el.textContent = addr; el.style.color = 'var(--orange)'; } });
+      } else {
+        if (banner) banner.style.display = 'none';
+        ids.forEach(function(id) { var el = document.getElementById(id); if (el) { el.textContent = '주소를 입력하면 연결됩니다'; el.style.color = ''; } });
+      }
+    } catch(e) { console.error('[map.updateLinks]', e); }
+  },
+  _open: function(url) {
+    try { window.open(url, '_blank'); } catch(e) { _ui.toast('⚠️ 지도 앱을 열 수 없습니다'); }
+  },
+  openKakao: function() {
+    var a = _ui.val('dispLocation'); if (!a) { _ui.toast('출동 탭에서 주소를 먼저 입력하세요'); return; }
+    this._open('https://map.kakao.com/link/search/' + encodeURIComponent(a));
+  },
+  openNaver: function() {
+    var a = _ui.val('dispLocation'); if (!a) { _ui.toast('출동 탭에서 주소를 먼저 입력하세요'); return; }
+    this._open('https://map.naver.com/v5/search/' + encodeURIComponent(a));
+  },
+  openTmap: function() {
+    var a = _ui.val('dispLocation'); if (!a) { _ui.toast('출동 탭에서 주소를 먼저 입력하세요'); return; }
+    this._open('https://tmap.life/search?keyword=' + encodeURIComponent(a));
+  }
+};
+
+/* ── contacts: 연락처 탭 ──────────────────────────────────────────── */
+APP.contacts = {
+  _data: [],
+  _tab : 'dispatch',
+
+  load: function() {
+    try { this._data = _store.getJSON('userContacts', []); }
+    catch(e) { this._data = []; }
+    // ID 정합성 보장
+    var changed = false;
+    this._data.forEach(function(c) {
+      if (!c.id) { c.id = Date.now() + '_' + Math.random().toString(36).slice(2,7); changed = true; }
+    });
+    if (changed) _store.setJSON('userContacts', this._data);
+    this.render();
+  },
+  save_data: function() {
+    try { _store.setJSON('userContacts', this._data); } catch(e) { console.error('[contacts.save_data]', e); }
+  },
+  switchTab: function(tab) {
+    try {
+      this._tab = tab;
+      ['dispatch','agency'].forEach(function(t) {
+        var panel = document.getElementById('ctPanel-' + t);
+        var seg   = document.getElementById('ctSeg-' + t);
+        if (panel) panel.style.display = t === tab ? 'block' : 'none';
+        if (seg)   seg.classList.toggle('on', t === tab);
+      });
+      this.hideForm();
+    } catch(e) { console.error('[contacts.switchTab]', e); }
+  },
+  render: function() {
+    try {
+      var self = this;
+      ['dispatch','agency'].forEach(function(group) {
+        var list = document.getElementById('ctList-' + group); if (!list) return;
+        var items = self._data.filter(function(c) { return c.group === group; });
+        if (!items.length) { list.innerHTML = '<div class="empty">📭 ' + (group === 'dispatch' ? '출동대' : '유관기관') + ' 연락처가 없습니다</div>'; return; }
+        list.innerHTML = items.map(function(c) {
+          var safeId  = _ui.escHtml(String(c.id || ''));
+          var safeTel = String(c.tel || '').replace(/[^0-9\-+\s]/g,'');
+          return '<div class="contact-item">' +
+            '<div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">' + (group === 'dispatch' ? '🚒' : '🏛️') + '</div>' +
+            '<div style="flex:1;min-width:0;"><div class="contact-name">' + _ui.escHtml(c.name) + '</div><div class="contact-tel">' + _ui.escHtml(c.tel) + '</div>' + (c.memo ? '<div class="contact-memo">' + _ui.escHtml(c.memo) + '</div>' : '') + '</div>' +
+            '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+            '<a class="contact-call" href="tel:' + safeTel + '">📞</a>' +
+            '<button class="contact-edit" onclick="APP.contacts.edit(\'' + safeId + '\')">✏️</button>' +
+            '<button class="contact-del" onclick="APP.contacts.del(\'' + safeId + '\')">🗑️</button>' +
+            '</div></div>';
+        }).join('');
+      });
+    } catch(e) { console.error('[contacts.render]', e); }
+  },
+  showForm: function(group) {
+    try {
+      this._tab = group || this._tab;
+      _ui.setVal('editContactId', ''); _ui.setVal('newName',''); _ui.setVal('newTel',''); _ui.setVal('newMemo','');
+      var badge = document.getElementById('contactFormBadge');
+      if (badge) badge.textContent = this._tab === 'dispatch' ? '출동대 연락처 추가' : '유관기관 연락처 추가';
+      var saveBtn = document.getElementById('contactSaveBtn'); if (saveBtn) saveBtn.textContent = '저장';
+      _ui.show('contactForm');
+      setTimeout(function() { var el = document.getElementById('newName'); if (el) el.focus(); }, 100);
+    } catch(e) { console.error('[contacts.showForm]', e); }
+  },
+  hideForm: function() {
+    try { _ui.hide('contactForm'); _ui.setVal('editContactId',''); } catch(e) {}
+  },
+  edit: function(id) {
+    try {
+      var c = this._data.find(function(x) { return String(x.id) === String(id); }); if (!c) return;
+      _ui.setVal('editContactId', id); _ui.setVal('newName', c.name || ''); _ui.setVal('newTel', c.tel || ''); _ui.setVal('newMemo', c.memo || '');
+      var badge = document.getElementById('contactFormBadge'); if (badge) badge.textContent = '연락처 수정';
+      var saveBtn = document.getElementById('contactSaveBtn'); if (saveBtn) saveBtn.textContent = '수정 저장';
+      _ui.show('contactForm');
+      var f = document.getElementById('contactForm'); if (f) f.scrollIntoView({behavior:'smooth', block:'nearest'});
+    } catch(e) { console.error('[contacts.edit]', e); }
+  },
+  save: function() {
+    try {
+      var name = _ui.val('newName'), tel = _ui.val('newTel'), memo = _ui.val('newMemo');
+      if (!name || !tel) { _ui.toast('이름과 전화번호를 입력하세요'); return; }
+      var editId = _ui.val('editContactId');
+      if (editId) {
+        var idx = this._data.findIndex(function(c) { return String(c.id) === String(editId); });
+        if (idx > -1) { this._data[idx].name = name; this._data[idx].tel = tel; this._data[idx].memo = memo; }
+        _ui.toast('연락처가 수정됐습니다');
+      } else {
+        this._data.push({id: Date.now() + '_' + Math.random().toString(36).slice(2,7), name:name, tel:tel, memo:memo, group:this._tab});
+        _ui.toast('연락처가 저장됐습니다');
+      }
+      this.save_data(); this.render(); this.hideForm();
+    } catch(e) { console.error('[contacts.save]', e); }
+  },
+  del: function(id) {
+    var self = this;
+    _ui.confirm('연락처 삭제', '이 연락처를 삭제하시겠습니까?', function() {
+      try {
+        self._data = self._data.filter(function(c) { return String(c.id) !== String(id); });
+        self.save_data(); self.render(); _ui.toast('삭제됐습니다');
+      } catch(e) { console.error('[contacts.del cb]', e); }
+    }, true);
+  }
+};
+
+/* ── report: 보고서 탭 ────────────────────────────────────────────── */
+APP.report = {
+  _type       : 'fire',
+  _page       : 0,
+  _scanPhotos : [],
+  _mapPhoto   : null,
+  _scenePhotos: [],
+  _bldgCount  : 0,
+  _tlCount    : 0,
+  // ── 효율성 v6 ──
+  _photoModes : ['p119'],          // 선택된 사진 종류 (복수)
+  _scanCache  : {},                // 캐시: cacheKey → parsed 결과
+  _lastCacheKey: null,             // 마지막 분석 캐시키
+  _lastParsed : null,              // 마지막 분석 결과 (캐시 적용용)
+
+  // ── ① 문서 종류 토글 (P119 / 건축물대장만) ──────────────────
+  togglePhotoMode: function(mode, btn) {
+    try {
+      // scene 모드는 더 이상 AI 분석 대상이 아님 (현장사진은 보고서 첨부 전용)
+      if (mode === 'scene') return;
+      var idx = this._photoModes.indexOf(mode);
+      if (idx >= 0) {
+        if (this._photoModes.length === 1) { _ui.toast('최소 1개는 선택해야 합니다'); return; }
+        this._photoModes.splice(idx, 1);
+        if (btn) btn.classList.remove('on');
+      } else {
+        this._photoModes.push(mode);
+        if (btn) btn.classList.add('on');
+      }
+      this._updatePhotoModeHint();
+    } catch(e) { console.error('[report.togglePhotoMode]', e); }
+  },
+  _updatePhotoModeHint: function() {
+    try {
+      var modes = this._photoModes;
+      var hintEl = document.getElementById('photoModeHint');
+      var guideEl = document.getElementById('photoQualityGuide');
+
+      // 추출 항목 안내
+      var lines = [];
+      if (modes.indexOf('p119') >= 0) {
+        lines.push('🖥️ P119 → 보고제목 · 재난명 · 일시 · 장소 · 주요내용 · 인명피해 · 재산피해 · 인원 · 장비 · 주요조치사항(타임라인)');
+      }
+      if (modes.indexOf('bldg') >= 0) {
+        lines.push('🏗️ 건축물대장 → 층별 구분 · 구조 · 면적(㎡) · 용도 · 비고');
+      }
+      if (hintEl) hintEl.textContent = lines.join('\n');
+
+      // 촬영 품질 가이드
+      var guides = [];
+      if (modes.indexOf('p119') >= 0) {
+        guides.push('📌 P119: 화면 전체가 보이게, 텍스트가 선명하게 캡처해주세요. 스크린샷이 가장 좋습니다.');
+      }
+      if (modes.indexOf('bldg') >= 0) {
+        guides.push('📌 건축물대장: 건축물 현황 표 전체가 잘리지 않게 찍어주세요. 기울지 않게 수평으로 촬영하면 정확도가 높아집니다.');
+      }
+      if (guideEl) {
+        if (guides.length) { guideEl.textContent = guides.join('\n'); guideEl.style.display = 'block'; }
+        else { guideEl.style.display = 'none'; }
+      }
+    } catch(e) { console.warn('[report._updatePhotoModeHint]', e); }
+  },
+
+  // ── ② 캐시키 생성 (파일명+크기+수정일 기반) ──────────────────
+  _makeCacheKey: function(files, modes) {
+    try {
+      var filePart = Array.from(files).map(function(f) {
+        return f.name + '_' + f.size + '_' + (f.lastModified || 0);
+      }).sort().join('|');
+      return filePart + '::' + modes.slice().sort().join(',');
+    } catch(e) { return ''; }
+  },
+
+  // ── ③ 문서별 초정밀 프롬프트 (실제 화면 구조 기반) ──────────
+  _buildPrompt: function(modes) {
+    var hasp119 = modes.indexOf('p119') >= 0;
+    var hasBldg = modes.indexOf('bldg') >= 0;
+
+    // ══════════════════════════════════════════════════════════
+    // 공통 최상위 지시
+    // ══════════════════════════════════════════════════════════
+    var base =
+      '당신은 대한민국 소방청 문서 OCR 전문가입니다.\n' +
+      '업로드된 이미지에서 텍스트를 정확히 읽어 지정된 JSON 형식으로만 반환하세요.\n\n' +
+      '【절대 규칙 — 반드시 준수】\n' +
+      '1. 이미지에서 눈에 보이는 텍스트만 그대로 추출합니다. 절대 추측·보완·생략하지 마세요.\n' +
+      '2. 읽을 수 없거나 해당 문서가 없는 항목은 반드시 null을 반환합니다.\n' +
+      '3. 숫자 필드(인원·장비 수량 등)는 숫자만 반환합니다. 단위(명·대)는 제외합니다.\n' +
+      '4. 응답은 JSON만 반환합니다. 설명·마크다운 코드블록·주석은 절대 포함하지 마세요.\n\n';
+
+    var sections = [];
+    var jsonShape = {};
+
+    // ══════════════════════════════════════════════════════════
+    // P119 현장지원시스템 화면 — 실제 레이아웃 기반
+    // ══════════════════════════════════════════════════════════
+    if (hasp119) {
+      sections.push(
+        '【P119 현장지원시스템 — 화면 구조 설명】\n' +
+        '화면 상단 제목 표시줄: "P119 현장지원시스템" 로고가 있습니다.\n' +
+        '화면은 크게 좌측 패널(사건개요·피해상황·자원동원)과 우측 패널(주요조치사항)으로 나뉩니다.\n\n' +
+
+        '▶ 좌측 패널 — 사건개요 섹션 (화면 좌상단 "■ 사건개요" 헤더 아래)\n' +
+        '  · "보고제목" 행 오른쪽 값 → reportTitle (예: [1보] 음암급차 소독등(1보))\n' +
+        '  · "보고일시" 행 오른쪽 값 → reportDatetime (예: 2026-04-24 12:27)\n' +
+        '  · "재 난 명" 행 오른쪽 값 → disasterType (예: [기타]업무운행)\n' +
+        '  · "일    시" 행 오른쪽 값 → incidentDatetime (예: 2026.04.24 12:23:55)\n' +
+        '  · "장    소" 행 오른쪽 값 → location (전체 주소 그대로, 예: 충청남도 서산시 예천동 496-16)\n' +
+        '  · "주요내용" 행 오른쪽 값 → mainContent (예: 음암급차 / 업무운행 / 소독 및 산소충전)\n\n' +
+
+        '▶ 좌측 패널 — 피해상황 섹션 ("■ 피해상황" 헤더 아래)\n' +
+        '  · "인명피해" 행: "사망:N명 / 부상:N명 / 실종:N명 / 총:N명" 형식\n' +
+        '    → casualty.death (사망 수치만), casualty.injured (부상 수치만), casualty.missing (실종 수치만)\n' +
+        '    → 값이 0이면 0을 반환, 텍스트가 없으면 null\n' +
+        '  · "재산피해" 행: "피해금액:N원 / 피해면적:N(㎡) / 피해임야:N(ha)" 형식\n' +
+        '    → property.damageAmount, property.damageArea, property.damageField\n\n' +
+
+        '▶ 좌측 패널 — 자원동원 섹션 ("■ 자원동원" 헤더 아래)\n' +
+        '  · "인    원" 행 첫 번째 줄: 총 인원 수 → mobilization.totalPersonnel (숫자만)\n' +
+        '  · "인    원" 행 괄호 안 상세: "(소방 N명, 경찰 N명, ...)" → mobilization.personnelDetail (괄호 제외 텍스트)\n' +
+        '  · "장    비" 행 첫 번째 줄: "N대 (소방 N대 / 유관기관 N대)" → mobilization.totalVehicles (앞 숫자만)\n' +
+        '  · 소방 차량 상세 줄: "지휘 N, 펌프 N, ..." → mobilization.fireVehicleDetail\n' +
+        '  · 유관기관 상세 줄: "경찰 N, 군인 N, ..." → mobilization.agencyDetail\n\n' +
+
+        '▶ 우측 패널 — 주요조치사항 섹션 ("■ 주요조치사항" 헤더 아래)\n' +
+        '  표 형식: 왼쪽 열 "시 간", 오른쪽 열 "주요내용"\n' +
+        '  각 행을 순서대로 읽어 배열로 반환합니다.\n' +
+        '  · time: "2026-04-24 12:23:55" 형식 그대로 (또는 HH:MM:SS 부분만)\n' +
+        '  · content: 주요내용 전체 텍스트 그대로\n' +
+        '  타임라인이 없으면 빈 배열 []'
+      );
+      jsonShape.p119 = {
+        reportTitle: null,
+        reportDatetime: null,
+        disasterType: null,
+        incidentDatetime: null,
+        location: null,
+        mainContent: null,
+        casualty: { death: null, injured: null, missing: null },
+        property: { damageAmount: null, damageArea: null, damageField: null },
+        mobilization: {
+          totalPersonnel: null,
+          personnelDetail: null,
+          totalVehicles: null,
+          fireVehicleDetail: null,
+          agencyDetail: null
+        },
+        timeline: []
+      };
+    } else {
+      jsonShape.p119 = null;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // 건축물대장 — 실제 문서 구조 기반
+    // ══════════════════════════════════════════════════════════
+    if (hasBldg) {
+      sections.push(
+        '【일반건축물대장(갑) — 문서 구조 설명】\n' +
+        '문서 최상단에 "일반건축물대장(갑)" 제목이 있습니다.\n\n' +
+
+        '▶ 상단 기본정보 영역 (표 형태)\n' +
+        '  · "대지위치" 셀 → building.address (예: 충청남도 서산시 예천동)\n' +
+        '  · "지번" 셀 → building.lotNumber (예: 496-16 외 3필지)\n' +
+        '  · "주구조" 셀 → building.mainStructure (예: 철근콘크리트구조)\n' +
+        '  · "주용도" 셀 → building.mainUse (예: 업무시설)\n' +
+        '  · "층수" 셀: "지하: N층, 지상 N층" 형식 → building.floors_above (지상 숫자만), building.floors_below (지하 숫자만)\n' +
+        '  · "건축면적" 셀 오른쪽 숫자 → building.buildingArea (숫자만, 단위 제외)\n' +
+        '  · "연면적" 셀 오른쪽 숫자 → building.totalArea (숫자만)\n\n' +
+
+        '▶ 건축물 현황 표 (하단 표 — 핵심!)\n' +
+        '표 헤더: 구분 | 층별 | 구조 | 용도 | 면적(㎡) | 소유자 현황...\n' +
+        '각 데이터 행을 순서대로 읽어 floors 배열로 반환합니다.\n' +
+        '  · division: "구분" 열 값 (예: 주3, 부속)\n' +
+        '  · floor: "층별" 열 값 (예: 1층, 2층, 3층, 옥탑층)\n' +
+        '  · structure: "구조" 열 값 (예: 철근콘크리트구조)\n' +
+        '  · use: "용도" 열 값 (예: 공공업무시설, 근린생활시설)\n' +
+        '  · area: "면적(㎡)" 열 숫자값만 (예: 460, 103.6, 323.6)\n' +
+        '  · note: 비고 열 값 (없으면 null)\n' +
+        '  ※ "- 이하여백 -" 행은 포함하지 마세요.\n' +
+        '  ※ 면적 숫자는 소수점 포함하여 그대로 추출합니다.'
+      );
+      jsonShape.building = {
+        address: null,
+        lotNumber: null,
+        mainStructure: null,
+        mainUse: null,
+        floors_above: null,
+        floors_below: null,
+        buildingArea: null,
+        totalArea: null,
+        floors: []
+      };
+    } else {
+      jsonShape.building = null;
+    }
+
+    var prompt = base;
+    if (sections.length) {
+      prompt += '【분석 대상 문서】\n' + sections.join('\n\n─────────────────────────────────────\n\n') + '\n\n';
+    }
+    prompt += '【반환할 JSON 스키마 — 이 구조 그대로 반환】\n' + JSON.stringify(jsonShape, null, 2);
+    return prompt;
+  },
+
+  // ── 캐시 관련 공개 메서드 ─────────────────────────────────────
+  applyCached: function() {
+    try {
+      if (!this._lastParsed) { _ui.toast('적용할 캐시 결과가 없습니다'); return; }
+      this._applyAI(this._lastParsed);
+      this._showScanResult(this._lastParsed, true);
+      _ui.toast('⚡ 캐시 결과가 적용됐습니다');
+    } catch(e) { console.error('[report.applyCached]', e); }
+  },
+  clearCache: function() {
+    try {
+      _ui.hide('cacheNotice');
+      this._lastCacheKey = null;
+      this._lastParsed = null;
+      _ui.toast('🔄 캐시가 초기화됐습니다. 새로 분석을 시작하세요');
+    } catch(e) {}
+  },
+
+  setType: function(btn, type) {
+    try {
+      this._type = type;
+      document.querySelectorAll('.rpt-type-btn').forEach(function(b) { b.classList.remove('sel'); });
+      if (btn) btn.classList.add('sel');
+    } catch(e) { console.error('[report.setType]', e); }
+  },
+  goPage: function(page) {
+    try {
+      document.querySelectorAll('.rpt-page').forEach(function(p, i) { p.classList.toggle('on', i === page); });
+      this._page = page;
+      window.scrollTo({top:0, behavior:'smooth'});
+      if (page === 2) this.renderPreview();
+    } catch(e) { console.error('[report.goPage]', e); }
+  },
+
+  /* 건물 현황 */
+  initBldgTable: function() {
+    try { this.addBldgRow({floor:'',struct:'',size:'',use:'',note:''}); } catch(e) {}
+  },
+  addBldgRow: function(data) {
+    try {
+      data = data || {}; this._bldgCount++;
+      var tbody = document.getElementById('bldgBody'); if (!tbody) return;
+      var tr = document.createElement('tr');
+      var cols = [
+        {v:data.floor, ph:'1층'}, {v:data.struct, ph:'일반철골구조'},
+        {v:data.size,  ph:'393.9'}, {v:data.use, ph:'체육관'},
+        {v:data.note,  ph:'화재발생', isNote:true}
+      ];
+      var self = this;
+      cols.forEach(function(col) {
+        var td = document.createElement('td');
+        var inp = document.createElement('input');
+        inp.value = col.v || ''; inp.placeholder = col.ph;
+        if (col.isNote) {
+          inp.addEventListener('input', function() { self._updateFireRow(inp); });
+        }
+        td.appendChild(inp); tr.appendChild(td);
+      });
+      if (data.note && data.note.indexOf('화재') >= 0) {
+        tr.querySelectorAll('td:first-child,td:last-child').forEach(function(td) { td.className = 'fire-cell'; });
+      }
+      tbody.appendChild(tr);
+    } catch(e) { console.error('[report.addBldgRow]', e); }
+  },
+  _updateFireRow: function(inp) {
+    try {
+      var tr = inp.closest('tr'); if (!tr) return;
+      var isFire = inp.value.indexOf('화재') >= 0;
+      var cells = tr.querySelectorAll('td');
+      if (cells[0]) cells[0].className = isFire ? 'fire-cell' : '';
+      if (cells[4]) cells[4].className = isFire ? 'fire-cell' : '';
+    } catch(e) {}
+  },
+
+  /* 타임라인 */
+  initTimeline: function() {
+    try {
+      [{time:'12:07',content:'신고접수'},
+       {time:'12:14',content:'선착대(예천센터), 현장지휘팀 현장도착'},
+       {time:'12:24',content:'초진'},
+       {time:'12:26',content:'완진'}].forEach(function(d) { APP.report.addTlItem(d); });
+    } catch(e) {}
+  },
+  addTlItem: function(data) {
+    try {
+      data = data || {}; this._tlCount++;
+      var list = document.getElementById('tlList'); if (!list) return;
+      var id = 'tl-' + this._tlCount;
+      var div = document.createElement('div'); div.className = 'tl-item'; div.id = id;
+      var td = document.createElement('div'); td.className = 'tl-time';
+      var tinp = document.createElement('input'); tinp.value = data.time || ''; tinp.placeholder = '12:07'; td.appendChild(tinp);
+      var cd = document.createElement('div'); cd.className = 'tl-content';
+      var cinp = document.createElement('input'); cinp.value = data.content || ''; cinp.placeholder = '신고접수'; cd.appendChild(cinp);
+      var del = document.createElement('button'); del.className = 'tl-del'; del.textContent = '✕';
+      var tid = id; del.onclick = function() { var el = document.getElementById(tid); if (el) el.remove(); };
+      div.appendChild(td); div.appendChild(cd); div.appendChild(del);
+      list.appendChild(div);
+    } catch(e) { console.error('[report.addTlItem]', e); }
+  },
+
+  /* 파일 처리 */
+  handleFiles: function(files) {
+    try {
+      this._scanPhotos = Array.from(files || []).slice(0, 10);
+      var row = document.getElementById('rptThumbRow');
+      if (row) {
+        row.innerHTML = '';
+        this._scanPhotos.forEach(function(f) {
+          var img = document.createElement('img'); img.className = 'thumb'; img.src = _blob.create(f); row.appendChild(img);
+        });
+      }
+      var btn = document.getElementById('rptAiBtn'); if (btn) btn.disabled = !this._scanPhotos.length;
+      _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('cacheNotice');
+
+      // ② 캐시 체크 — 동일 파일+모드 조합이면 캐시 알림
+      if (this._scanPhotos.length) {
+        var key = this._makeCacheKey(this._scanPhotos, this._photoModes);
+        if (key && this._scanCache[key]) {
+          this._lastCacheKey = key;
+          this._lastParsed = this._scanCache[key];
+          _ui.show('cacheNotice');
+          if (btn) btn.disabled = false;
+        }
+      }
+    } catch(e) { console.error('[report.handleFiles]', e); }
+  },
+  handleMapFile: function(files) {
+    try {
+      if (!files || !files.length) return;
+      this._mapPhoto = files[0];
+      var thumb = document.getElementById('mapThumb');
+      var wrap  = document.getElementById('mapThumbWrap');
+      var dz    = document.getElementById('mapDropZone');
+      if (thumb) thumb.src = _blob.create(this._mapPhoto);
+      if (wrap)  wrap.style.display = 'block';
+      if (dz)    dz.style.display = 'none';
+      _ui.toast('위치도가 등록됐습니다');
+    } catch(e) { console.error('[report.handleMapFile]', e); }
+  },
+  removeMapPhoto: function() {
+    try {
+      this._mapPhoto = null;
+      _ui.hide('mapThumbWrap');
+      var dz = document.getElementById('mapDropZone'); if (dz) dz.style.display = 'flex';
+      var fi = document.getElementById('mapFileInput'); if (fi) fi.value = '';
+    } catch(e) {}
+  },
+  handleSceneFiles: function(files) {
+    try {
+      this._scenePhotos = this._scenePhotos.concat(Array.from(files || [])).slice(0, 6);
+      this._renderSceneThumbs();
+      _ui.toast('현장사진 ' + this._scenePhotos.length + '장 등록됨');
+    } catch(e) { console.error('[report.handleSceneFiles]', e); }
+  },
+  _renderSceneThumbs: function() {
+    try {
+      var row = document.getElementById('sceneThumbRow'); if (!row) return; row.innerHTML = '';
+      var self = this;
+      this._scenePhotos.forEach(function(f, i) {
+        var wrap = document.createElement('div'); wrap.style.cssText = 'position:relative;flex-shrink:0;';
+        var img  = document.createElement('img');  img.src = _blob.create(f); img.style.cssText = 'width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--border);display:block;';
+        var del  = document.createElement('button'); del.textContent = '✕'; del.style.cssText = 'position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;cursor:pointer;';
+        del.onclick = (function(idx) { return function() { self._scenePhotos.splice(idx,1); self._renderSceneThumbs(); }; })(i);
+        wrap.appendChild(img); wrap.appendChild(del); row.appendChild(wrap);
+      });
+    } catch(e) {}
+  },
+
+  /* AI 분석 */
+  _resizeImg: function(file) {
+    return new Promise(function(resolve) {
+      try {
+        var reader = new FileReader();
+        reader.onerror = function() { resolve({dataUrl:null, origSize:file.size, newSize:file.size, resized:false}); };
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onerror = function() { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); };
+          img.onload = function() {
+            var MAX = 1280, w = img.naturalWidth, h = img.naturalHeight;
+            if (w <= MAX && h <= MAX) { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); return; }
+            var scale = MAX / Math.max(w,h), nw = Math.round(w*scale), nh = Math.round(h*scale);
             try {
-              _apiKey.clear();
-  교체:     lock: function() {
-              _debug.clear();   // ← 잠금 시 로그 초기화
-              try {
-                _apiKey.clear();
+              var c = document.createElement('canvas'); c.width = nw; c.height = nh;
+              var ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+              ctx.drawImage(img, 0, 0, nw, nh);
+              var dataUrl = c.toDataURL('image/jpeg', 0.90);
+              resolve({dataUrl:dataUrl, origSize:file.size, newSize:Math.round((dataUrl.length-22)*3/4), resized:true});
+            } catch(ce) { resolve({dataUrl:e.target.result, origSize:file.size, newSize:file.size, resized:false}); }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } catch(e) { resolve({dataUrl:null, origSize:file.size, newSize:file.size, resized:false}); }
+    });
+  },
+  runAI: async function() {
+    var btn  = document.getElementById('rptAiBtn');
+    var prog = document.getElementById('rptProgress');
+    var bar  = document.getElementById('rptProgressBar');
+    var sub  = document.getElementById('rptProgressSub');
+    var pint;
+    try {
+      if (!this._scanPhotos.length) { _ui.toast('사진을 먼저 업로드하세요'); return; }
+      var key = _apiKey.get(); if (!key) { _ui.toast('설정 탭에서 Gemini API Key를 먼저 입력해주세요'); return; }
 
-  ★ 4-C. auth.checkSettingsLock 성공 직후
-  찾기:   _ui.hide('settingsLock');
-            _ui.show('settingsContent');
-  교체:   _ui.hide('settingsLock');
-            _ui.show('settingsContent');
-            // 디버그 토글 버튼 표시
-            var dw=document.getElementById('debugToggleWrap');
-            if(dw) dw.style.display='block';
-            _debug.info('Auth','설정 탭 잠금 해제됨');
+      // ② 캐시 히트 — API 호출 없이 바로 적용
+      var cacheKey = this._makeCacheKey(this._scanPhotos, this._photoModes);
+      if (cacheKey && this._scanCache[cacheKey]) {
+        this._lastParsed = this._scanCache[cacheKey];
+        this._applyAI(this._lastParsed);
+        this._showScanResult(this._lastParsed, true);
+        _ui.toast('⚡ 캐시에서 즉시 적용됐습니다 (API 호출 없음)', 3000);
+        return;
+      }
 
-  ★ 4-D. report.runAI — API 호출 전
-  찾기:   var res = await fetch('https://generativelanguage
-  교체:   _debug.info('AI분석','Gemini API 호출 시작','이미지 '+imgParts.length+'장 · 모드: '+APP.report._photoModes.join('+'));
-            var res = await fetch('https://generativelanguage
+      if (btn) btn.disabled = true;
+      _ui.hide('cacheNotice');
+      if (prog) prog.style.display = 'block';
+      _ui.hide('rptScanDone'); _ui.hide('rptScanResult');
 
-  ★ 4-E. report.runAI — API 응답 성공 직후 (res.ok 확인 후)
-  찾기:   var data = await res.json();
-            if (!data.candidates
-  교체:   _debug.ok('AI분석','API 응답 수신','HTTP '+res.status);
-            var data = await res.json();
-            if (!data.candidates
+      // 진행 표시 — 선택된 모드에 맞는 메시지
+      var progVal = 0;
+      var modeNames = {p119:'P119 텍스트', bldg:'건축물대장', scene:'현장사진'};
+      var msgs = this._photoModes.map(function(m) { return (modeNames[m]||m) + ' 분석 중...'; });
+      msgs.push('데이터 정합성 검증 중...', '폼 항목 매핑 중...');
+      var msgIdx = 0;
+      pint = setInterval(function() {
+        progVal = Math.min(progVal + 1.1, 90);
+        if (bar) bar.style.width = progVal + '%';
+        if (progVal % 20 < 1.5 && msgIdx < msgs.length) { if (sub) sub.textContent = msgs[msgIdx++]; }
+      }, 200);
 
-  ★ 4-F. report.runAI — JSON 파싱 직후
-  찾기:   var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
-  교체:   var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
-            var _p119keys = Object.keys(parsed.p119||{}).filter(function(k){return parsed.p119[k]!==null;});
-            _debug.ok('AI분석','JSON 파싱 완료','P119 '+_p119keys.length+'항목 · 건물층 '+(parsed.building&&parsed.building.floors?parsed.building.floors.length:0)+'개');
+      // 이미지 최적화
+      if (sub) sub.textContent = '이미지 최적화 중...';
+      var resized = await Promise.all(this._scanPhotos.map(function(f) { return APP.report._resizeImg(f); }));
+      var imgParts = resized.filter(function(r) { return r.dataUrl; }).map(function(r, i) {
+        return {inlineData:{mimeType: r.resized ? 'image/jpeg' : (APP.report._scanPhotos[i] ? APP.report._scanPhotos[i].type : 'image/jpeg'), data: r.dataUrl.split(',')[1]}};
+      });
+      if (!imgParts.length) throw new Error('처리 가능한 이미지가 없습니다');
 
-  ★ 4-G. report.runAI — catch 블록
-  찾기:   } catch(e) {
-              if (pint) clearInterval(pint);
-              if (prog) prog.style.display = 'none';
-              if (bar) bar.style.width = '0%';
-              _ui.toast('❌ ' + String(e.message)
-  교체:   } catch(e) {
-              _debug.err('AI분석','분석 실패',e.message);
-              if (pint) clearInterval(pint);
-              if (prog) prog.style.display = 'none';
-              if (bar) bar.style.width = '0%';
-              _ui.toast('❌ ' + String(e.message)
+      // ① 모드별 전용 프롬프트 생성
+      var prompt = this._buildPrompt(this._photoModes);
+      var parts  = [{text: prompt}].concat(imgParts);
 
-  ★ 4-H. report._applyAI — 함수 맨 앞
-  찾기:   _applyAI: function(parsed) {
-            try {
-              var p = parsed.p119 || {}
-  교체:   _applyAI: function(parsed) {
-            _debug.info('AI분석','폼 자동채우기 시작');
-            try {
-              var p = parsed.p119 || {}
+      var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({contents:[{parts:parts}], generationConfig:{temperature:0.0, maxOutputTokens:4096, responseMimeType:'application/json'}})
+      });
+      if (!res.ok) {
+        var errData = await res.json().catch(function(){return{};});
+        var errInfo = _ui.parseApiError(errData, res.status);
+        throw new Error(errInfo.msg + (errInfo.retry ? '\n(잠시 후 다시 시도할 수 있습니다)' : ''));
+      }
+      var data = await res.json();
+      if (!data.candidates || !data.candidates[0]) {
+        // finishReason 확인 (SAFETY, MAX_TOKENS 등)
+        var reason = data.candidates && data.candidates[0] && data.candidates[0].finishReason;
+        if (reason === 'SAFETY') throw new Error(_ui._API_ERRORS['SAFETY'].msg);
+        throw new Error('AI 응답이 비어있습니다. API Key 또는 할당량을 확인해주세요.');
+      }
 
-  ★ 4-I. report._applyAI — 함수 끝 (banner 표시 직후)
-  찾기:   var banner = document.getElementById('aiFillBanner');
-            if (banner) banner.style.display = 'flex';
-          } catch(e) { console.error('[report._applyAI]', e); }
-  교체:   var banner = document.getElementById('aiFillBanner');
-            if (banner) banner.style.display = 'flex';
-            _debug.ok('AI분석','폼 채우기 완료');
-          } catch(e) {
-            _debug.err('AI분석','폼 채우기 실패',e.message);
-            console.error('[report._applyAI]', e);
+      var rawText = (data.candidates[0].content.parts[0].text || '');
+      var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
+
+      // ④ 부분 적용 보장 + null 정합성 처리
+      parsed = this._sanitizeParsed(parsed);
+
+      clearInterval(pint); pint = null;
+      if (bar) bar.style.width = '100%';
+
+      // ② 캐시 저장
+      if (cacheKey) {
+        this._scanCache[cacheKey] = parsed;
+        this._lastCacheKey = cacheKey;
+      }
+      this._lastParsed = parsed;
+      try { APP.usage.record('aiScan'); } catch(ue) {}  // 사용량 기록
+
+      // 결과 표시 (약간의 딜레이로 진행바 완료 느낌)
+      var self = this;
+      setTimeout(function() {
+        try {
+          if (prog) prog.style.display = 'none';
+          self._applyAI(parsed);
+          self._showScanResult(parsed, false);
+          var filled = self._countFilled(parsed);
+          _ui.toast('✅ 분석 완료 — ' + filled + '개 항목 추출됨', 3500);
+        } catch(e2) { console.error('[runAI result cb]', e2); }
+      }, 350);
+
+    } catch(e) {
+      if (pint) clearInterval(pint);
+      if (prog) prog.style.display = 'none';
+      if (bar) bar.style.width = '0%';
+      _ui.toast('❌ ' + String(e.message).slice(0, 60), 5000);
+      console.error('[report.runAI]', e);
+    } finally {
+      if (btn) btn.disabled = !this._scanPhotos.length;
+    }
+  },
+
+  // ④ 파싱 결과 정합성 검증
+  _sanitizeParsed: function(parsed) {
+    try {
+      var p = parsed.p119 || {};
+      var b = parsed.building || {};
+      // 인명피해 숫자 검증
+      var cas = p.casualty || {};
+      ['death','injured','missing'].forEach(function(k) {
+        var v = cas[k];
+        if (v !== null && v !== undefined) {
+          var n = parseInt(v);
+          if (isNaN(n) || n < 0 || n > 999) cas[k] = null;
+          else cas[k] = n;
+        }
+      });
+      // 자원동원 숫자 검증
+      var mob = p.mobilization || {};
+      ['totalPersonnel','totalVehicles'].forEach(function(k) {
+        var v = mob[k];
+        if (v !== null && v !== undefined) {
+          var n = parseInt(v);
+          if (isNaN(n) || n < 0 || n > 9999) mob[k] = null;
+          else mob[k] = n;
+        }
+      });
+      // 타임라인 검증
+      if (p.timeline && Array.isArray(p.timeline)) {
+        p.timeline = p.timeline.filter(function(t) {
+          return t && t.time && t.content && String(t.time).trim() && String(t.content).trim();
+        });
+      } else { p.timeline = []; }
+      // 건물 floors 검증 — "이하여백" 행 제거 + 면적 숫자 확인
+      if (b.floors && Array.isArray(b.floors)) {
+        b.floors = b.floors.filter(function(fl) {
+          if (!fl || !fl.floor) return false;
+          if (String(fl.floor).indexOf('이하여백') >= 0) return false;
+          if (String(fl.use || '').indexOf('이하여백') >= 0) return false;
+          return true;
+        });
+        // 면적 숫자 정리
+        b.floors.forEach(function(fl) {
+          if (fl.area !== null && fl.area !== undefined) {
+            var a = parseFloat(String(fl.area).replace(/[^0-9.]/g,''));
+            fl.area = isNaN(a) ? null : String(a);
           }
+        });
+      } else { b.floors = []; }
+      return { p119: p, building: b };
+    } catch(e) { console.warn('[_sanitizeParsed]', e); return parsed || {}; }
+  },
 
-  ★ 4-J. dispatch.render — 함수 맨 앞
-  찾기:   render: function() {
-            try {
-              var loc  = _ui.val('dispLocation');
-  교체:   render: function() {
-            try {
-              var loc  = _ui.val('dispLocation');
-              // (render는 잦은 호출이므로 내용이 있을 때만 로깅)
+  // ③ 결과 카드 표시 + 신뢰도 뱃지
+  _showScanResult: function(parsed, fromCache) {
+    try {
+      _ui.show('rptScanDone');
+      _ui.show('rptScanResult');
+      var p = parsed.p119 || {};
+      var b = parsed.building || {};
+      var modes = this._photoModes;
 
-  ★ 4-K. dispatch.send — share 성공 직후
-  찾기:   var ok = await _ui.share(box.textContent, '📨 전파됐습니다');
-            if (ok) {
-  교체:   var ok = await _ui.share(box.textContent, '📨 전파됐습니다');
-            _debug.ok('출동보고','보고문 전파됨');
-            if (ok) {
+      // 모드 레이블
+      var modeNames = {p119:'P119', bldg:'건축물대장'};
+      var modeLabel = document.getElementById('scanModeLabel');
+      if (modeLabel) modeLabel.textContent = (fromCache ? '⚡캐시 · ' : '') + modes.map(function(m){return modeNames[m]||m;}).join('+');
 
-  ★ 4-L. report.renderPreview — try 맨 앞
-  찾기:   var body = document.getElementById('previewBody'); if (!body) return;
-            try {
-              var d = this._collectData();
-              body.innerHTML
-  교체:   var body = document.getElementById('previewBody'); if (!body) return;
-            try {
-              _debug.info('보고서','미리보기 렌더링 시작');
-              var d = this._collectData();
-              body.innerHTML
+      // 신뢰도 뱃지 헬퍼
+      function badge(id, val) {
+        var el = document.getElementById(id); if (!el) return;
+        var isNull = val === null || val === undefined || String(val).trim() === '' || String(val) === 'null';
+        if (isNull) { el.textContent = '미확인'; el.className = 'conf-badge conf-miss'; }
+        else { el.textContent = '✓ 확인됨'; el.className = 'conf-badge conf-ok'; }
+      }
+      // 값 표시 헬퍼
+      function sv(id, val) {
+        var el = document.getElementById(id); if (!el) return;
+        var empty = !val || String(val) === 'null' || String(val).trim() === '';
+        el.textContent = empty ? '— 확인 불가' : String(val).trim();
+        el.style.color = empty ? 'var(--ink4)' : 'var(--ink)';
+        el.style.fontStyle = empty ? 'italic' : 'normal';
+      }
 
-  ★ 4-M. report.renderPreview — catch 블록
-  찾기:   } catch(e) {
-              console.error('[report.renderPreview]', e);
-              body.innerHTML = '<div
-  교체:   } catch(e) {
-              _debug.err('보고서','미리보기 렌더링 실패',e.message);
-              console.error('[report.renderPreview]', e);
-              body.innerHTML = '<div
+      sv('scanType',    p.disasterType);     badge('conf_type',    p.disasterType);
+      sv('scanAddr',    p.location);          badge('conf_addr',    p.location);
+      sv('scanTarget',  p.mainContent);       badge('conf_target',  p.mainContent);
+      sv('scanSummary', p.reportTitle);       badge('conf_summary', p.reportTitle);
 
-  ★ 4-N. spell.run — API 호출 전
-  찾기:   var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite
-  교체:   _debug.info('맞춤법','API 호출 시작');
-            var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite
+      // 인명피해
+      var cas = p.casualty || {};
+      var casArr = [];
+      if (cas.death   !== null && cas.death   !== undefined) casArr.push('사망 ' + cas.death   + '명');
+      if (cas.injured !== null && cas.injured !== undefined) casArr.push('부상 ' + cas.injured + '명');
+      if (cas.missing !== null && cas.missing !== undefined) casArr.push('실종 ' + cas.missing + '명');
+      sv('scanCasualty', casArr.join(' / ') || null);
+      badge('conf_casualty', casArr.length ? casArr[0] : null);
 
-  ★ 4-O. spell.run — catch 블록
-  찾기:   } catch(e) {
-              _ui.toast('❌ 검사 실패:
-  교체:   } catch(e) {
-              _debug.err('맞춤법','검사 실패',e.message);
-              _ui.toast('❌ 검사 실패:
--->
+      // 자원동원 (상세 표시)
+      var mob = p.mobilization || {};
+      var mobLines = [];
+      if (mob.totalPersonnel != null) {
+        var perLine = '인원: ' + mob.totalPersonnel + '명';
+        if (mob.personnelDetail) perLine += '  (' + mob.personnelDetail + ')';
+        mobLines.push(perLine);
+      }
+      if (mob.totalVehicles != null) {
+        var vehLine = '장비: ' + mob.totalVehicles + '대';
+        if (mob.fireVehicleDetail) vehLine += '  소방(' + mob.fireVehicleDetail + ')';
+        if (mob.agencyDetail)      vehLine += '  유관(' + mob.agencyDetail + ')';
+        mobLines.push(vehLine);
+      }
+      sv('scanMob', mobLines.join('\n') || null);
+      badge('conf_mob', mobLines.length ? mobLines[0] : null);
+
+      // 타임라인
+      var tlEl = document.getElementById('scanTimeline');
+      if (tlEl) {
+        if (p.timeline && p.timeline.length) {
+          tlEl.textContent = p.timeline.map(function(t){ return '(' + t.time + ') ' + t.content; }).join('\n');
+          tlEl.style.color = 'var(--ink)'; tlEl.style.fontStyle = 'normal';
+        } else {
+          tlEl.textContent = modes.indexOf('p119') >= 0 ? '— 주요조치사항 없음' : '— P119 미선택';
+          tlEl.style.color = 'var(--ink4)'; tlEl.style.fontStyle = 'italic';
+        }
+      }
+      badge('conf_timeline', p.timeline && p.timeline.length ? p.timeline[0].content : null);
+
+      // 건물 현황
+      var bldgEl = document.getElementById('scanBldg');
+      if (bldgEl) {
+        if (b.floors && b.floors.length) {
+          bldgEl.textContent = b.floors.map(function(f) {
+            var parts = [f.floor || '?층'];
+            if (f.structure) parts.push(f.structure);
+            if (f.use) parts.push(f.use);
+            if (f.area) parts.push(f.area + '㎡');
+            if (f.note) parts.push('[' + f.note + ']');
+            return parts.join(' · ');
+          }).join('\n');
+          bldgEl.style.color = 'var(--ink)'; bldgEl.style.fontStyle = 'normal';
+        } else {
+          bldgEl.textContent = modes.indexOf('bldg') >= 0 ? '— 건축물 현황 표 없음' : '— 건축물대장 미선택';
+          bldgEl.style.color = 'var(--ink4)'; bldgEl.style.fontStyle = 'italic';
+        }
+      }
+      badge('conf_bldg', b.floors && b.floors.length ? b.floors[0].floor : null);
+
+      // 요약 줄
+      var filled = this._countFilled(parsed);
+      var sumEl = document.getElementById('scanSummaryLine');
+      if (sumEl) {
+        sumEl.textContent = filled + '개 항목 확인됨' + (fromCache ? ' (캐시 적용)' : '') +
+          ' · 녹색 항목은 폼에 자동 채워졌습니다' +
+          (b.floors && b.floors.length ? ' · 건물 ' + b.floors.length + '개 층 추출됨' : '');
+      }
+    } catch(e) { console.error('[report._showScanResult]', e); }
+  },
+  _countFilled: function(p) {
+    var n = 0, pi = (p.p119 || {}), b = (p.building || {});
+    ['reportTitle','disasterType','incidentDatetime','location','mainContent'].forEach(function(k) { if (pi[k] && pi[k] !== 'null') n++; });
+    var c = pi.casualty || {}; ['death','injured','missing'].forEach(function(k) { if (c[k] != null) n++; });
+    var m = pi.mobilization || {}; ['totalPersonnel','totalVehicles'].forEach(function(k) { if (m[k] != null) n++; });
+    if (pi.timeline && pi.timeline.length) n++;
+    if (b.floors && b.floors.length) n++;
+    return n;
+  },
+  _applyAI: function(parsed) {
+    try {
+      var p = parsed.p119 || {}, b = parsed.building || {};
+      var isV = function(v) { return v !== null && v !== undefined && String(v).trim() !== '' && String(v) !== 'null'; };
+      var fill = function(id, lblId, val) {
+        if (!isV(val)) return;
+        var el = document.getElementById(id); if (!el) return;
+        el.value = String(val).trim(); el.classList.add('ai-ok');
+        var lbl = document.getElementById(lblId); if (lbl) lbl.style.display = 'inline-block';
+      };
+
+      // ── P119 필드 적용 ──
+      fill('f_datetime','lbl_datetime', p.incidentDatetime);
+      fill('f_addr','lbl_addr', p.location);
+      fill('f_summary','lbl_summary', p.reportTitle);
+      fill('f_target','lbl_target', p.disasterType);
+      fill('f_mainContent','lbl_mainContent', p.mainContent);
+
+      // 인명피해
+      var cas = p.casualty || {};
+      var casArr = [];
+      if (isV(cas.death))   casArr.push('사망: ' + cas.death   + '명');
+      if (isV(cas.injured)) casArr.push('부상: ' + cas.injured + '명');
+      if (isV(cas.missing)) casArr.push('실종: ' + cas.missing + '명');
+      if (casArr.length) fill('f_casualty','lbl_casualty', casArr.join(' / '));
+
+      // 재산피해
+      var prop = p.property || {};
+      var propArr = [];
+      if (isV(prop.damageAmount)) propArr.push('피해금액: ' + prop.damageAmount);
+      if (isV(prop.damageArea))   propArr.push('피해면적: ' + prop.damageArea + '㎡');
+      if (propArr.length) fill('f_damage','lbl_damage', propArr.join(' / '));
+
+      // 자원동원
+      var mob = p.mobilization || {};
+      var perStr = '';
+      if (isV(mob.totalPersonnel)) perStr = String(mob.totalPersonnel) + '명';
+      if (isV(mob.personnelDetail)) {
+        var det = String(mob.personnelDetail).trim();
+        perStr += (det.startsWith('(') ? det : ' (' + det + ')');
+      }
+      if (perStr) fill('f_personnel','lbl_personnel', perStr);
+      if (isV(mob.totalVehicles)) fill('f_equipment','lbl_equipment', mob.totalVehicles + '대');
+      var eqArr = [];
+      if (isV(mob.fireVehicleDetail)) eqArr.push('소방: ' + mob.fireVehicleDetail);
+      if (isV(mob.agencyDetail))      eqArr.push('유관기관: ' + mob.agencyDetail);
+      if (eqArr.length) fill('f_equipDetail','lbl_equipDetail', eqArr.join(' / '));
+
+      // 타임라인
+      if (p.timeline && p.timeline.length) {
+        var tl = document.getElementById('tlList');
+        if (tl) { tl.innerHTML = ''; APP.report._tlCount = 0; }
+        p.timeline.forEach(function(t) {
+          if (isV(t.time) && isV(t.content)) {
+            // 시간 정리: "2026-04-24 12:23:55" → "12:23"
+            var timeStr = String(t.time).trim();
+            var match = timeStr.match(/(\d{1,2}:\d{2})/);
+            if (match) timeStr = match[1];
+            APP.report.addTlItem({time: timeStr, content: t.content});
+          }
+        });
+      }
+
+      // ── 건축물대장 필드 적용 ──
+      if (b.floors && b.floors.length) {
+        var tb = document.getElementById('bldgBody');
+        if (tb) { tb.innerHTML = ''; APP.report._bldgCount = 0; }
+        b.floors.forEach(function(fl) {
+          if (!isV(fl.floor)) return;
+          APP.report.addBldgRow({
+            floor  : fl.floor    || '',
+            struct : fl.structure || '',
+            size   : fl.area     || '',
+            use    : fl.use      || '',
+            note   : fl.note     || ''
+          });
+        });
+      }
+
+      var banner = document.getElementById('aiFillBanner');
+      if (banner) banner.style.display = 'flex';
+    } catch(e) { console.error('[report._applyAI]', e); }
+  },
+
+  /* 미리보기 */
+  renderPreview: function() {
+    var body = document.getElementById('previewBody'); if (!body) return;
+    try {
+      var d = this._collectData();
+      body.innerHTML = this._buildBanner() + this._buildHeader(d) + this._buildSec1(d) + this._buildSec2(d) + this._buildSec3(d) + this._buildSec4() + this._buildPhotoSection();
+    } catch(e) {
+      console.error('[report.renderPreview]', e);
+      body.innerHTML = '<div style="color:var(--red);padding:16px;">⚠️ 보고서 생성 오류: ' + _ui.escHtml(e.message) + '</div>';
+    }
+  },
+  _collectData: function() {
+    var e = _ui.escHtml.bind(_ui), v = _ui.val.bind(_ui);
+    var personnel = v('f_personnel').replace(/명\s*명/g,'명').replace(/\(\s*\(/g,'(').replace(/\)\s*\)/g,')');
+    var addr = v('f_addr'), target = v('f_target'), summary = v('f_summary');
+    var types = {fire:'화재',rescue:'구조',ems:'구급',hazmat:'위험물',misc:'기타',training:'훈련'};
+    return {
+      station: v('f_station') || '서산소방서', manager: v('f_manager'), duty: v('f_duty'),
+      callCount: v('f_callCount'), datetime: v('f_datetime').replace(/(\d{1,2}:\d{2}):\d{2}/g,'$1'),
+      distance: v('f_distance'), target:target, addr:addr, mainContent:v('f_mainContent'), summary:summary,
+      casualty:v('f_casualty'), damage:v('f_damage'), personnel:personnel, equipment:v('f_equipment'),
+      equipDetail:v('f_equipDetail'),
+      reportTitle: summary || (addr ? _util.extractDong(addr) : '') + (target || types[this._type] || '기타') + '발생보고'
+    };
+  },
+  _buildBanner: function() {
+    return '<div style="border:1px solid #cc0000;margin:0 0 3px 0;padding:1px 4px;text-align:center;border-radius:2px;"><span style="color:#cc0000;font-size:8px;font-weight:800;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
+  },
+  _buildHeader: function(d) {
+    var e = _ui.escHtml.bind(_ui);
+    return '<table style="width:100%;border-collapse:collapse;margin-bottom:6px;"><tr>' +
+      '<td style="border:1px solid #1a3a6b;padding:5px 8px;width:120px;text-align:center;vertical-align:middle;"><img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" style="max-width:110px;max-height:56px;object-fit:contain;" onerror="this.style.display=\'none\'"/></td>' +
+      '<td style="border:1px solid #1a3a6b;padding:5px 8px;text-align:center;font-size:15px;font-weight:700;color:#1a3a6b;vertical-align:middle;">' + e(d.reportTitle) + '</td>' +
+      '<td style="border:1px solid #1a3a6b;padding:5px 8px;width:140px;font-size:10px;color:#374151;text-align:right;vertical-align:middle;line-height:1.9;">' + (d.duty?'당직 '+e(d.duty)+'<br/>':'') + e(d.manager||'서산소방서') + '</td>' +
+      '</tr></table>';
+  },
+  _row: function(label, val) {
+    if (!val) return '';
+    return '<div style="display:flex;align-items:baseline;line-height:1.9;font-size:11px;"><span style="flex-shrink:0;white-space:nowrap;">○ ' + _ui.escHtml(label) + ' :</span><span style="margin-left:6px;">' + _ui.escHtml(val) + '</span></div>';
+  },
+  _buildSec1: function(d) {
+    try {
+      var e = _ui.escHtml.bind(_ui);
+      var dtRow = d.datetime ? '<div style="display:flex;align-items:baseline;line-height:1.9;font-size:11px;"><span style="flex-shrink:0;white-space:nowrap;">○ 일 시 :</span><span style="margin-left:6px;">' + e(d.datetime) + (d.callCount ? '&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:10px;">신고건수: '+e(d.callCount)+'</span>':'')+'</span></div>' : '';
+      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">1. 사고개요</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:8px;">' + dtRow + (d.distance?'<div style="font-size:10px;color:#6B7280;padding-left:14px;">※ '+e(d.distance)+'</div>':'') + this._row('대 상',d.target) + this._row('장 소',d.addr) + this._row('내 용',d.mainContent) + '</div>';
+    } catch(e) { return ''; }
+  },
+  _buildSec2: function(d) {
+    try {
+      var rows = '';
+      document.querySelectorAll('#bldgBody tr').forEach(function(tr) {
+        var vals = Array.from(tr.querySelectorAll('input')).map(function(i){return i.value.trim();});
+        if (!vals[0]) return;
+        var isFire = vals[4] && vals[4].indexOf('화재') >= 0;
+        rows += '<tr' + (isFire?' style="background:#FFF3EC;"':'') + '>' + vals.map(function(v){return '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+_ui.escHtml(v)+'</td>';}).join('') + '</tr>';
+      });
+      var bldg = rows ? '<div style="padding-left:4px;margin-bottom:8px;"><div style="font-size:10px;font-weight:500;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div><table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr>' + ['구분','구조','크기(㎡)','용도','기타'].map(function(h){return '<th style="background:#4a6fa5;color:#fff;padding:2px 3px;text-align:center;">'+h+'</th>';}).join('') + '</tr></thead><tbody>'+rows+'</tbody></table></div>' : '';
+      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">2. 피해상황</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:4px;font-size:11px;">' + this._row('인명피해',d.casualty) + this._row('재산피해',d.damage) + '</div>' + bldg;
+    } catch(e) { return ''; }
+  },
+  _buildSec3: function(d) {
+    try {
+      var sub = function(lbl,val) { return val ? '<div style="font-size:10.5px;line-height:1.85;padding-left:8px;"><span style="color:#6B7280;">- '+_ui.escHtml(lbl)+' : </span>' + _ui.escHtml(val) + '</div>' : ''; };
+      var perD='', agD='';
+      if (d.equipDetail) {
+        d.equipDetail.split('/').forEach(function(s){s=s.trim();if(/소방/.test(s))perD=s.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();else if(/유관기관/.test(s))agD=s.replace(/^유관기관\s*:\s*/,'').trim();});
+      }
+      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">3. 자원동원</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:8px;font-size:11px;">' + this._row('인 원',d.personnel) + this._row('장 비',d.equipment) + sub('소방기관',perD) + sub('유관기관',agD) + '</div>';
+    } catch(e) { return ''; }
+  },
+  _buildSec4: function() {
+    try {
+      var items = [];
+      document.querySelectorAll('#tlList .tl-item').forEach(function(item) {
+        var inputs = item.querySelectorAll('input');
+        if (inputs.length < 2 || !inputs[1].value.trim()) return;
+        var t = inputs[0].value.trim().replace(/(\d{1,2}:\d{2}):\d{2}/,'$1').replace(/^\d{4}-/,'');
+        items.push('<div style="font-size:10.5px;line-height:1.75;"><span style="color:#E8600A;font-family:monospace;font-weight:700;">【'+_ui.escHtml(t)+'】</span> '+_ui.escHtml(inputs[1].value.trim())+'</div>');
+      });
+      if (!items.length) return '';
+      var left = '', right = '';
+      items.forEach(function(it,i) { if(i%2===0) left+=it; else right+=it; });
+      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">4. 주요 조치사항</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:8px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 16px;"><div>'+left+'</div><div>'+right+'</div></div></div>';
+    } catch(e) { return ''; }
+  },
+  _buildPhotoSection: function() {
+    try {
+      var hasMap = !!this._mapPhoto, hasScene = this._scenePhotos.length > 0;
+      if (!hasMap && !hasScene) return '';
+      var H = 120, self = this;
+      var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
+      var out = '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
+      if (hasMap && hasScene) {
+        var n=this._scenePhotos.length, cols=n===1?1:2, rows=Math.ceil(n/cols), cellH=Math.floor((H-(rows-1)*3)/rows);
+        out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-left:4px;">';
+        out+='<div><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">위치도</div><div style="height:'+H+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;"><img src="'+safe(this._mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;"/></div></div>';
+        out+='<div><div style="font-size:10px;color:#6B7280;margin-bottom:3px;">현장사진</div><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
+        this._scenePhotos.forEach(function(f){out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;"><img src="'+safe(f)+'" style="width:100%;height:100%;object-fit:cover;"/></div>';});
+        out+='</div></div></div>';
+      } else if (hasMap) {
+        out+='<div style="padding-left:4px;"><div style="height:'+(H+20)+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;"><img src="'+safe(this._mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;"/></div></div>';
+      } else {
+        var n=this._scenePhotos.length, cols=Math.min(n,3), rows=Math.ceil(n/cols), cellH=Math.floor((H-(rows-1)*3)/rows);
+        out+='<div style="padding-left:4px;"><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
+        this._scenePhotos.forEach(function(f){out+='<div style="height:'+cellH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;"><img src="'+safe(f)+'" style="width:100%;height:100%;object-fit:cover;"/></div>';});
+        out+='</div></div>';
+      }
+      return out;
+    } catch(e) { console.error('[report._buildPhotoSection]', e); return ''; }
+  },
+
+  /* 내보내기 */
+  copyText: async function() {
+    try {
+      var body = document.getElementById('previewBody');
+      if (body) await _ui.copy(body.innerText || body.textContent);
+    } catch(e) { console.error('[report.copyText]', e); }
+  },
+  share: async function() {
+    try {
+      var body = document.getElementById('previewBody');
+      if (body) await _ui.share(body.innerText || body.textContent, '📨 공유됐습니다');
+    } catch(e) { console.error('[report.share]', e); }
+  },
+  exportJPG: async function() {
+    try {
+      this.renderPreview();
+      var previewEl = document.getElementById('previewBody').parentElement;
+      var body = document.getElementById('previewBody');
+      if (!body || body.innerHTML.indexOf('보고서를 작성하면') >= 0) { _ui.toast('보고서를 먼저 작성하세요'); return; }
+      _ui.toast('JPG 저장 중...', 5000);
+      if (!window.html2canvas) {
+        await new Promise(function(res, rej) {
+          var s = document.createElement('script');
+          s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          s.onload = res; s.onerror = function() { rej(new Error('html2canvas 로드 실패')); };
+          document.head.appendChild(s);
+        });
+      }
+      var canvas = await html2canvas(previewEl, {scale:2, useCORS:true, backgroundColor:'#ffffff', logging:false});
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      var now = new Date();
+      var fname = now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_소방상황보고서.jpg';
+      var a = document.createElement('a'); a.href = dataUrl; a.download = fname;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      _ui.toast('✅ JPG 저장 완료', 3000);
+    } catch(e) { _ui.toast('❌ 저장 실패: ' + String(e.message).slice(0,30)); console.error('[report.exportJPG]', e); }
+  },
+  reset: function() {
+    var self = this;
+    _ui.confirm('보고서 초기화', '작성된 보고서가 모두 삭제됩니다.', function() {
+      try {
+        self._scanPhotos=[]; self._mapPhoto=null; self._scenePhotos=[];
+        self._lastParsed=null; self._lastCacheKey=null;
+        _blob.revokeAll();
+        var ids = ['rptThumbRow','rptScanResult','rptScanDone','mapThumbWrap','sceneThumbRow','aiFillBanner','cacheNotice'];
+        ids.forEach(function(id) { var el=document.getElementById(id); if(el) el.innerHTML=''; });
+        _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('aiFillBanner'); _ui.hide('cacheNotice');
+        var mDz = document.getElementById('mapDropZone'); if(mDz) mDz.style.display='flex';
+        var aBtn = document.getElementById('rptAiBtn'); if(aBtn) aBtn.disabled=true;
+        var fids = ['f_station','f_manager','f_duty','f_reportDate','f_callCount','f_datetime','f_distance','f_target','f_addr','f_summary','f_mainContent','f_casualty','f_damage','f_personnel','f_equipment','f_equipDetail'];
+        fids.forEach(function(id){var el=document.getElementById(id);if(el){el.value=el.id==='f_station'?'서산소방서':'';el.classList.remove('ai-ok');}});
+        ['lbl_datetime','lbl_target','lbl_addr','lbl_summary','lbl_mainContent','lbl_casualty','lbl_personnel'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+        var tb=document.getElementById('bldgBody'); if(tb){tb.innerHTML='';self._bldgCount=0;} self.initBldgTable();
+        var tl=document.getElementById('tlList'); if(tl){tl.innerHTML='';self._tlCount=0;} self.initTimeline();
+        self.goPage(0); _ui.toast('초기화됐습니다');
+      } catch(e2) { console.error('[report.reset cb]', e2); }
+    });
+  }
+};
+
+/* ── settings: 설정 탭 ────────────────────────────────────────────── */
+APP.settings = {
+  saveNotice: function() {
+    // 하위 호환 래퍼 — APP.notice.saveLocal() 위임
+    try { APP.notice.saveLocal(); } catch(e) { console.error('[settings.saveNotice]', e); }
+  },
+  loadNotice: function() {
+    // 하위 호환 래퍼 — APP.notice.init() 위임
+    try { APP.notice.init(); } catch(e) { console.error('[settings.loadNotice]', e); }
+  },
+  toggleLock: function(tab) {
+    try {
+      var locks = _store.getJSON('featureLocks', {});
+      locks[tab] = !locks[tab];
+      _store.setJSON('featureLocks', locks);
+      APP.nav.setLock(tab, locks[tab]);
+      this._renderLockBtns(locks);
+      _ui.toast(locks[tab] ? tab+'이 잠겼습니다' : tab+'이 해제됐습니다');
+    } catch(e) { console.error('[settings.toggleLock]', e); }
+  },
+  loadLocks: function() {
+    try {
+      var locks = _store.getJSON('featureLocks', {});
+      ['report','map','contacts'].forEach(function(t) { APP.nav.setLock(t, !!locks[t]); });
+      this._renderLockBtns(locks);
+    } catch(e) {}
+  },
+  _renderLockBtns: function(locks) {
+    ['report','map','contacts'].forEach(function(tab) {
+      var btn = document.getElementById('lockBtn-'+tab); if (!btn) return;
+      var locked = !!locks[tab];
+      btn.textContent = locked ? '잠김' : '해제됨';
+      btn.style.background = locked ? 'var(--red-lt)' : 'var(--surface)';
+      btn.style.color = locked ? 'var(--red)' : 'var(--ink3)';
+      btn.style.borderColor = locked ? 'rgba(217,48,37,0.35)' : 'var(--border)';
+    });
+  },
+  changePw: async function() {
+    var cur=_ui.val('cfg_curPw'), nw=_ui.val('cfg_newPw'), conf=_ui.val('cfg_confirmPw');
+    try {
+      if (!await _pw.check('appLockPw', cur)) { _ui.msgBox('pwMsg','err','현재 비밀번호가 틀렸습니다.'); return; }
+      if (nw.length < 4) { _ui.msgBox('pwMsg','err','4자리 이상 입력하세요.'); return; }
+      if (nw !== conf) { _ui.msgBox('pwMsg','err','비밀번호가 일치하지 않습니다.'); return; }
+      await _pw.save('appLockPw', nw);
+      if (_apiKey.get()) await _apiKey.save(_apiKey.get(), nw);
+      _apiKey._appPw = nw;
+      _ui.msgBox('pwMsg','ok','✅ 비밀번호가 변경됐습니다.');
+      ['cfg_curPw','cfg_newPw','cfg_confirmPw'].forEach(function(id){_ui.setVal(id,'');});
+    } catch(e) { _ui.msgBox('pwMsg','err','오류: ' + e.message.slice(0,40)); }
+  },
+  changeSettingsPw: async function() {
+    var cur=_ui.val('cfg_curSetPw'), nw=_ui.val('cfg_newSetPw'), conf=_ui.val('cfg_confirmSetPw');
+    try {
+      if (!await _pw.check('settingsPw', cur)) { _ui.msgBox('setPwMsg','err','현재 비밀번호가 틀렸습니다.'); return; }
+      if (nw.length < 4) { _ui.msgBox('setPwMsg','err','4자리 이상 입력하세요.'); return; }
+      if (nw !== conf) { _ui.msgBox('setPwMsg','err','비밀번호가 일치하지 않습니다.'); return; }
+      await _pw.save('settingsPw', nw);
+      _ui.msgBox('setPwMsg','ok','✅ 설정 비밀번호가 변경됐습니다.');
+      ['cfg_curSetPw','cfg_newSetPw','cfg_confirmSetPw'].forEach(function(id){_ui.setVal(id,'');});
+    } catch(e) { _ui.msgBox('setPwMsg','err','오류: ' + e.message.slice(0,40)); }
+  },
+  setAutoLock: function(min) { _autoLock.set(min); },
+  saveApiKey: async function() {
+    try {
+      var inp = document.getElementById('cfg_geminiKey');
+      var key = inp ? inp.value.trim() : '';
+      if (!_apiKey._appPw) { _ui.toast('앱 재로그인 후 저장해주세요'); return; }
+      await _apiKey.save(key, _apiKey._appPw);
+      _ui.toast('🔐 API Key가 암호화 저장됐습니다');
+      if (inp) { inp.value=''; inp.placeholder='저장됨 (변경하려면 새로 입력)'; }
+    } catch(e) { _ui.toast('❌ 저장 실패: ' + e.message.slice(0,30)); }
+  }
+};
+
+/* ── notice: 공지사항 관리 (GitHub Raw + 로컬 이중 방식) ────────── */
+APP.notice = {
+  KEY_URL   : 'noticeGithubUrl',  // GitHub Raw URL 저장
+  KEY_LOCAL : 'appNotice',        // 로컬 직접 입력 저장
+  KEY_LEVEL : 'noticeLevel',      // 로컬 공지 level
+  _level    : 'info',             // 현재 선택된 레벨
+
+  // ── 레벨별 스타일 정의 ─────────────────────────────────────────
+  _STYLES: {
+    info  : { bg:'var(--blue-lt)',   border:'rgba(26,110,232,0.25)',  titleColor:'var(--blue)',  icon:'📢' },
+    warn  : { bg:'#fff9e6',          border:'rgba(255,193,7,0.4)',    titleColor:'#856404',      icon:'⚠️' },
+    urgent: { bg:'var(--red-lt)',    border:'rgba(217,48,37,0.35)',   titleColor:'var(--red)',   icon:'🚨' }
+  },
+
+  // ── 배너 표시 핵심 함수 ────────────────────────────────────────
+  _showBanner: function(msg, level, title) {
+    try {
+      if (!msg || !msg.trim()) return;
+      var s = this._STYLES[level] || this._STYLES.info;
+      var banner = document.getElementById('noticeBanner');
+      var iconEl = document.getElementById('noticeIcon');
+      var titleEl = document.getElementById('noticeTitle');
+      var msgEl   = document.getElementById('noticeMsg');
+      if (!banner) return;
+      banner.style.cssText = [
+        'display:flex', 'align-items:center', 'gap:10px',
+        'background:'+s.bg, 'border:1.5px solid '+s.border,
+        'border-radius:var(--r2)', 'padding:11px 14px', 'margin-bottom:10px'
+      ].join(';');
+      if (iconEl)  iconEl.textContent  = s.icon;
+      if (titleEl) { titleEl.textContent = title || '서산소방서 상황보고 시스템'; titleEl.style.color = s.titleColor; }
+      if (msgEl)   { msgEl.textContent   = msg; msgEl.style.color = s.titleColor; msgEl.style.opacity = '0.85'; }
+    } catch(e) { console.warn('[notice._showBanner]', e); }
+  },
+
+  // ── 초기화 (앱 부팅 시 호출) ────────────────────────────────────
+  init: function() {
+    try {
+      // 1) 저장된 GitHub URL이 있으면 fetch 시도
+      var url = _store.get(this.KEY_URL);
+      if (url && url.trim()) {
+        this._fetchFromUrl(url, true); // silent=true (부팅 시)
+      }
+      // 2) 로컬 저장된 공지도 표시 (fetch 전까지 fallback)
+      this._applyLocal();
+      // 3) 설정 UI 복원
+      this._restoreSettingsUI();
+    } catch(e) { console.warn('[notice.init]', e); }
+  },
+
+  // ── 로컬 공지 적용 ──────────────────────────────────────────────
+  _applyLocal: function() {
+    try {
+      var n = _store.getJSON(this.KEY_LOCAL, {});
+      if (n.msg) this._showBanner(n.msg, n.level || 'info', n.title);
+    } catch(e) {}
+  },
+
+  // ── GitHub Raw URL에서 공지 fetch ───────────────────────────────
+  _fetchFromUrl: function(url, silent) {
+    var self = this;
+    var statusEl = document.getElementById('noticeFetchStatus');
+    if (!silent && statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--blue-lt);color:var(--blue);';
+      statusEl.textContent = '🔄 공지를 불러오는 중...';
+    }
+    // GitHub Raw URL 캐시 무력화 (매번 최신 파일 가져오기)
+    var fetchUrl = url.trim();
+    if (fetchUrl.indexOf('?') < 0) fetchUrl += '?t=' + Date.now();
+    else fetchUrl += '&t=' + Date.now();
+
+    fetch(fetchUrl, {cache: 'no-store'})
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(text) {
+        var data = _ui.safeJSON(text, null);
+        if (data && data.msg) {
+          self._showBanner(data.msg, data.level || 'info', data.title);
+          // 성공 시 URL도 저장 (fetchNow로 불러왔을 때도 저장)
+          var savedUrl = _store.get(self.KEY_URL, '');
+          if (savedUrl) _store.set(self.KEY_URL, savedUrl);
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
+            statusEl.textContent = '✅ 공지 저장 및 적용 완료!';
+            setTimeout(function() { statusEl.style.display='none'; }, 3000);
+          }
+        } else if (text.trim()) {
+          self._showBanner(text.trim(), 'info');
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
+            statusEl.textContent = '✅ 공지 적용 완료!';
+            setTimeout(function() { statusEl.style.display='none'; }, 3000);
+          }
+        } else {
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:#fff9e6;color:#856404;';
+            statusEl.textContent = '⚠️ URL은 저장됐지만 공지 내용이 비어있습니다. notice.json 파일을 확인해주세요.';
+          }
+        }
+      })
+      .catch(function(e) {
+        console.warn('[notice._fetchFromUrl]', e);
+        if (!silent) {
+          if (statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--red-lt);color:var(--red);';
+            statusEl.textContent = '❌ 불러오기 실패: ' + String(e.message).slice(0,40) + ' (URL을 확인해주세요)';
+          }
+        }
+        // fetch 실패 시 로컬 공지 유지 (이미 _applyLocal로 표시됨)
+      });
+  },
+
+  // ── 설정 UI 복원 ────────────────────────────────────────────────
+  _restoreSettingsUI: function() {
+    try {
+      var url = _store.get(this.KEY_URL, '');
+      var urlEl = document.getElementById('cfg_noticeUrl'); if (urlEl) urlEl.value = url || '';
+      var n = _store.getJSON(this.KEY_LOCAL, {});
+      var msgEl = document.getElementById('cfg_noticeMsg'); if (msgEl) msgEl.value = n.msg || '';
+      var savedLevel = _store.get(this.KEY_LEVEL, 'info');
+      this._level = savedLevel;
+      this._renderLevelBtns(savedLevel);
+    } catch(e) {}
+  },
+
+  // ── 레벨 버튼 렌더링 ────────────────────────────────────────────
+  _renderLevelBtns: function(level) {
+    var styles = this._STYLES;
+    document.querySelectorAll('.notice-level-btn').forEach(function(btn) {
+      var lv = btn.dataset.level;
+      var s  = styles[lv] || styles.info;
+      var isOn = lv === level;
+      btn.style.borderColor  = isOn ? s.border       : 'var(--border)';
+      btn.style.background   = isOn ? s.bg            : 'var(--surface2)';
+      btn.style.color        = isOn ? s.titleColor    : 'var(--ink3)';
+    });
+  },
+
+  // ── 레벨 선택 (버튼 클릭) ───────────────────────────────────────
+  setLevel: function(level, btn) {
+    try {
+      this._level = level;
+      _store.set(this.KEY_LEVEL, level);
+      this._renderLevelBtns(level);
+    } catch(e) {}
+  },
+
+  // ── URL 저장 ────────────────────────────────────────────────────
+  saveUrl: function() {
+    try {
+      var urlEl = document.getElementById('cfg_noticeUrl');
+      var url = urlEl ? urlEl.value.trim() : '';
+      if (!url) { _ui.toast('URL을 입력해주세요'); return; }
+      // github.com → raw.githubusercontent.com 자동 변환
+      if (url.indexOf('github.com') >= 0 && url.indexOf('raw.githubusercontent.com') < 0) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        if (urlEl) urlEl.value = url;
+      }
+      _store.set(this.KEY_URL, url);
+      // 저장 즉시 자동으로 불러오기 (버튼 두 번 누를 필요 없음)
+      this._fetchFromUrl(url, false);
+    } catch(e) { _ui.toast('저장 실패: ' + e.message.slice(0,30)); }
+  },
+
+  // ── 지금 바로 fetch ─────────────────────────────────────────────
+  fetchNow: function() {
+    try {
+      var urlEl = document.getElementById('cfg_noticeUrl');
+      var url = urlEl ? urlEl.value.trim() : _store.get(this.KEY_URL, '');
+      if (!url) { _ui.toast('먼저 GitHub Raw URL을 입력해주세요'); return; }
+      this._fetchFromUrl(url, false);
+    } catch(e) { _ui.toast('오류: ' + e.message.slice(0,30)); }
+  },
+
+  // ── 로컬 직접 입력 저장 ─────────────────────────────────────────
+  saveLocal: function() {
+    try {
+      var msg = _ui.val('cfg_noticeMsg') || '정상 운영 중입니다.';
+      var level = this._level || 'info';
+      _store.setJSON(this.KEY_LOCAL, {msg:msg, level:level});
+      this._showBanner(msg, level);
+      _ui.toast('공지가 저장됐습니다');
+    } catch(e) { console.error('[notice.saveLocal]', e); }
+  }
+};
+
+/* ── usage: API 사용량 모니터링 ────────────────────────────────── */
+APP.usage = {
+  // ── 상수 ──────────────────────────────────────────────────────
+  KEY_LOG      : 'apiUsageLog',       // 최근 10건 로그
+  KEY_DAILY    : 'apiUsageDaily',     // 날짜별 집계 { YYYY-MM-DD: {aiScan:N, spell:N} }
+  KEY_THRESHOLD: 'apiUsageThreshold', // 경고 임계값
+  MAX_LOG      : 10,
+  DEFAULT_THRESHOLD: 50,
+
+  // ── 오늘 날짜 키 ───────────────────────────────────────────────
+  _todayKey: function() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  },
+
+  // ── 기록 추가 (API 호출할 때마다 호출) ────────────────────────
+  record: function(type) {
+    // type: 'aiScan' | 'spell'
+    try {
+      var today = this._todayKey();
+      // 일별 집계 업데이트
+      var daily = _store.getJSON(this.KEY_DAILY, {});
+      if (!daily[today]) daily[today] = {aiScan:0, spell:0};
+      daily[today][type] = (daily[today][type] || 0) + 1;
+      // 60일 이상 된 데이터 자동 삭제
+      var keys = Object.keys(daily).sort();
+      while (keys.length > 60) { delete daily[keys.shift()]; }
+      _store.setJSON(this.KEY_DAILY, daily);
+
+      // 로그 추가
+      var log = _store.getJSON(this.KEY_LOG, []);
+      var now = new Date();
+      var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+      var labels = {aiScan:'AI 사진 분석', spell:'맞춤법 검사'};
+      log.unshift({type:type, label:labels[type]||type, time:timeStr, date:today});
+      if (log.length > this.MAX_LOG) log = log.slice(0, this.MAX_LOG);
+      _store.setJSON(this.KEY_LOG, log);
+
+      // 임계값 초과 토스트 (한 번만)
+      var threshold = parseInt(_store.get(this.KEY_THRESHOLD, String(this.DEFAULT_THRESHOLD))) || this.DEFAULT_THRESHOLD;
+      var todayTotal = (daily[today].aiScan||0) + (daily[today].spell||0);
+      if (todayTotal === threshold) {
+        _ui.toast('⚠️ 오늘 API 호출이 ' + threshold + '회를 초과했습니다!', 5000);
+      }
+    } catch(e) { console.warn('[usage.record]', e); }
+  },
+
+  // ── 화면 렌더링 ────────────────────────────────────────────────
+  refresh: function() {
+    try {
+      var today = this._todayKey();
+      var daily = _store.getJSON(this.KEY_DAILY, {});
+      var todayData = daily[today] || {aiScan:0, spell:0};
+      var todayTotal = (todayData.aiScan||0) + (todayData.spell||0);
+
+      // 이번 주 집계 (월~오늘)
+      var weekTotal = 0;
+      var now = new Date(), dow = now.getDay(); // 0=일
+      var weekStart = new Date(now); weekStart.setDate(now.getDate() - ((dow === 0 ? 7 : dow) - 1));
+      Object.keys(daily).forEach(function(k) {
+        var d = new Date(k);
+        if (d >= weekStart) weekTotal += (daily[k].aiScan||0) + (daily[k].spell||0);
+      });
+
+      // 누적
+      var allTotal = 0;
+      Object.keys(daily).forEach(function(k) { allTotal += (daily[k].aiScan||0) + (daily[k].spell||0); });
+
+      // 숫자 업데이트
+      this._setText('usage_todayTotal', todayTotal);
+      this._setText('usage_weekTotal',  weekTotal);
+      this._setText('usage_allTotal',   allTotal);
+      this._setText('usage_aiScan',     todayData.aiScan||0);
+      this._setText('usage_spell',      todayData.spell||0);
+
+      // 바 그래프 (오늘 총 대비 비율)
+      var MAX_BAR = Math.max(todayTotal, 1);
+      this._setBar('usage_aiScanBar', (todayData.aiScan||0) / MAX_BAR * 100);
+      this._setBar('usage_spellBar',  (todayData.spell||0)  / MAX_BAR * 100);
+
+      // 임계값 설정
+      var threshold = parseInt(_store.get(this.KEY_THRESHOLD, String(this.DEFAULT_THRESHOLD))) || this.DEFAULT_THRESHOLD;
+      var thEl = document.getElementById('usage_threshold'); if (thEl) thEl.value = threshold;
+
+      // 경고 배너
+      var warnEl = document.getElementById('usage_warningBanner');
+      if (warnEl) warnEl.style.display = todayTotal >= threshold ? 'block' : 'none';
+
+      // 로그 렌더링
+      this._renderLog();
+    } catch(e) { console.error('[usage.refresh]', e); }
+  },
+
+  _renderLog: function() {
+    try {
+      var logEl = document.getElementById('usage_log'); if (!logEl) return;
+      var log = _store.getJSON(this.KEY_LOG, []);
+      if (!log.length) {
+        logEl.innerHTML = '<div style="padding:10px;text-align:center;color:var(--ink4);">사용 기록이 없습니다</div>';
+        return;
+      }
+      var icons = {aiScan:'🤖', spell:'✓'};
+      var colors = {aiScan:'var(--orange)', spell:'var(--green)'};
+      logEl.innerHTML = log.map(function(item) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);">' +
+          '<span style="font-size:13px;flex-shrink:0;">' + (icons[item.type]||'📡') + '</span>' +
+          '<span style="flex:1;font-size:11px;font-weight:700;color:' + (colors[item.type]||'var(--ink)') + ';">' + _ui.escHtml(item.label) + '</span>' +
+          '<span style="font-size:10px;color:var(--ink4);font-family:var(--mono);">' + _ui.escHtml(item.time) + '</span>' +
+          '</div>';
+      }).join('');
+    } catch(e) { console.warn('[usage._renderLog]', e); }
+  },
+
+  _setText: function(id, val) {
+    var el = document.getElementById(id); if (el) el.textContent = String(val);
+  },
+  _setBar: function(id, pct) {
+    var el = document.getElementById(id); if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  },
+
+  saveThreshold: function(val) {
+    try {
+      var n = parseInt(val);
+      if (isNaN(n) || n < 1) return;
+      _store.set(this.KEY_THRESHOLD, String(n));
+      this.refresh();
+      _ui.toast('임계값이 ' + n + '회로 설정됐습니다');
+    } catch(e) { console.warn('[usage.saveThreshold]', e); }
+  },
+
+  resetStats: function() {
+    _ui.confirm('사용량 기록 초기화', '모든 API 사용량 기록이 삭제됩니다. 계속할까요?', function() {
+      try {
+        _store.remove(APP.usage.KEY_LOG);
+        _store.remove(APP.usage.KEY_DAILY);
+        APP.usage.refresh();
+        _ui.toast('사용량 기록이 초기화됐습니다');
+      } catch(e) { console.error('[usage.resetStats]', e); }
+    }, true);
+  }
+};
+
+/* ──────────────────────────────────────────────────────────────── */
+APP.settings.clearAll = function() {
+  _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
+    try {
+      _store.clearKeep(['appLockPw','settingsPw']);
+      _ui.toast('초기화됐습니다'); location.reload();
+    } catch(e) { console.error('[settings.clearAll]', e); }
+  }, true);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑫ UTIL — 공통 유틸
+═══════════════════════════════════════════════════════════════════ */
+var _util = {
+  extractDong: function(addr) {
+    if (!addr) return '';
+    try {
+      var m = addr.match(/([가-힣]+(?:면|동|읍|리|가))/g); if (!m || !m.length) return '';
+      var skip = ['특별시','광역시','특별자치시','도','특별자치도','시','군','구'];
+      for (var i=0;i<m.length;i++){var ok=true;for(var j=0;j<skip.length;j++){if(m[i].endsWith(skip[j])){ok=false;break;}}if(ok)return m[i];}
+      return m[m.length-1];
+    } catch(e) { return ''; }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑬ 드래그&드롭 초기화 (독립 try-catch)
+═══════════════════════════════════════════════════════════════════ */
+function _initDragDrop() {
+  function setup(zoneId, handler, resetColor) {
+    try {
+      var zone = document.getElementById(zoneId); if (!zone) return;
+      zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.style.borderColor='var(--orange)'; });
+      zone.addEventListener('dragleave', function() { zone.style.borderColor = resetColor || 'var(--orange-bd)'; });
+      zone.addEventListener('drop', function(e) { e.preventDefault(); zone.style.borderColor = resetColor || 'var(--orange-bd)'; try { handler(e.dataTransfer.files); } catch(err) { console.error('[dragdrop handler]', err); } });
+    } catch(e) { console.warn('[dragdrop.setup]', zoneId, e); }
+  }
+  setup('rptDropZone', function(f){APP.report.handleFiles(f);}, 'var(--orange-bd)');
+  setup('mapDropZone',  function(f){APP.report.handleMapFile(f);}, 'rgba(26,110,232,0.35)');
+  setup('sceneDropZone',function(f){APP.report.handleSceneFiles(f);}, 'var(--orange-bd)');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑭ 시계
+═══════════════════════════════════════════════════════════════════ */
+function _startClock() {
+  function tick() {
+    try {
+      var n=new Date(), el=document.getElementById('clock'); if (!el) return;
+      el.textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+    } catch(e) {}
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ⑮ 앱 부트스트랩 — 단일 진입점
+   각 단계가 독립 try-catch로 격리됨
+═══════════════════════════════════════════════════════════════════ */
+function _boot() {
+  // 시계
+  try { _startClock(); } catch(e) { console.warn('[boot:clock]', e); }
+
+  // 환경 경고 표시
+  try {
+    if (!ENV.hasCrypto) {
+      var warn = document.getElementById('lockEnvWarn'); if (warn) warn.style.display = 'block';
+    }
+  } catch(e) {}
+
+  // 잠금 화면
+  try {
+    var ls = document.getElementById('lockScreen'); if (ls) ls.style.display = 'flex';
+    var inp = document.getElementById('lockInput');
+    if (inp) {
+      inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') APP.auth.checkLock(); });
+      setTimeout(function() { try { inp.focus(); } catch(e2) {} }, 300);
+    }
+  } catch(e) { console.warn('[boot:lockScreen]', e); }
+
+  // 비밀번호 마이그레이션
+  _pw.migrate().catch(function(e) { console.warn('[boot:migrate]', e); });
+
+  // 설정 로드
+  try { APP.settings.loadNotice(); } catch(e) { console.warn('[boot:notice]', e); }
+  try { APP.settings.loadLocks(); } catch(e) { console.warn('[boot:locks]', e); }
+  try { _autoLock.load(); } catch(e) { console.warn('[boot:autolock]', e); }
+
+  // 연락처 로드
+  try { APP.contacts.load(); } catch(e) { console.warn('[boot:contacts]', e); }
+
+  // 보고서 탭 초기화
+  try { APP.report.initBldgTable(); } catch(e) { console.warn('[boot:bldg]', e); }
+  try { APP.report.initTimeline(); } catch(e) { console.warn('[boot:timeline]', e); }
+  try { APP.report._updatePhotoModeHint(); } catch(e) { console.warn('[boot:modeHint]', e); }
+
+  // 드래그&드롭
+  try { _initDragDrop(); } catch(e) { console.warn('[boot:dragdrop]', e); }
+
+  // 출동 탭 초기 상태
+  try {
+    window._dispatchType = 'fire'; window._dispatchStage = '출동';
+    var stageBtn = document.querySelector('.stage-btn[data-stage="출동"]');
+    if (stageBtn) stageBtn.classList.add('on');
+  } catch(e) {}
+
+  // 설정 잠금 Enter 키
+  try {
+    var setInp = document.getElementById('settingsLockInput');
+    if (setInp) setInp.addEventListener('keydown', function(e) { if (e.key === 'Enter') APP.auth.checkSettingsLock(); });
+  } catch(e) {}
+}
+
+// 안전한 부트 실행 (DOM 상태 무관하게 동작)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _boot);
+} else {
+  _boot();
+}
+</script>
+</body>
+</html>
