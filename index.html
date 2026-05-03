@@ -1620,7 +1620,7 @@ APP.spell = {
       if (status) status.style.display = 'block';
       if (resultWrap) resultWrap.style.display = 'none';
 
-      var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n' + text;
+      var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n【절대 규칙】\n1. [ ] ( ) 등 모든 괄호와 특수문자는 원문 그대로 유지하세요. 절대 삭제하거나 변경하지 마세요.\n2. [예천동 관공서화재](최종) 같은 소방 보고 형식의 제목은 맞춤법 교정 대상이 아닙니다. 그대로 두세요.\n3. 숫자, 부호, 괄호 안 내용은 절대 수정하지 마세요.\n4. 오직 명백한 맞춤법/띄어쓰기 오류만 교정하세요.\n\n텍스트:\n' + text;
       _debug.info('맞춤법','API 호출 시작');
       var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
         method:'POST', headers:{'Content-Type':'application/json'},
