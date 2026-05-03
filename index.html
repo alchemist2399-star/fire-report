@@ -700,6 +700,84 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
       <div id="autoLockStatus" style="font-size:12px;font-weight:700;color:var(--ink4);text-align:center;margin-top:8px;"></div>
     </div>
+    <!-- ══ 사용량 모니터링 카드 ══ -->
+    <div class="card" id="usageCard">
+      <div class="card-head">
+        <span class="badge" style="background:#e8f4fd;color:#1a6ee8;border:1px solid rgba(26,110,232,0.2);">📊 사용량</span>
+        <span class="card-title">API 사용량 현황</span>
+        <button onclick="APP.usage.refresh()" style="margin-left:auto;font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-weight:700;">↺ 새로고침</button>
+      </div>
+      <!-- 오늘 사용량 요약 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:var(--orange-lt);border:1px solid var(--orange-bd);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--orange);" id="usage_todayTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">오늘 총 호출</div>
+        </div>
+        <div style="background:var(--blue-lt);border:1px solid rgba(26,110,232,0.2);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--blue);" id="usage_weekTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">이번 주</div>
+        </div>
+        <div style="background:var(--green-lt);border:1px solid rgba(13,155,106,0.2);border-radius:var(--r2);padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:var(--green);" id="usage_allTotal">0</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink4);margin-top:2px;">누적</div>
+        </div>
+      </div>
+      <!-- 기능별 분류 -->
+      <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:6px;">기능별 오늘 사용량</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+        <!-- AI 사진 분석 -->
+        <div style="background:var(--surface2);border-radius:var(--r3);padding:9px 12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">🤖</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink2);">AI 사진 분석</span>
+              <span style="font-size:9px;color:var(--ink4);background:var(--border);padding:1px 5px;border-radius:3px;">gemini-2.5-flash</span>
+            </div>
+            <span style="font-size:14px;font-weight:900;color:var(--orange);" id="usage_aiScan">0</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+            <div id="usage_aiScanBar" style="height:100%;background:var(--orange);border-radius:100px;width:0%;transition:width .5s;"></div>
+          </div>
+        </div>
+        <!-- 맞춤법 검사 -->
+        <div style="background:var(--surface2);border-radius:var(--r3);padding:9px 12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">✓</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink2);">맞춤법 검사</span>
+              <span style="font-size:9px;color:var(--ink4);background:var(--border);padding:1px 5px;border-radius:3px;">gemini-2.5-flash-lite</span>
+            </div>
+            <span style="font-size:14px;font-weight:900;color:var(--green);" id="usage_spell">0</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+            <div id="usage_spellBar" style="height:100%;background:var(--green);border-radius:100px;width:0%;transition:width .5s;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 최근 사용 기록 -->
+      <div style="font-size:10px;font-weight:800;color:var(--ink4);letter-spacing:0.7px;margin-bottom:6px;">최근 사용 기록 (최대 10건)</div>
+      <div id="usage_log" style="background:var(--surface2);border-radius:var(--r3);padding:4px 0;max-height:180px;overflow-y:auto;font-size:11px;">
+        <div style="padding:10px;text-align:center;color:var(--ink4);">사용 기록이 없습니다</div>
+      </div>
+      <!-- 할당량 경고 임계값 설정 -->
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:11px;font-weight:700;color:var(--ink3);">⚠️ 일일 경고 임계값</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" id="usage_threshold" min="1" max="9999" value="50"
+              style="width:64px;font-size:12px;padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r3);background:var(--surface);color:var(--ink);font-family:var(--mono);outline:none;text-align:center;"
+              onchange="APP.usage.saveThreshold(this.value)"/>
+            <span style="font-size:11px;color:var(--ink4);">회 초과 시 알림</span>
+          </div>
+        </div>
+        <div id="usage_warningBanner" style="display:none;background:var(--red-lt);border:1.5px solid rgba(217,48,37,0.3);border-radius:var(--r3);padding:8px 11px;font-size:12px;color:var(--red);font-weight:700;">
+          🚨 오늘 API 호출이 임계값을 초과했습니다!
+        </div>
+      </div>
+      <!-- 초기화 버튼 -->
+      <button onclick="APP.usage.resetStats()" style="width:100%;margin-top:10px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🗑️ 사용량 기록 초기화</button>
+    </div>
+
     <div class="card">
       <div class="card-head"><span class="badge badge-green">Gemini AI</span><span class="card-title">AI API 설정</span></div>
       <div class="info-box">🔒 API Key는 AES-256-GCM으로 암호화되어 저장됩니다.</div>
@@ -712,7 +790,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
       <button class="btn btn-full" style="color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="APP.settings.clearAll()">🗑️ 모든 데이터 초기화</button>
     </div>
-    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v7.0&nbsp;·&nbsp;서산소방서</div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v8.0&nbsp;·&nbsp;서산소방서</div>
   </div>
 </div>
 
@@ -1125,6 +1203,8 @@ APP.auth = {
           var keyEl = document.getElementById('cfg_geminiKey');
           if (keyEl) keyEl.placeholder = '저장됨 (변경하려면 새로 입력)';
         }
+        // 사용량 대시보드 자동 새로고침
+        try { APP.usage.refresh(); } catch(ue) {}
       } else {
         var locked = _bf.fail('settings');
         _bf.showMsg('settings', errId, inp);
@@ -1353,7 +1433,10 @@ APP.spell = {
       if (!data.candidates || !data.candidates[0]) throw new Error('AI 응답이 비어있습니다');
       var parsed = _ui.safeJSON((data.candidates[0].content.parts[0].text || ''), {});
       var corrected = parsed.corrected || '';
-      if (corrected) this._cache[text] = corrected;
+      if (corrected) {
+        this._cache[text] = corrected;
+        try { APP.usage.record('spell'); } catch(ue) {}  // 사용량 기록
+      }
       if (corrEl) corrEl.textContent = corrected || '(교정 결과 없음)';
       if (resultWrap) resultWrap.style.display = 'block';
     } catch(e) {
@@ -1997,6 +2080,7 @@ APP.report = {
         this._lastCacheKey = cacheKey;
       }
       this._lastParsed = parsed;
+      try { APP.usage.record('aiScan'); } catch(ue) {}  // 사용량 기록
 
       // 결과 표시 (약간의 딜레이로 진행바 완료 느낌)
       var self = this;
@@ -2523,14 +2607,156 @@ APP.settings = {
       if (inp) { inp.value=''; inp.placeholder='저장됨 (변경하려면 새로 입력)'; }
     } catch(e) { _ui.toast('❌ 저장 실패: ' + e.message.slice(0,30)); }
   },
-  clearAll: function() {
-    _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
+/* ── usage: API 사용량 모니터링 ────────────────────────────────── */
+APP.usage = {
+  // ── 상수 ──────────────────────────────────────────────────────
+  KEY_LOG      : 'apiUsageLog',       // 최근 10건 로그
+  KEY_DAILY    : 'apiUsageDaily',     // 날짜별 집계 { YYYY-MM-DD: {aiScan:N, spell:N} }
+  KEY_THRESHOLD: 'apiUsageThreshold', // 경고 임계값
+  MAX_LOG      : 10,
+  DEFAULT_THRESHOLD: 50,
+
+  // ── 오늘 날짜 키 ───────────────────────────────────────────────
+  _todayKey: function() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  },
+
+  // ── 기록 추가 (API 호출할 때마다 호출) ────────────────────────
+  record: function(type) {
+    // type: 'aiScan' | 'spell'
+    try {
+      var today = this._todayKey();
+      // 일별 집계 업데이트
+      var daily = _store.getJSON(this.KEY_DAILY, {});
+      if (!daily[today]) daily[today] = {aiScan:0, spell:0};
+      daily[today][type] = (daily[today][type] || 0) + 1;
+      // 60일 이상 된 데이터 자동 삭제
+      var keys = Object.keys(daily).sort();
+      while (keys.length > 60) { delete daily[keys.shift()]; }
+      _store.setJSON(this.KEY_DAILY, daily);
+
+      // 로그 추가
+      var log = _store.getJSON(this.KEY_LOG, []);
+      var now = new Date();
+      var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+      var labels = {aiScan:'AI 사진 분석', spell:'맞춤법 검사'};
+      log.unshift({type:type, label:labels[type]||type, time:timeStr, date:today});
+      if (log.length > this.MAX_LOG) log = log.slice(0, this.MAX_LOG);
+      _store.setJSON(this.KEY_LOG, log);
+
+      // 임계값 초과 토스트 (한 번만)
+      var threshold = parseInt(_store.get(this.KEY_THRESHOLD, String(this.DEFAULT_THRESHOLD))) || this.DEFAULT_THRESHOLD;
+      var todayTotal = (daily[today].aiScan||0) + (daily[today].spell||0);
+      if (todayTotal === threshold) {
+        _ui.toast('⚠️ 오늘 API 호출이 ' + threshold + '회를 초과했습니다!', 5000);
+      }
+    } catch(e) { console.warn('[usage.record]', e); }
+  },
+
+  // ── 화면 렌더링 ────────────────────────────────────────────────
+  refresh: function() {
+    try {
+      var today = this._todayKey();
+      var daily = _store.getJSON(this.KEY_DAILY, {});
+      var todayData = daily[today] || {aiScan:0, spell:0};
+      var todayTotal = (todayData.aiScan||0) + (todayData.spell||0);
+
+      // 이번 주 집계 (월~오늘)
+      var weekTotal = 0;
+      var now = new Date(), dow = now.getDay(); // 0=일
+      var weekStart = new Date(now); weekStart.setDate(now.getDate() - ((dow === 0 ? 7 : dow) - 1));
+      Object.keys(daily).forEach(function(k) {
+        var d = new Date(k);
+        if (d >= weekStart) weekTotal += (daily[k].aiScan||0) + (daily[k].spell||0);
+      });
+
+      // 누적
+      var allTotal = 0;
+      Object.keys(daily).forEach(function(k) { allTotal += (daily[k].aiScan||0) + (daily[k].spell||0); });
+
+      // 숫자 업데이트
+      this._setText('usage_todayTotal', todayTotal);
+      this._setText('usage_weekTotal',  weekTotal);
+      this._setText('usage_allTotal',   allTotal);
+      this._setText('usage_aiScan',     todayData.aiScan||0);
+      this._setText('usage_spell',      todayData.spell||0);
+
+      // 바 그래프 (오늘 총 대비 비율)
+      var MAX_BAR = Math.max(todayTotal, 1);
+      this._setBar('usage_aiScanBar', (todayData.aiScan||0) / MAX_BAR * 100);
+      this._setBar('usage_spellBar',  (todayData.spell||0)  / MAX_BAR * 100);
+
+      // 임계값 설정
+      var threshold = parseInt(_store.get(this.KEY_THRESHOLD, String(this.DEFAULT_THRESHOLD))) || this.DEFAULT_THRESHOLD;
+      var thEl = document.getElementById('usage_threshold'); if (thEl) thEl.value = threshold;
+
+      // 경고 배너
+      var warnEl = document.getElementById('usage_warningBanner');
+      if (warnEl) warnEl.style.display = todayTotal >= threshold ? 'block' : 'none';
+
+      // 로그 렌더링
+      this._renderLog();
+    } catch(e) { console.error('[usage.refresh]', e); }
+  },
+
+  _renderLog: function() {
+    try {
+      var logEl = document.getElementById('usage_log'); if (!logEl) return;
+      var log = _store.getJSON(this.KEY_LOG, []);
+      if (!log.length) {
+        logEl.innerHTML = '<div style="padding:10px;text-align:center;color:var(--ink4);">사용 기록이 없습니다</div>';
+        return;
+      }
+      var icons = {aiScan:'🤖', spell:'✓'};
+      var colors = {aiScan:'var(--orange)', spell:'var(--green)'};
+      logEl.innerHTML = log.map(function(item) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);">' +
+          '<span style="font-size:13px;flex-shrink:0;">' + (icons[item.type]||'📡') + '</span>' +
+          '<span style="flex:1;font-size:11px;font-weight:700;color:' + (colors[item.type]||'var(--ink)') + ';">' + _ui.escHtml(item.label) + '</span>' +
+          '<span style="font-size:10px;color:var(--ink4);font-family:var(--mono);">' + _ui.escHtml(item.time) + '</span>' +
+          '</div>';
+      }).join('');
+    } catch(e) { console.warn('[usage._renderLog]', e); }
+  },
+
+  _setText: function(id, val) {
+    var el = document.getElementById(id); if (el) el.textContent = String(val);
+  },
+  _setBar: function(id, pct) {
+    var el = document.getElementById(id); if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  },
+
+  saveThreshold: function(val) {
+    try {
+      var n = parseInt(val);
+      if (isNaN(n) || n < 1) return;
+      _store.set(this.KEY_THRESHOLD, String(n));
+      this.refresh();
+      _ui.toast('임계값이 ' + n + '회로 설정됐습니다');
+    } catch(e) { console.warn('[usage.saveThreshold]', e); }
+  },
+
+  resetStats: function() {
+    _ui.confirm('사용량 기록 초기화', '모든 API 사용량 기록이 삭제됩니다. 계속할까요?', function() {
       try {
-        _store.clearKeep(['appLockPw','settingsPw']);
-        _ui.toast('초기화됐습니다'); location.reload();
-      } catch(e) { console.error('[settings.clearAll]', e); }
+        _store.remove(APP.usage.KEY_LOG);
+        _store.remove(APP.usage.KEY_DAILY);
+        APP.usage.refresh();
+        _ui.toast('사용량 기록이 초기화됐습니다');
+      } catch(e) { console.error('[usage.resetStats]', e); }
     }, true);
   }
+};
+
+/* ──────────────────────────────────────────────────────────────── */
+APP.settings.clearAll = function() {
+  _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
+    try {
+      _store.clearKeep(['appLockPw','settingsPw']);
+      _ui.toast('초기화됐습니다'); location.reload();
+    } catch(e) { console.error('[settings.clearAll]', e); }
+  }, true);
 };
 
 /* ═══════════════════════════════════════════════════════════════════
