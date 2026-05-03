@@ -169,7 +169,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .tl-content input:focus{border-color:var(--orange);}
 .tl-del{width:30px;height:30px;border-radius:50%;background:var(--surface2);color:var(--ink4);border:1.5px solid var(--border);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
 .preview-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
-.preview-body{padding:12px;font-size:12px;color:var(--ink);line-height:1.9;font-family:var(--font);width:100%;box-sizing:border-box;}
+.preview-body{padding:14px;font-size:14px;color:var(--ink);line-height:2.0;font-family:var(--font);width:100%;box-sizing:border-box;}
 
 /* ═══════════════════════════════════════════
    연락처 탭
@@ -2671,16 +2671,16 @@ APP.report = {
     };
   },
   _buildBanner: function() {
-    return '<div style="border:1px solid #cc0000;margin:0 0 3px 0;padding:1px 4px;text-align:center;border-radius:2px;"><span style="color:#cc0000;font-size:8px;font-weight:800;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
+    return '<div style="border:1px solid #cc0000;margin:0 0 3px 0;padding:1px 4px;text-align:center;border-radius:2px;"><span style="color:#cc0000;font-size:30px;font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
   },
   _buildHeader: function(d) {
     var e = _ui.escHtml.bind(_ui);
     return '<div style="border:1px solid #1a3a6b;border-radius:3px;margin-bottom:6px;overflow:hidden;">' +
       '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;">' +
         '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" style="max-width:56px;max-height:32px;object-fit:contain;flex-shrink:0;" onerror="this.style.display:\'none\'"/>' +
-        '<div style="flex:1;text-align:center;font-size:13px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
+        '<div style="flex:1;text-align:center;font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
       '</div>' +
-      '<div style="padding:4px 10px;font-size:10px;color:#374151;text-align:right;line-height:1.8;">' +
+      '<div style="padding:4px 10px;font-size:30px;color:#374151;text-align:right;line-height:1.8;">' +
         (d.duty ? '당직: ' + e(d.duty) + '&nbsp;&nbsp;' : '') +
         e(d.manager||'서산소방서') +
       '</div>' +
@@ -2688,14 +2688,14 @@ APP.report = {
     },
   _row: function(label, val) {
     if (!val) return '';
-    return '<div style="display:flex;align-items:baseline;line-height:1.9;font-size:11px;"><span style="flex-shrink:0;white-space:nowrap;">○ ' + _ui.escHtml(label) + ' :</span><span style="margin-left:6px;">' + _ui.escHtml(val) + '</span></div>';
+    return '<div style="display:flex;align-items:baseline;line-height:2.0;font-size:39px;"><span style="flex-shrink:0;white-space:nowrap;font-weight:900;">○ ' + _ui.escHtml(label) + ' :</span><span style="margin-left:6px;">' + _ui.escHtml(val) + '</span></div>';
   },
   _buildSec1: function(d) {
     try {
       var e = _ui.escHtml.bind(_ui);
-      var dtRow = d.datetime ? '<div style="display:flex;align-items:baseline;line-height:1.9;font-size:11px;"><span style="flex-shrink:0;white-space:nowrap;">○ 일 시 :</span><span style="margin-left:6px;">' + e(d.datetime) + (d.callCount ? '&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:10px;">신고건수: '+e(d.callCount)+'</span>':'')+'</span></div>' : '';
-      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">1. 사고개요</span></div>' +
-        '<div style="padding-left:4px;margin-bottom:8px;">' + dtRow + (d.distance?'<div style="font-size:10px;color:#6B7280;padding-left:14px;">※ '+e(d.distance)+'</div>':'') + this._row('대 상',d.target) + this._row('장 소',d.addr) + this._row('내 용',d.mainContent) + '</div>';
+      var dtRow = d.datetime ? '<div style="display:flex;align-items:baseline;line-height:2.0;font-size:39px;"><span style="flex-shrink:0;white-space:nowrap;font-weight:900;">○ 일 시 :</span><span style="margin-left:6px;">' + e(d.datetime) + (d.callCount ? '&nbsp;&nbsp;<span style="border:0.5px solid #E4E7EE;border-radius:100px;padding:1px 7px;font-size:30px;">신고건수: '+e(d.callCount)+'</span>':'')+'</span></div>' : '';
+      return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">1. 사고개요</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:8px;">' + dtRow + (d.distance?'<div style="font-size:30px;color:#6B7280;padding-left:14px;">※ '+e(d.distance)+'</div>':'') + this._row('대 상',d.target) + this._row('장 소',d.addr) + this._row('내 용',d.mainContent) + '</div>';
     } catch(e) { return ''; }
   },
   _buildSec2: function(d) {
@@ -2707,20 +2707,20 @@ APP.report = {
         var isFire = vals[4] && vals[4].indexOf('화재') >= 0;
         rows += '<tr' + (isFire?' style="background:#FFF3EC;"':'') + '>' + vals.map(function(v){return '<td style="padding:2px 3px;border:0.5px solid #E4E7EE;text-align:center;">'+_ui.escHtml(v)+'</td>';}).join('') + '</tr>';
       });
-      var bldg = rows ? '<div style="padding-left:4px;margin-bottom:8px;"><div style="font-size:10px;font-weight:500;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:10px;min-width:280px;"><thead><tr>' + ['구분','구조','크기(㎡)','용도','기타'].map(function(h){return '<th style="background:#4a6fa5;color:#fff;padding:3px 4px;text-align:center;white-space:nowrap;">'+h+'</th>';}).join('') + '</tr></thead><tbody>'+rows+'</tbody></table></div></div>' : '';
-      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">2. 피해상황</span></div>' +
-        '<div style="padding-left:4px;margin-bottom:4px;font-size:11px;">' + this._row('인명피해',d.casualty) + this._row('재산피해',d.damage) + '</div>' + bldg;
+      var bldg = rows ? '<div style="padding-left:4px;margin-bottom:8px;"><div style="font-size:30px;font-weight:700;color:#6B7280;margin-bottom:2px;">▪ 건축물 현황</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:30px;min-width:280px;"><thead><tr>' + ['구분','구조','크기(㎡)','용도','기타'].map(function(h){return '<th style="background:#4a6fa5;color:#fff;padding:3px 4px;text-align:center;white-space:nowrap;">'+h+'</th>';}).join('') + '</tr></thead><tbody>'+rows+'</tbody></table></div></div>' : '';
+      return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">2. 피해상황</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:4px;font-size:33px;">' + this._row('인명피해',d.casualty) + this._row('재산피해',d.damage) + '</div>' + bldg;
     } catch(e) { return ''; }
   },
   _buildSec3: function(d) {
     try {
-      var sub = function(lbl,val) { return val ? '<div style="font-size:10.5px;line-height:1.85;padding-left:8px;"><span style="color:#6B7280;">- '+_ui.escHtml(lbl)+' : </span>' + _ui.escHtml(val) + '</div>' : ''; };
+      var sub = function(lbl,val) { return val ? '<div style="font-size:32px;line-height:1.85;padding-left:8px;"><span style="color:#6B7280;">- '+_ui.escHtml(lbl)+' : </span>' + _ui.escHtml(val) + '</div>' : ''; };
       var perD='', agD='';
       if (d.equipDetail) {
         d.equipDetail.split('/').forEach(function(s){s=s.trim();if(/소방/.test(s))perD=s.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();else if(/유관기관/.test(s))agD=s.replace(/^유관기관\s*:\s*/,'').trim();});
       }
-      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">3. 자원동원</span></div>' +
-        '<div style="padding-left:4px;margin-bottom:8px;font-size:11px;">' + this._row('인 원',d.personnel) + this._row('장 비',d.equipment) + sub('소방기관',perD) + sub('유관기관',agD) + '</div>';
+      return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">3. 자원동원</span></div>' +
+        '<div style="padding-left:4px;margin-bottom:8px;font-size:33px;">' + this._row('인 원',d.personnel) + this._row('장 비',d.equipment) + sub('소방기관',perD) + sub('유관기관',agD) + '</div>';
     } catch(e) { return ''; }
   },
   _buildSec4: function() {
@@ -2730,11 +2730,11 @@ APP.report = {
         var inputs = item.querySelectorAll('input');
         if (inputs.length < 2 || !inputs[1].value.trim()) return;
         var t = inputs[0].value.trim().replace(/(\d{1,2}:\d{2}):\d{2}/,'$1').replace(/^\d{4}-/,'');
-        items.push('<div style="font-size:10.5px;line-height:1.75;"><span style="color:#E8600A;font-family:monospace;font-weight:700;">【'+_ui.escHtml(t)+'】</span> '+_ui.escHtml(inputs[1].value.trim())+'</div>');
+        items.push('<div style="font-size:39px;line-height:1.9;"><span style="color:#E8600A;font-family:monospace;font-weight:900;">【'+_ui.escHtml(t)+'】</span> '+_ui.escHtml(inputs[1].value.trim())+'</div>');
       });
       if (!items.length) return '';
       var allItems = items.join('');
-      return '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">4. 주요 조치사항</span></div>' +
+      return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">4. 주요 조치사항</span></div>' +
         '<div style="padding-left:4px;margin-bottom:8px;">' + allItems + '</div>';
     } catch(e) { return ''; }
   },
@@ -2744,23 +2744,24 @@ APP.report = {
       if (!hasMap && !hasScene) return '';
       var H = 120, self = this;
       var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
-      var out = '<div style="margin-bottom:3px;"><span style="font-size:12px;font-weight:500;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
-      // 세로형 레이아웃 — 위치도 먼저, 현장사진 아래
-      var IMGW = '100%';
+      var out = '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
+      // 세로형 — 위치도: 고정높이, 현장사진: 2열 그리드
+      var MH = 140, SH = 100;
       if (hasMap) {
         out+='<div style="padding-left:4px;margin-bottom:6px;">';
-        out+='<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">📍 위치도</div>';
-        out+='<div style="width:'+IMGW+';border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">';
-        out+='<img src="'+safe(this._mapPhoto)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
+        out+='<div style="font-size:30px;color:#6B7280;margin-bottom:3px;">📍 위치도</div>';
+        out+='<div style="height:'+MH+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">';
+        out+='<img src="'+safe(this._mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;"/>';
         out+='</div></div>';
       }
       if (hasScene) {
+        var n=this._scenePhotos.length, cols=Math.min(n,2);
         out+='<div style="padding-left:4px;">';
-        out+='<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">📷 현장사진 ('+this._scenePhotos.length+'장)</div>';
-        out+='<div style="display:flex;flex-direction:column;gap:4px;">';
+        out+='<div style="font-size:30px;color:#6B7280;margin-bottom:3px;">📷 현장사진 ('+n+'장)</div>';
+        out+='<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
         this._scenePhotos.forEach(function(f){
-          out+='<div style="width:'+IMGW+';border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">';
-          out+='<img src="'+safe(f)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
+          out+='<div style="height:'+SH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">';
+          out+='<img src="'+safe(f)+'" style="width:100%;height:100%;object-fit:cover;"/>';
           out+='</div>';
         });
         out+='</div></div>';
