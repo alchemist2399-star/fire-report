@@ -212,6 +212,15 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .conf-ok{background:var(--green-lt);color:var(--green);border:1px solid rgba(13,155,106,0.3);}
 .conf-warn{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
 .conf-miss{background:var(--surface2);color:var(--ink4);border:1px solid var(--border);}
+
+/* ── 디버그 패널 스타일 ── */
+.dbg-panel{background:var(--surface);border:1.5px solid rgba(124,58,237,0.3);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
+.dbg-toolbar{display:flex;align-items:center;gap:6px;padding:10px 12px;background:#1a1a2e;flex-wrap:wrap;}
+.dbg-filter-btn{padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);background:var(--surface2);color:var(--ink3);transition:all .15s;}
+.dbg-log-wrap{max-height:360px;overflow-y:auto;background:#0d0d1a;}
+.dbg-status-dot{width:8px;height:8px;border-radius:50%;background:#28c840;flex-shrink:0;box-shadow:0 0 6px rgba(40,200,64,0.6);}
+.dbg-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;background:rgba(124,58,237,0.25);color:#c4b5fd;letter-spacing:0.5px;}
+
 </style>
 </head>
 <body>
@@ -829,7 +838,36 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div class="info-box">⚠️ 저장된 모든 보고서 기록과 연락처가 삭제됩니다.</div>
       <button class="btn btn-full" style="color:var(--red);border-color:rgba(217,48,37,0.3);" onclick="APP.settings.clearAll()">🗑️ 모든 데이터 초기화</button>
     </div>
-    <div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v9.0&nbsp;·&nbsp;서산소방서</div>
+    <!-- ══ 디버그 토글 버튼 ══ -->
+<div id="debugToggleWrap" style="display:none;margin-bottom:12px;">
+  <button onclick="_debug.toggle()" style="width:100%;padding:12px;border-radius:var(--r2);border:1.5px solid rgba(124,58,237,0.3);background:var(--purple-lt);color:var(--purple);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;">
+    🛠️ 디버그 패널 열기/닫기
+    <span style="font-size:10px;font-weight:700;background:rgba(124,58,237,0.15);padding:2px 8px;border-radius:100px;">개발자 전용</span>
+  </button>
+</div>
+<!-- ══ 디버그 패널 ══ -->
+<div class="card dbg-panel" id="debugPanel" style="display:none;">
+  <div class="dbg-toolbar">
+    <div class="dbg-status-dot"></div>
+    <span style="font-size:12px;font-weight:900;color:#fff;">🛠️ 디버그 로그</span>
+    <span class="dbg-tag">LIVE</span>
+    <button class="dbg-filter-btn" data-filter="all" onclick="_debug.setFilter('all')" style="background:var(--navy);color:#fff;">전체</button>
+    <button class="dbg-filter-btn" data-filter="err" onclick="_debug.setFilter('err')">오류만</button>
+    <button class="dbg-filter-btn" data-filter="warn" onclick="_debug.setFilter('warn')">경고만</button>
+    <button onclick="_debug.copyLogs()" style="margin-left:auto;padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.12);color:#fff;font-family:var(--font);">📋 복사</button>
+    <button onclick="_debug.clear()" style="padding:5px 10px;border-radius:100px;border:none;font-size:11px;font-weight:800;cursor:pointer;background:rgba(217,48,37,0.3);color:#ff8888;font-family:var(--font);">🗑️ 지우기</button>
+  </div>
+  <div class="dbg-log-wrap" id="debugLogContainer">
+    <div style="padding:14px;text-align:center;color:#555;font-size:11px;">아직 기록이 없습니다</div>
+  </div>
+  <div style="display:flex;gap:12px;padding:8px 14px;background:#111;border-top:1px solid #222;">
+    <span style="font-size:10px;color:#0D9B6A;font-weight:700;" id="dbg_okCount">✅ 성공 0</span>
+    <span style="font-size:10px;color:#D93025;font-weight:700;" id="dbg_errCount">❌ 오류 0</span>
+    <span style="font-size:10px;color:#856404;font-weight:700;" id="dbg_warnCount">⚠️ 경고 0</span>
+    <span style="font-size:10px;color:#9CA3AF;margin-left:auto;font-family:monospace;" id="dbg_totalCount">총 0건</span>
+  </div>
+</div>
+<div style="text-align:center;padding:16px;font-size:11px;color:var(--ink4);">소방 상황보고 시스템 v9.0&nbsp;·&nbsp;서산소방서</div>
   </div>
 </div>
 
@@ -851,6 +889,85 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 ══════════════════════════════════════════ -->
 <script>
 'use strict';
+
+/* ═══ 🛠️ DEBUG MODULE ══════════════════════════════════════════
+   보안: API Key/비밀번호 자동 마스킹 · 설정 비번 인증 후만 접근
+   로그 메모리에만 저장 · 앱 잠금 시 자동 초기화 (외부전송 없음)
+══════════════════════════════════════════════════════════════ */
+var _debug={
+  _logs:[],MAX:200,
+  log:function(module,step,status,detail){
+    try{
+      var n=new Date();
+      var t=[n.getHours(),n.getMinutes(),n.getSeconds()].map(function(v){return String(v).padStart(2,'0');}).join(':')+'.'+String(n.getMilliseconds()).padStart(3,'0');
+      this._logs.unshift({time:t,module:String(module||'').slice(0,20),step:String(step||'').slice(0,50),status:status,detail:this._mask(String(detail||'')).slice(0,200)});
+      if(this._logs.length>this.MAX)this._logs.pop();
+      var icon={ok:'✅',err:'❌',warn:'⚠️',info:'🔵'}[status]||'▪';
+      console.log('[DBG]['+module+'] '+icon+' '+step+(detail?' — '+this._mask(String(detail)):''));
+      this._render();this._updateCounts();
+    }catch(e){}
+  },
+  ok:function(m,s,d){this.log(m,s,'ok',d);},
+  err:function(m,s,d){this.log(m,s,'err',d);},
+  warn:function(m,s,d){this.log(m,s,'warn',d);},
+  info:function(m,s,d){this.log(m,s,'info',d);},
+  _mask:function(s){
+    return String(s||'').replace(/AIza[A-Za-z0-9_\-]{10,}/g,'AIza***[MASKED]').replace(/"?(password|pw|secret|token)"?\s*:\s*"[^"]+"/gi,'"$1":"[MASKED]"');
+  },
+  _open:false,
+  toggle:function(){
+    this._open=!this._open;
+    var p=document.getElementById('debugPanel');
+    if(p)p.style.display=this._open?'block':'none';
+    if(this._open){this._render();this._updateCounts();}
+  },
+  clear:function(){this._logs=[];this._render();this._updateCounts();this.info('Debug','로그 초기화됨');},
+  _updateCounts:function(){
+    try{
+      var ok=0,err=0,warn=0;
+      this._logs.forEach(function(e){if(e.status==='ok')ok++;else if(e.status==='err')err++;else if(e.status==='warn')warn++;});
+      var s=function(id,v){var el=document.getElementById(id);if(el)el.textContent=v;};
+      s('dbg_okCount','✅ 성공 '+ok);s('dbg_errCount','❌ 오류 '+err);
+      s('dbg_warnCount','⚠️ 경고 '+warn);s('dbg_totalCount','총 '+this._logs.length+'건');
+    }catch(e){}
+  },
+  _filter:'all',
+  setFilter:function(f){
+    this._filter=f;
+    document.querySelectorAll('.dbg-filter-btn').forEach(function(b){
+      b.style.background=b.dataset.filter===f?'var(--navy)':'var(--surface2)';
+      b.style.color=b.dataset.filter===f?'#fff':'var(--ink3)';
+    });
+    this._render();
+  },
+  _render:function(){
+    try{
+      var wrap=document.getElementById('debugLogContainer');if(!wrap)return;
+      var f=this._filter;
+      var fl=f==='all'?this._logs:this._logs.filter(function(e){return e.status===f;});
+      if(!fl.length){wrap.innerHTML='<div style="padding:14px;text-align:center;color:#555;font-size:11px;">'+(f==='all'?'아직 기록이 없습니다':'해당 로그 없음')+'</div>';return;}
+      var BG={ok:'rgba(13,155,106,0.08)',err:'rgba(217,48,37,0.08)',warn:'rgba(133,100,4,0.08)',info:'rgba(26,110,232,0.08)'};
+      var CLR={ok:'#4ade80',err:'#f87171',warn:'#fbbf24',info:'#60a5fa'};
+      var ICO={ok:'✅',err:'❌',warn:'⚠️',info:'🔵'};
+      wrap.innerHTML=fl.map(function(e){
+        return '<div style="display:flex;gap:8px;padding:7px 10px;border-bottom:1px solid #1a1a2e;background:'+(BG[e.status]||'transparent')+';align-items:flex-start;">'+
+          '<span style="font-size:11px;flex-shrink:0;">'+(ICO[e.status]||'▪')+'</span>'+
+          '<div style="flex:1;min-width:0;">'+
+            '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">'+
+              '<span style="font-size:10px;font-weight:900;color:'+(CLR[e.status]||'#9CA3AF')+';">['+e.module+']</span>'+
+              '<span style="font-size:10px;font-weight:700;color:#d1d5db;">'+e.step+'</span>'+
+              '<span style="font-size:9px;color:#6B7280;margin-left:auto;font-family:monospace;">'+e.time+'</span>'+
+            '</div>'+
+            (e.detail?'<div style="font-size:10px;color:#9CA3AF;font-family:monospace;word-break:break-all;margin-top:2px;">'+e.detail+'</div>':'')+
+          '</div></div>';
+      }).join('');
+    }catch(e){}
+  },
+  copyLogs:async function(){
+    try{var text=this._logs.map(function(e){return '['+e.time+']['+e.module+'] '+e.step+(e.detail?' — '+e.detail:'');}).join('\n');await _ui.copy(text,'📋 디버그 로그 복사됨');}catch(e){}
+  }
+};
+
 
 /* ═══════════════════════════════════════════════════════════════════
    ① CORE — 전역 오류 핸들러 (가장 먼저 등록)
@@ -1241,7 +1358,7 @@ APP.auth = {
       if (ok) {
         _bf.ok('app');
         await _apiKey.load(val);
-        _ui.hide('lockScreen');
+        _ui.hide('lockScreen'); _debug.info('Auth','앱 잠금 해제됨');
         var errEl = document.getElementById(errId); if (errEl) errEl.className = 'sec-err';
         inp.value = '';
         APP.nav.go('dispatch');
@@ -1271,6 +1388,8 @@ APP.auth = {
         _bf.ok('settings');
         _ui.hide('settingsLock');
         _ui.show('settingsContent');
+        var dw=document.getElementById('debugToggleWrap');if(dw)dw.style.display='block';
+        _debug.info('Auth','설정 탭 잠금 해제됨');
         var errEl = document.getElementById(errId); if (errEl) errEl.className = 'sec-err';
         inp.value = '';
         if (_apiKey.get()) {
@@ -1295,6 +1414,7 @@ APP.auth = {
     }
   },
   lock: function() {
+      _debug.clear();
     try {
       _apiKey.clear();
       APP.report._scanPhotos = []; APP.report._mapPhoto = null; APP.report._scenePhotos = [];
@@ -1442,6 +1562,7 @@ APP.dispatch = {
       var box = document.getElementById('outputBox');
       if (!box || box.textContent.indexOf('정보를 입력하면') >= 0) { _ui.toast('보고서를 먼저 작성하세요'); return; }
       var ok = await _ui.share(box.textContent, '📨 전파됐습니다');
+      _debug.ok('출동보고','보고문 전파됨');
       if (ok) {
         try {
           var h = _store.getJSON('dispatchHistory', []);
@@ -1500,6 +1621,7 @@ APP.spell = {
       if (resultWrap) resultWrap.style.display = 'none';
 
       var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n텍스트:\n' + text;
+      _debug.info('맞춤법','API 호출 시작');
       var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
@@ -1520,6 +1642,7 @@ APP.spell = {
       if (corrEl) corrEl.textContent = corrected || '(교정 결과 없음)';
       if (resultWrap) resultWrap.style.display = 'block';
     } catch(e) {
+      _debug.err('맞춤법','검사 실패',e.message);
       _ui.toast('❌ 검사 실패: ' + String(e.message).slice(0,40));
       console.error('[spell.run]', e);
     } finally {
@@ -2130,6 +2253,7 @@ APP.report = {
       var prompt = this._buildPrompt(this._photoModes);
       var parts  = [{text: prompt}].concat(imgParts);
 
+      _debug.info('AI분석','Gemini API 호출 시작','이미지 '+imgParts.length+'장 · 모드: '+APP.report._photoModes.join('+'));
       var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({contents:[{parts:parts}], generationConfig:{temperature:0.0, maxOutputTokens:4096, responseMimeType:'application/json'}})
@@ -2139,6 +2263,7 @@ APP.report = {
         var errInfo = _ui.parseApiError(errData, res.status);
         throw new Error(errInfo.msg + (errInfo.retry ? '\n(잠시 후 다시 시도할 수 있습니다)' : ''));
       }
+      _debug.ok('AI분석','API 응답 수신','HTTP '+res.status);
       var data = await res.json();
       if (!data.candidates || !data.candidates[0]) {
         // finishReason 확인 (SAFETY, MAX_TOKENS 등)
@@ -2149,6 +2274,8 @@ APP.report = {
 
       var rawText = (data.candidates[0].content.parts[0].text || '');
       var parsed  = _ui.safeJSON(rawText, {p119:{}, building:{floors:[]}, scene:{}});
+      var _p119keys=Object.keys(parsed.p119||{}).filter(function(k){return parsed.p119[k]!==null;});
+      _debug.ok('AI분석','JSON 파싱 완료','P119 '+_p119keys.length+'항목 · 건물층 '+(parsed.building&&parsed.building.floors?parsed.building.floors.length:0)+'개');
 
       // ④ 부분 적용 보장 + null 정합성 처리
       parsed = this._sanitizeParsed(parsed);
@@ -2177,6 +2304,7 @@ APP.report = {
       }, 350);
 
     } catch(e) {
+      _debug.err('AI분석','분석 실패',e.message);
       if (pint) clearInterval(pint);
       if (prog) prog.style.display = 'none';
       if (bar) bar.style.width = '0%';
@@ -2352,6 +2480,7 @@ APP.report = {
     return n;
   },
   _applyAI: function(parsed) {
+    _debug.info('AI분석','폼 자동채우기 시작');
     try {
       var p = parsed.p119 || {}, b = parsed.building || {};
       var isV = function(v) { return v !== null && v !== undefined && String(v).trim() !== '' && String(v) !== 'null'; };
@@ -2432,16 +2561,21 @@ APP.report = {
 
       var banner = document.getElementById('aiFillBanner');
       if (banner) banner.style.display = 'flex';
-    } catch(e) { console.error('[report._applyAI]', e); }
+    } catch(e) {
+        _debug.err('AI분석','폼 채우기 실패',e.message);
+        console.error('[report._applyAI]', e);
+      }
   },
 
   /* 미리보기 */
   renderPreview: function() {
     var body = document.getElementById('previewBody'); if (!body) return;
     try {
+      _debug.info('보고서','미리보기 렌더링 시작');
       var d = this._collectData();
       body.innerHTML = this._buildBanner() + this._buildHeader(d) + this._buildSec1(d) + this._buildSec2(d) + this._buildSec3(d) + this._buildSec4() + this._buildPhotoSection();
     } catch(e) {
+      _debug.err('보고서','미리보기 렌더링 실패',e.message);
       console.error('[report.renderPreview]', e);
       body.innerHTML = '<div style="color:var(--red);padding:16px;">⚠️ 보고서 생성 오류: ' + _ui.escHtml(e.message) + '</div>';
     }
