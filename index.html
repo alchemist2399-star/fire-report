@@ -664,8 +664,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
           <span style="margin-left:4px;">level: <b>info</b>파랑 / <b>warn</b>노랑 / <b>urgent</b>빨강</span>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.saveUrl()">💾 URL 저장</button>
-          <button class="btn" style="flex:1;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.fetchNow()">🔄 불러오기</button>
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.saveUrl()">💾 저장 + 바로 적용</button>
+          <button class="btn" style="flex:1;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.fetchNow()">🔄 다시 불러오기</button>
         </div>
         <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:6px 10px;border-radius:var(--r3);"></div>
       </div>
@@ -2764,23 +2764,27 @@ APP.notice = {
       .then(function(text) {
         var data = _ui.safeJSON(text, null);
         if (data && data.msg) {
-          // JSON 형식: {"msg":"...", "level":"info", "title":"..."}
           self._showBanner(data.msg, data.level || 'info', data.title);
+          // 성공 시 URL도 저장 (fetchNow로 불러왔을 때도 저장)
+          var savedUrl = _store.get(self.KEY_URL, '');
+          if (savedUrl) _store.set(self.KEY_URL, savedUrl);
           if (!silent && statusEl) {
             statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
-            statusEl.textContent = '✅ 공지를 성공적으로 불러왔습니다!';
+            statusEl.textContent = '✅ 공지 저장 및 적용 완료!';
             setTimeout(function() { statusEl.style.display='none'; }, 3000);
           }
         } else if (text.trim()) {
-          // 평문 텍스트인 경우
           self._showBanner(text.trim(), 'info');
           if (!silent && statusEl) {
             statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:var(--green-lt);color:var(--green);';
-            statusEl.textContent = '✅ 공지를 불러왔습니다!';
+            statusEl.textContent = '✅ 공지 적용 완료!';
             setTimeout(function() { statusEl.style.display='none'; }, 3000);
           }
         } else {
-          if (!silent) _ui.toast('⚠️ 공지 내용이 비어있습니다 (파일을 확인해주세요)');
+          if (!silent && statusEl) {
+            statusEl.style.cssText = 'display:block;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);background:#fff9e6;color:#856404;';
+            statusEl.textContent = '⚠️ URL은 저장됐지만 공지 내용이 비어있습니다. notice.json 파일을 확인해주세요.';
+          }
         }
       })
       .catch(function(e) {
@@ -2836,15 +2840,14 @@ APP.notice = {
       var urlEl = document.getElementById('cfg_noticeUrl');
       var url = urlEl ? urlEl.value.trim() : '';
       if (!url) { _ui.toast('URL을 입력해주세요'); return; }
-      // GitHub Raw URL 형식 가이드
+      // github.com → raw.githubusercontent.com 자동 변환
       if (url.indexOf('github.com') >= 0 && url.indexOf('raw.githubusercontent.com') < 0) {
-        // github.com → raw.githubusercontent.com 자동 변환
         url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         if (urlEl) urlEl.value = url;
-        _ui.toast('GitHub URL을 Raw 형식으로 자동 변환했습니다', 3500);
       }
       _store.set(this.KEY_URL, url);
-      _ui.toast('✅ URL이 저장됐습니다. 앱 시작 시 자동으로 공지를 불러옵니다.');
+      // 저장 즉시 자동으로 불러오기 (버튼 두 번 누를 필요 없음)
+      this._fetchFromUrl(url, false);
     } catch(e) { _ui.toast('저장 실패: ' + e.message.slice(0,30)); }
   },
 
