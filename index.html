@@ -2671,22 +2671,21 @@ APP.report = {
     };
   },
   _buildBanner: function() {
-    return '<div style="border:1px solid #cc0000;margin:0 0 3px 0;padding:1px 4px;text-align:center;border-radius:2px;"><span style="color:#cc0000;font-size:30px;font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
+    return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;"><span style="color:#cc0000;font-size:30px;font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
   },
   _buildHeader: function(d) {
     var e = _ui.escHtml.bind(_ui);
     return '<div style="border:1px solid #1a3a6b;border-radius:3px;margin-bottom:6px;overflow:hidden;">' +
-      '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;">' +
-        '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/logo_chungnam.png" style="max-width:56px;max-height:32px;object-fit:contain;flex-shrink:0;" onerror="this.style.display:\'none\'"/>' +
-        '<div style="flex:1;text-align:center;font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
+      '<div style="padding:8px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;text-align:center;">' +
+        '<div style="font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
       '</div>' +
-      '<div style="padding:4px 10px;font-size:30px;color:#374151;text-align:right;line-height:1.8;">' +
-        (d.duty ? '당직: ' + e(d.duty) + '&nbsp;&nbsp;' : '') +
+      '<div style="padding:6px 10px;font-size:30px;font-weight:700;color:#374151;text-align:center;line-height:1.8;">' +
+        (d.duty ? '당직: ' + e(d.duty) + '&nbsp;&nbsp;&nbsp;' : '') +
         e(d.manager||'서산소방서') +
       '</div>' +
     '</div>';
-    },
-  _row: function(label, val) {
+  },
+    _row: function(label, val) {
     if (!val) return '';
     return '<div style="display:flex;align-items:baseline;line-height:2.0;font-size:39px;"><span style="flex-shrink:0;white-space:nowrap;font-weight:900;">○ ' + _ui.escHtml(label) + ' :</span><span style="margin-left:6px;">' + _ui.escHtml(val) + '</span></div>';
   },
@@ -2745,23 +2744,40 @@ APP.report = {
       var H = 120, self = this;
       var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
       var out = '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
-      // 세로형 — 위치도: 고정높이, 현장사진: 2열 그리드
-      var MH = 140, SH = 100;
-      if (hasMap) {
-        out+='<div style="padding-left:4px;margin-bottom:6px;">';
-        out+='<div style="font-size:30px;color:#6B7280;margin-bottom:3px;">📍 위치도</div>';
-        out+='<div style="height:'+MH+'px;border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">';
-        out+='<img src="'+safe(this._mapPhoto)+'" style="width:100%;height:100%;object-fit:cover;"/>';
+      // 좌우 배치 — 위치도(왼쪽) + 현장사진(오른쪽), 사진 안 잘림
+      if (hasMap && hasScene) {
+        var n = this._scenePhotos.length;
+        out+='<div style="display:flex;gap:4px;align-items:flex-start;padding-left:4px;">';
+        // 왼쪽: 위치도
+        out+='<div style="flex:1;min-width:0;">';
+        out+='<div style="font-size:22px;color:#6B7280;margin-bottom:3px;font-weight:700;">📍 위치도</div>';
+        out+='<div style="border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">';
+        out+='<img src="'+safe(this._mapPhoto)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
         out+='</div></div>';
-      }
-      if (hasScene) {
+        // 오른쪽: 현장사진 세로 나열
+        out+='<div style="flex:1;min-width:0;">';
+        out+='<div style="font-size:22px;color:#6B7280;margin-bottom:3px;font-weight:700;">📷 현장사진('+n+'장)</div>';
+        out+='<div style="display:flex;flex-direction:column;gap:3px;">';
+        this._scenePhotos.forEach(function(f){
+          out+='<div style="border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">';
+          out+='<img src="'+safe(f)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
+          out+='</div>';
+        });
+        out+='</div></div></div>';
+      } else if (hasMap) {
+        out+='<div style="padding-left:4px;">';
+        out+='<div style="font-size:22px;color:#6B7280;margin-bottom:3px;font-weight:700;">📍 위치도</div>';
+        out+='<div style="border:0.5px solid #E4E7EE;border-radius:5px;overflow:hidden;background:#f0f4ff;">';
+        out+='<img src="'+safe(this._mapPhoto)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
+        out+='</div></div>';
+      } else if (hasScene) {
         var n=this._scenePhotos.length, cols=Math.min(n,2);
         out+='<div style="padding-left:4px;">';
-        out+='<div style="font-size:30px;color:#6B7280;margin-bottom:3px;">📷 현장사진 ('+n+'장)</div>';
+        out+='<div style="font-size:22px;color:#6B7280;margin-bottom:3px;font-weight:700;">📷 현장사진('+n+'장)</div>';
         out+='<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:3px;">';
         this._scenePhotos.forEach(function(f){
-          out+='<div style="height:'+SH+'px;border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">';
-          out+='<img src="'+safe(f)+'" style="width:100%;height:100%;object-fit:cover;"/>';
+          out+='<div style="border:0.5px solid #E4E7EE;border-radius:4px;overflow:hidden;">';
+          out+='<img src="'+safe(f)+'" style="width:100%;height:auto;display:block;object-fit:contain;"/>';
           out+='</div>';
         });
         out+='</div></div>';
