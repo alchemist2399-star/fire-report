@@ -825,6 +825,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       </div>
       <!-- 초기화 버튼 -->
       <button onclick="APP.usage.resetStats()" style="width:100%;margin-top:10px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🗑️ 사용량 기록 초기화</button>
+      <!-- 저장소 진단 버튼 -->
+      <button onclick="APP.usage.diagStorage()" style="width:100%;margin-top:6px;padding:8px;border:1.5px dashed rgba(26,110,232,0.3);border-radius:var(--r3);background:transparent;color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🔍 저장소 상태 진단</button>
+      <div id="usage_diagResult" style="display:none;margin-top:6px;font-size:11px;padding:8px 10px;border-radius:var(--r3);font-weight:700;"></div>
     </div>
 
     <div class="card">
@@ -1019,10 +1022,19 @@ var _store = {
     catch(e) { return this._mem.hasOwnProperty(k) ? this._mem[k] : (def !== undefined ? def : null); }
   },
   set: function(k, v) {
-    try { localStorage.setItem(k, v); return true; }
+    try {
+      localStorage.setItem(k, v);
+      // 실제 저장 검증 (Private 브라우징 등 silent fail 방어)
+      var check = localStorage.getItem(k);
+      if (check === null) throw new Error('저장 검증 실패');
+      return true;
+    }
     catch(e) {
       this._mem[k] = v;
-      if (!this._warned) { this._warned = true; _ui.toast('⚠️ 저장공간 제한: 앱 종료 시 데이터가 소실될 수 있습니다', 5000); }
+      if (!this._warned) {
+        this._warned = true;
+        _ui.toast('⚠️ 저장공간 제한: 앱 종료 시 데이터(사용량 포함)가 소실됩니다', 6000);
+      }
       return false;
     }
   },
@@ -3099,7 +3111,9 @@ APP.usage = {
       // 60일 이상 된 데이터 자동 삭제
       var keys = Object.keys(daily).sort();
       while (keys.length > 60) { delete daily[keys.shift()]; }
-      _store.setJSON(this.KEY_DAILY, daily);
+      var saved = _store.setJSON(this.KEY_DAILY, daily);
+      // 저장 실패 시 디버그 로그
+      if (!saved) { try { _debug.warn('Usage','일별 사용량 저장 실패 — localStorage 불가 환경'); } catch(e) {} }
 
       // 로그 추가
       var log = _store.getJSON(this.KEY_LOG, []);
@@ -3211,6 +3225,48 @@ APP.usage = {
         _ui.toast('사용량 기록이 초기화됐습니다');
       } catch(e) { console.error('[usage.resetStats]', e); }
     }, true);
+  },
+
+  // ── 저장소 진단 ───────────────────────────────────────────
+  diagStorage: function() {
+    var el = document.getElementById('usage_diagResult');
+    if (!el) return;
+    el.style.display = 'block';
+    try {
+      // 1. localStorage 쓰기 테스트
+      var testKey = '__diagTest__';
+      localStorage.setItem(testKey, 'ok');
+      var readBack = localStorage.getItem(testKey);
+      localStorage.removeItem(testKey);
+      if (readBack !== 'ok') throw new Error('읽기/쓰기 불일치');
+
+      // 2. 실제 usage 데이터 존재 여부
+      var daily = _store.getJSON(this.KEY_DAILY, null);
+      var log   = _store.getJSON(this.KEY_LOG, null);
+      var dailyKeys = daily ? Object.keys(daily).length : 0;
+      var logCount  = log   ? log.length : 0;
+
+      // 3. localStorage 전체 사용량
+      var totalBytes = 0;
+      try {
+        for (var k in localStorage) {
+          if (localStorage.hasOwnProperty(k)) totalBytes += (localStorage[k].length + k.length) * 2;
+        }
+      } catch(e) {}
+
+      el.style.background = 'var(--green-lt)';
+      el.style.color = 'var(--green)';
+      el.style.border = '1px solid rgba(13,155,106,0.3)';
+      el.innerHTML = '✅ localStorage 정상<br/>' +
+        '📅 저장된 날짜: ' + dailyKeys + '일치 | ' +
+        '📋 로그: ' + logCount + '건 | ' +
+        '💾 사용량: ' + Math.round(totalBytes/1024) + 'KB';
+    } catch(e) {
+      el.style.background = 'var(--red-lt)';
+      el.style.color = 'var(--red)';
+      el.style.border = '1px solid rgba(217,48,37,0.3)';
+      el.innerHTML = '❌ localStorage 사용 불가: ' + String(e.message).slice(0,60) + '<br/>시크릿 모드 또는 브라우저 설정을 확인하세요.';
+    }
   }
 };
 
@@ -3218,7 +3274,7 @@ APP.usage = {
 APP.settings.clearAll = function() {
   _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
     try {
-      _store.clearKeep(['appLockPw','settingsPw']);
+      _store.clearKeep(['appLockPw','settingsPw','apiUsageLog','apiUsageDaily','apiUsageThreshold']);
       _ui.toast('초기화됐습니다'); location.reload();
     } catch(e) { console.error('[settings.clearAll]', e); }
   }, true);
@@ -3315,6 +3371,19 @@ function _boot() {
 
   // 드래그&드롭
   try { _initDragDrop(); } catch(e) { console.warn('[boot:dragdrop]', e); }
+
+  // localStorage 가용 여부 사전 체크
+  try {
+    var _lsTest = '__lsTest__';
+    localStorage.setItem(_lsTest, '1');
+    if (localStorage.getItem(_lsTest) !== '1') throw new Error('검증 실패');
+    localStorage.removeItem(_lsTest);
+  } catch(e) {
+    // 부팅 직후 1회만 경고 (3초 후 표시 — 잠금화면 이후)
+    setTimeout(function() {
+      _ui.toast('⚠️ 이 브라우저는 데이터 저장이 안 됩니다. 시크릿 모드 또는 Safari 설정을 확인하세요.', 8000);
+    }, 3000);
+  }
 
   // 오프라인 감지
   try {
