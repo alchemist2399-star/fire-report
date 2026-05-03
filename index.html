@@ -647,42 +647,47 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="card">
       <div class="card-head"><span class="badge badge-blue">공지</span><span class="card-title">공지 관리</span></div>
 
-      <!-- GitHub Raw URL 방식 -->
-      <div style="margin-bottom:12px;">
-        <div class="sec-lbl">GitHub Raw 공지 URL <span style="font-weight:400;letter-spacing:0;text-transform:none;">(외부에서 공지 관리)</span></div>
-        <input type="url" id="cfg_noticeUrl" class="inp" placeholder="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/notice.json" style="margin-bottom:6px;font-size:11px;"/>
-        <div style="background:var(--surface2);border-radius:var(--r3);padding:8px 11px;font-size:10px;color:var(--ink4);line-height:1.8;margin-bottom:8px;">
-          📌 <b>사용 방법:</b><br/>
-          1. GitHub <code style="background:var(--border);padding:1px 4px;border-radius:3px;">alchemist2399-star/fire-report</code> 저장소에<br/>
-          &nbsp;&nbsp;&nbsp;<code style="background:var(--border);padding:1px 4px;border-radius:3px;">notice.json</code> 파일을 만드세요<br/>
-          2. 파일 내용 예시:<br/>
-          &nbsp;&nbsp;&nbsp;<code style="background:var(--border);padding:1px 4px;border-radius:3px;">{"msg":"공지 내용","level":"info"}</code><br/>
-          3. level: <b>info</b>(파랑) / <b>warn</b>(노랑) / <b>urgent</b>(빨강)<br/>
-          4. 공지 변경 시 GitHub에서 파일만 수정하면 자동 반영
+      <!-- ① 전체 기기 공지 (GitHub) -->
+      <div style="background:var(--blue-lt);border:1.5px solid rgba(26,110,232,0.2);border-radius:var(--r2);padding:12px 14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:16px;">🌐</span>
+          <div>
+            <div style="font-size:12px;font-weight:900;color:var(--blue);">전체 기기 공지</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:1px;">GitHub 파일 수정 → 모든 기기에 자동 반영</div>
+          </div>
+        </div>
+        <input type="url" id="cfg_noticeUrl" class="inp" placeholder="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/notice.json" style="font-size:11px;margin-bottom:8px;border-color:rgba(26,110,232,0.3);background:#fff;"/>
+        <!-- 한 줄 사용 가이드 -->
+        <div style="background:#fff;border-radius:var(--r3);padding:8px 10px;font-size:10px;color:var(--ink4);margin-bottom:8px;line-height:1.7;">
+          <b style="color:var(--blue);">notice.json</b> 파일 내용 →
+          <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:10px;">{"msg":"공지내용", "level":"info"}</code>
+          <span style="margin-left:4px;">level: <b>info</b>파랑 / <b>warn</b>노랑 / <b>urgent</b>빨강</span>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:10px;" onclick="APP.notice.saveUrl()">💾 URL 저장</button>
-          <button class="btn" style="flex:1;border-radius:var(--r2);padding:10px;" onclick="APP.notice.fetchNow()">🔄 지금 불러오기</button>
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.saveUrl()">💾 URL 저장</button>
+          <button class="btn" style="flex:1;border-radius:var(--r2);padding:9px;font-size:12px;" onclick="APP.notice.fetchNow()">🔄 불러오기</button>
         </div>
-        <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:7px 10px;border-radius:var(--r3);"></div>
+        <div id="noticeFetchStatus" style="display:none;margin-top:6px;font-size:11px;font-weight:700;padding:6px 10px;border-radius:var(--r3);"></div>
       </div>
 
-      <!-- 구분선 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;height:1px;background:var(--border);"></div>
-        <span style="font-size:10px;color:var(--ink4);font-weight:700;">또는 직접 입력</span>
-        <div style="flex:1;height:1px;background:var(--border);"></div>
+      <!-- ② 이 기기만 공지 (로컬) -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:16px;">📱</span>
+          <div>
+            <div style="font-size:12px;font-weight:900;color:var(--ink2);">이 기기만 공지</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:1px;">이 기기에서만 보임 · GitHub 연동 안 됨</div>
+          </div>
+        </div>
+        <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:8px;"/>
+        <!-- 레벨 선택 + 저장 버튼 한 줄 -->
+        <div style="display:flex;gap:6px;">
+          <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
+          <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
+          <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:8px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
+          <button class="btn btn-primary" style="flex:2;border-radius:var(--r3);padding:8px;font-size:11px;font-weight:800;" onclick="APP.notice.saveLocal()">📢 적용</button>
+        </div>
       </div>
-
-      <!-- 직접 입력 -->
-      <div class="sec-lbl">공지 내용 직접 입력</div>
-      <input type="text" id="cfg_noticeMsg" class="inp" placeholder="예) 정상 운영 중입니다." style="margin-bottom:6px;"/>
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <button class="notice-level-btn on" data-level="info" onclick="APP.notice.setLevel('info',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid rgba(26,110,232,0.4);background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">📢 일반</button>
-        <button class="notice-level-btn" data-level="warn" onclick="APP.notice.setLevel('warn',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚠️ 주의</button>
-        <button class="notice-level-btn" data-level="urgent" onclick="APP.notice.setLevel('urgent',this)" style="flex:1;padding:7px 4px;border-radius:var(--r3);border:1.5px solid var(--border);background:var(--surface2);color:var(--ink3);font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">🚨 긴급</button>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="APP.notice.saveLocal()">📢 공지 저장 및 적용</button>
     </div>
     <div class="card">
       <div class="card-head"><span class="badge badge-red">잠금</span><span class="card-title">기능 잠금 관리</span></div>
