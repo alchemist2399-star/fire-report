@@ -157,6 +157,10 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
 .bldg-table th{background:var(--navy);color:#fff;padding:7px 6px;font-size:11px;font-weight:700;text-align:center;}
 .bldg-table td{padding:6px;border:1px solid var(--border);text-align:center;background:var(--surface);}
 .bldg-table td input{width:100%;font-size:11px;padding:3px 4px;border:none;background:transparent;font-family:var(--font);color:var(--ink);text-align:center;outline:none;}
+.bldg-table td.note-cell{background:#fafbff;}
+.bldg-table td.note-cell input{border:1.5px solid var(--border);border-radius:4px;background:#fff;padding:3px 6px;color:var(--ink2);text-align:left;cursor:text;}
+.bldg-table td.note-cell input:focus{border-color:var(--orange);background:#fff;box-shadow:0 0 0 2px rgba(232,96,10,0.12);}
+.bldg-table td.note-cell input::placeholder{color:var(--ink4);font-style:italic;}
 .bldg-table tr:nth-child(even) td{background:var(--surface2);}
 .bldg-table .fire-cell{background:var(--orange-lt)!important;}
 .bldg-add{width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r3);background:transparent;color:var(--ink4);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);margin-bottom:8px;}
@@ -2168,6 +2172,7 @@ APP.report = {
         var inp = document.createElement('input');
         inp.value = col.v || ''; inp.placeholder = col.ph;
         if (col.isNote) {
+          td.className = 'note-cell'; // ✅ 비고 칸 편집 가능 표시
           inp.addEventListener('input', function() { self._updateFireRow(inp); });
         }
         td.appendChild(inp); tr.appendChild(td);
