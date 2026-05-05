@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="theme-color" content="#E8600A"/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://cdnjs.cloudflare.com https://map.kakao.com https://map.naver.com https://tmap.life data: blob:; img-src 'self' data: blob: https:; connect-src 'self' https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://api.github.com;"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://cdnjs.cloudflare.com https://map.kakao.com https://map.naver.com https://tmap.life data: blob:; img-src 'self' data: blob: https:; connect-src 'self' https://generativelanguage.googleapis.com https://raw.githubusercontent.com https://api.github.com;"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════
@@ -1186,34 +1186,39 @@ var _pw = {
 /* ═══════════════════════════════════════════════════════════════════
    ⑦ API KEY — 암호화 저장 (메모리 보관)
 ═══════════════════════════════════════════════════════════════════ */
-var _apiKey = {
-  _val: '',
-  _appPw: '',
-  get: function() {
-    // 운영 환경에서 콘솔 경고 (개발자도구 열림 탐지 보조)
-    return this._val;
-  },
-  save: async function(plain, appPw) {
-    this._val = plain || '';
-    appPw = appPw || this._appPw;
-    if (!plain) { _store.remove('encApiKey'); return; }
-    _store.set('encApiKey', await _crypto.encrypt(plain, appPw));
-  },
-  load: async function(appPw) {
-    this._appPw = appPw;
-    // 레거시 평문 마이그레이션
-    try {
-      var s = _store.getJSON('appSettings', {});
-      if (s.geminiKey) { await this.save(s.geminiKey, appPw); s.geminiKey = ''; _store.setJSON('appSettings', s); return; }
-    } catch(e) {}
-    var enc = _store.get('encApiKey');
-    if (!enc) return;
-    var dec = await _crypto.decrypt(enc, appPw);
-    if (dec !== null) this._val = dec;
-    else _ui.toast('⚠️ API Key 복호화 실패 — 설정에서 재입력 필요', 4000);
-  },
-  clear: function() { this._val = ''; }
-};
+// ✅ 보안패치 #2: API Key 완전 클로저 격리
+// _secret 변수가 외부 스코프에서 절대 접근 불가
+// (콘솔에서 _apiKey._val, Object.keys(_apiKey), JSON.stringify(_apiKey) 모두 차단)
+var _apiKey = (function() {
+  var _secret = '';   // ← 클로저 내부 전용 변수
+  var _appPw  = '';
+
+  return {
+    get: function() { return _secret; },
+    save: async function(plain, pw) {
+      _secret = plain || '';
+      pw = pw || _appPw;
+      if (!plain) { _store.remove('encApiKey'); return; }
+      _store.set('encApiKey', await _crypto.encrypt(plain, pw));
+    },
+    load: async function(pw) {
+      _appPw = pw;
+      try {
+        var s = _store.getJSON('appSettings', {});
+        if (s.geminiKey) { await this.save(s.geminiKey, pw); s.geminiKey = ''; _store.setJSON('appSettings', s); return; }
+      } catch(e) {}
+      var enc = _store.get('encApiKey');
+      if (!enc) return;
+      var dec = await _crypto.decrypt(enc, pw);
+      if (dec !== null) _secret = dec;
+      else _ui.toast('⚠️ API Key 복호화 실패 — 설정에서 재입력 필요', 4000);
+    },
+    clear: function() { _secret = ''; },
+    // _appPw는 비밀번호 변경 시 접근 필요 — getter로만 노출
+    get _appPw() { return _appPw; },
+    set _appPw(v) { _appPw = v; }
+  };
+})();
 
 /* ═══════════════════════════════════════════════════════════════════
    ⑧ BLOB URL — 메모리 누수 방지
@@ -1638,6 +1643,7 @@ APP.dispatch = {
 
 /* ── spell: 맞춤법 검사 ───────────────────────────────────────────── */
 APP.spell = {
+  _abortCtrl: null,  // ✅ 보안패치 #4: 모듈 레벨 AbortController
   _cache: {},
   toggle: function() {
     try {
@@ -1677,13 +1683,15 @@ APP.spell = {
 
       var prompt = '다음 소방 보고서 텍스트의 맞춤법과 문법을 교정해주세요. 반드시 JSON 형식으로만 응답하세요:\n{"corrected":"교정된 전체 텍스트"}\n\n【절대 규칙】\n1. [ ] ( ) 등 모든 괄호와 특수문자는 원문 그대로 유지하세요. 절대 삭제하거나 변경하지 마세요.\n2. [예천동 관공서화재](최종) 같은 소방 보고 형식의 제목은 맞춤법 교정 대상이 아닙니다. 그대로 두세요.\n3. 숫자, 부호, 괄호 안 내용은 절대 수정하지 마세요.\n4. 오직 명백한 맞춤법/띄어쓰기 오류만 교정하세요.\n\n텍스트:\n' + text;
       _debug.info('맞춤법','API 호출 시작');
-      var _spAbort = new AbortController();
-      var _spTimeout = setTimeout(function(){ _spAbort.abort(); }, 30000); // 30초 타임아웃
+      // ✅ 보안패치 #4: 이전 요청 중단 후 새 컨트롤러 생성
+      if (APP.spell._abortCtrl) { try { APP.spell._abortCtrl.abort(); } catch(e) {} }
+      APP.spell._abortCtrl = new AbortController();
+      var _spTimeout = setTimeout(function(){ if(APP.spell._abortCtrl) APP.spell._abortCtrl.abort(); }, 30000); // 30초 타임아웃
       var res;
       try {
         res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + key, {
           method:'POST', headers:{'Content-Type':'application/json'},
-          signal: _spAbort.signal,
+          signal: APP.spell._abortCtrl.signal,
           body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.1, maxOutputTokens:2048}})
         });
       } finally { clearTimeout(_spTimeout); }
@@ -1801,14 +1809,14 @@ APP.contacts = {
         if (!items.length) { list.innerHTML = '<div class="empty">📭 ' + (group === 'dispatch' ? '출동대' : '유관기관') + ' 연락처가 없습니다</div>'; return; }
         list.innerHTML = items.map(function(c) {
           var safeId  = _ui.escHtml(String(c.id || ''));
-          var safeTel = String(c.tel || '').replace(/[^0-9\-+\s]/g,'');
+      var safeTel = String(c.tel || '').replace(/[^0-9\-+]/g,''); // ✅ 보안패치 #5: tel: URI 공백 제거
           return '<div class="contact-item">' +
             '<div style="width:40px;height:40px;border-radius:50%;background:var(--orange-lt);border:1.5px solid var(--orange-bd);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">' + (group === 'dispatch' ? '🚒' : '🏛️') + '</div>' +
             '<div style="flex:1;min-width:0;"><div class="contact-name">' + _ui.escHtml(c.name) + '</div><div class="contact-tel">' + _ui.escHtml(c.tel) + '</div>' + (c.memo ? '<div class="contact-memo">' + _ui.escHtml(c.memo) + '</div>' : '') + '</div>' +
             '<div style="display:flex;gap:6px;flex-shrink:0;">' +
             '<a class="contact-call" href="tel:' + safeTel + '">📞</a>' +
-            '<button class="contact-edit" onclick="APP.contacts.edit(\'' + safeId + '\')">✏️</button>' +
-            '<button class="contact-del" onclick="APP.contacts.del(\'' + safeId + '\')">🗑️</button>' +
+            '<button class="contact-edit" data-id="' + safeId + '" onclick="APP.contacts.edit(this.dataset.id)">✏️</button>' +
+            '<button class="contact-del" data-id="' + safeId + '" onclick="APP.contacts.del(this.dataset.id)">🗑️</button>' +
             '</div></div>';
         }).join('');
       });
@@ -1867,6 +1875,7 @@ APP.contacts = {
 
 /* ── report: 보고서 탭 ────────────────────────────────────────────── */
 APP.report = {
+  _aiAbortCtrl : null,  // ✅ 보안패치 #4: AI 분석 모듈 AbortController
   _type       : 'fire',
   _page       : 0,
   _scanPhotos : [],
@@ -2324,13 +2333,15 @@ APP.report = {
       var parts  = [{text: prompt}].concat(imgParts);
 
       _debug.info('AI분석','Gemini API 호출 시작','이미지 '+imgParts.length+'장 · 모드: '+APP.report._photoModes.join('+'));
-      var _aiAbort = new AbortController();
+      // ✅ 보안패치 #4(AI): 이전 요청 중단 후 새 컨트롤러
+      if (APP.report._aiAbortCtrl) { try { APP.report._aiAbortCtrl.abort(); } catch(e) {} }
+      APP.report._aiAbortCtrl = new AbortController();
       var _aiTimeout = setTimeout(function(){ _aiAbort.abort(); }, 60000); // 60초 타임아웃
       var res;
       try {
         res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key, {
           method:'POST', headers:{'Content-Type':'application/json'},
-          signal: _aiAbort.signal,
+          signal: APP.report._aiAbortCtrl.signal,
           body: JSON.stringify({contents:[{parts:parts}], generationConfig:{temperature:0.0, maxOutputTokens:4096, responseMimeType:'application/json'}})
         });
       } finally { clearTimeout(_aiTimeout); }
