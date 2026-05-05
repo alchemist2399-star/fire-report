@@ -977,20 +977,30 @@ var _debug={
    ① CORE — 전역 오류 핸들러 (가장 먼저 등록)
    모든 예외를 잡아서 앱이 완전히 죽지 않도록 보호
 ═══════════════════════════════════════════════════════════════════ */
+// ✅ 코드품질 #13: 전역 오류 핸들러 — _debug/_ui 미정의 시 안전 폴백
 window.onerror = function(msg, src, line, col, err) {
   // 외부 리소스(폰트, CDN) 오류는 무시
   if (src && /fonts\.google|html2canvas|cdnjs/i.test(src)) return false;
   var detail = err ? (err.message || msg) : msg;
-  _ui.toast('⚠️ ' + String(detail).slice(0, 50), 4000);
+  // _ui/_debug가 아직 정의되지 않았을 수 있으므로 typeof 가드
+  if (typeof _ui !== 'undefined' && _ui.toast) {
+    _ui.toast('⚠️ ' + String(detail).slice(0, 50), 4000);
+  }
+  if (typeof _debug !== 'undefined' && _debug.err) {
+    _debug.err('GlobalErr', String(msg).slice(0,40), String(detail).slice(0,80));
+  }
   console.error('[GlobalErr]', msg, src + ':' + line, err);
   return true;
 };
 window.addEventListener('unhandledrejection', function(e) {
   var msg = e.reason ? (e.reason.message || String(e.reason)) : 'Promise 오류';
   if (/abort|user cancel|AbortError/i.test(msg)) return;
-  _ui.toast('⚠️ ' + msg.slice(0, 50), 4000);
+  if (typeof _ui !== 'undefined' && _ui.toast) {
+    _ui.toast('⚠️ ' + msg.slice(0, 50), 4000);
+  }
   console.error('[UnhandledRejection]', e.reason);
 });
+};
 
 /* ═══════════════════════════════════════════════════════════════════
    ② ENVIRONMENT — 브라우저 환경 감지
@@ -2707,7 +2717,7 @@ APP.report = {
     };
   },
   _buildBanner: function() {
-    return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;"><span style="color:#cc0000;font-size:30px;font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
+    return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;"><span style="color:#cc0000;font-size:clamp(11px,2.5vw,14px);font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
   },
   _buildHeader: function(d) {
     var e = _ui.escHtml.bind(_ui);
@@ -3338,16 +3348,16 @@ APP.usage = {
       el.innerHTML = '❌ localStorage 사용 불가: ' + String(e.message).slice(0,60) + '<br/>시크릿 모드 또는 브라우저 설정을 확인하세요.';
     }
   }
-};
-
-/* ──────────────────────────────────────────────────────────────── */
-APP.settings.clearAll = function() {
-  _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
-    try {
-      _store.clearKeep(['appLockPw','settingsPw','apiUsageLog','apiUsageDaily','apiUsageThreshold']);
-      _ui.toast('초기화됐습니다'); location.reload();
-    } catch(e) { console.error('[settings.clearAll]', e); }
-  }, true);
+  },
+  // ✅ 코드품질 #14: clearAll을 APP.settings 네임스페이스 안으로 이동
+  clearAll: function() {
+    _ui.confirm('모든 데이터 초기화', '저장된 모든 연락처와 기록이 삭제됩니다. 되돌릴 수 없습니다.', function() {
+      try {
+        _store.clearKeep(['appLockPw','settingsPw','apiUsageLog','apiUsageDaily','apiUsageThreshold']);
+        _ui.toast('초기화됐습니다'); location.reload();
+      } catch(e) { console.error('[settings.clearAll]', e); }
+    }, true);
+  }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
