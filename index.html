@@ -2803,10 +2803,10 @@ APP.report = {
     } else {
       imgHtml = '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/1.png" style="height:40px;max-width:200px;object-fit:contain;display:block;" onerror="this.style.display=\'none\'"/>';
     }
-    var d = this._collectData ? this._collectData() : {};
-    var duty    = (d.duty    || '').trim();
-    var manager = (d.manager || '').trim();
-    var rightText = '';
+    var dutyEl    = document.getElementById('f_duty');
+    var managerEl = document.getElementById('f_manager');
+    var duty    = dutyEl    ? (dutyEl.value    || '').trim() : '';
+    var manager = managerEl ? (managerEl.value || '').trim() : '';
     if (duty)             rightText += '<b style="color:#1a3a6b;">당직:</b> ' + _ui.escHtml(duty);
     if (duty && manager) rightText += '&nbsp;&nbsp;&nbsp;';
     if (manager)          rightText += '<b style="color:#1a3a6b;">상황관리:</b> ' + _ui.escHtml(manager);
@@ -2820,12 +2820,13 @@ APP.report = {
   },
   _buildHeader: function(d) {
     var e = _ui.escHtml.bind(_ui);
-      '<div style="padding:8px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;text-align:center;">' +
-        '<div style="font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
-      '</div>' +
-    '</div>';
+    return '<div style="border:1px solid #1a3a6b;border-radius:3px;margin-bottom:6px;overflow:hidden;">'
+         + '<div style="padding:8px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;text-align:center;">'
+         + '<div style="font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>'
+         + '</div>'
+         + '</div>';
   },
-    _row: function(label, val) {
+  _row: function(label, val) {
     if (!val) return '';
     return '<div style="display:flex;align-items:baseline;line-height:2.0;font-size:39px;"><span style="flex-shrink:0;white-space:nowrap;font-weight:900;">○ ' + _ui.escHtml(label) + ' :</span><span style="margin-left:6px;">' + _ui.escHtml(val) + '</span></div>';
   },
@@ -2895,7 +2896,8 @@ APP.report = {
   _buildPhotoSection: function() {
     try {
       var hasMap = !!this._mapPhoto, hasScene = this._scenePhotos.length > 0;
-      if (!hasMap && !hasScene) return '';
+      var hasMap   = !!this._mapPhoto;
+      var hasScene = Array.isArray(this._scenePhotos) && this._scenePhotos.length > 0;
       var H = 120, self = this;
       var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
       var out = '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
