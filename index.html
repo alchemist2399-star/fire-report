@@ -498,6 +498,15 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
     <div class="card">
       <div class="sec-head"><div class="sec-num">📄</div><div class="sec-title">보고서 기본 정보</div></div>
       <div class="field"><label>소방서명</label><input class="inp" id="f_station" value="서산소방서"/></div>
+      <div class="field">
+        <label>헤더 이미지 <span style="font-weight:400;color:var(--ink4);">(비공개 배너 아래 좌측 — 로고·직인 등)</span></label>
+        <label id="headerImgDropZone" style="display:flex;align-items:center;gap:10px;border:1.5px dashed var(--border2);border-radius:var(--r3);padding:8px 12px;cursor:pointer;background:var(--surface2);">
+          <input type="file" id="headerImgInput" accept="image/*" onchange="APP.report.handleHeaderImg(this.files)" style="display:none;"/>
+          <span id="headerImgLabel" style="font-size:12px;color:var(--ink4);">🖼️ 이미지 선택 (JPG·PNG)</span>
+          <img id="headerImgThumb" style="display:none;height:36px;border-radius:4px;border:1px solid var(--border);object-fit:contain;"/>
+          <button id="headerImgClearBtn" onclick="APP.report.removeHeaderImg(event)" style="display:none;margin-left:auto;padding:3px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--ink4);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">✕ 제거</button>
+        </label>
+      </div>
       <div class="grid2">
         <div class="field"><label>상황관리자</label><input class="inp" id="f_manager" maxlength="50" placeholder="소방장 홍길동(☎306)"/></div>
         <div class="field"><label>당직근무자</label><input class="inp" id="f_duty" placeholder="소방경 김철수"/></div>
@@ -1494,7 +1503,7 @@ APP.auth = {
       _debug.clear();
     try {
       _apiKey.clear();
-      APP.report._scanPhotos = []; APP.report._mapPhoto = null; APP.report._scenePhotos = [];
+      APP.report._scanPhotos = []; APP.report._mapPhoto = null; APP.report._headerPhoto = null; APP.report._scenePhotos = [];
       _blob.revokeAll();
       var ls = document.getElementById('lockScreen');
       var inp = document.getElementById('lockInput');
@@ -1914,7 +1923,8 @@ APP.report = {
   _page       : 0,
   _scanPhotos : [],
   _mapPhoto   : null,
-  _scenePhotos: [],
+  _mapPhoto   : null,
+  _headerPhoto: null,  // ✅ 헤더 이미지 (비공개 배너 아래 좌측)
   _bldgCount  : 0,
   _tlCount    : 0,
   // ── 효율성 v6 ──
@@ -2247,6 +2257,35 @@ APP.report = {
         }
       }
     } catch(e) { console.error('[report.handleFiles]', e); }
+  },
+  // ✅ 헤더 이미지 핸들러
+  handleHeaderImg: function(files) {
+    try {
+      if (!files || !files.length) return;
+      this._headerPhoto = files[0];
+      var thumb = document.getElementById('headerImgThumb');
+      var label = document.getElementById('headerImgLabel');
+      var clearBtn = document.getElementById('headerImgClearBtn');
+      var url = _blob.create(this._headerPhoto);
+      if (thumb) { thumb.src = url; thumb.style.display = 'block'; }
+      if (label) label.style.display = 'none';
+      if (clearBtn) clearBtn.style.display = 'inline-flex';
+      _ui.toast('헤더 이미지가 등록됐습니다');
+    } catch(e) { console.error('[report.handleHeaderImg]', e); }
+  },
+  removeHeaderImg: function(e) {
+    try {
+      if (e) e.preventDefault();
+      this._headerPhoto = null;
+      var thumb = document.getElementById('headerImgThumb');
+      var label = document.getElementById('headerImgLabel');
+      var clearBtn = document.getElementById('headerImgClearBtn');
+      var inp = document.getElementById('headerImgInput');
+      if (thumb) { thumb.src = ''; thumb.style.display = 'none'; }
+      if (label) label.style.display = 'inline';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (inp) inp.value = '';
+    } catch(e2) { console.error('[report.removeHeaderImg]', e2); }
   },
   handleMapFile: function(files) {
     try {
@@ -2755,17 +2794,33 @@ APP.report = {
     };
   },
   _buildBanner: function() {
-    return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;"><span style="color:#cc0000;font-size:clamp(11px,2.5vw,14px);font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span></div>';
+    var self = this;
+    var imgHtml = '';
+    if (self._headerPhoto) {
+      var imgSrc = _ui.escHtml(_blob.create(self._headerPhoto));
+      imgHtml = '<img src="' + imgSrc + '" style="height:40px;max-width:160px;object-fit:contain;display:block;"/>';
+    } else {
+      imgHtml = '<div style="height:40px;width:120px;background:#f0f0f0;border:1px dashed #ccc;border-radius:3px;display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:#999;">이미지</span></div>';
+    }
+    var d = this._collectData ? this._collectData() : {};
+    var duty = (d.duty || '').trim();
+    var manager = (d.manager || '').trim();
+    var rightText = '';
+    if (duty) rightText += '<b style="color:#1a3a6b;">당직:</b> ' + _ui.escHtml(duty);
+    if (duty && manager) rightText += '&nbsp;&nbsp;&nbsp;';
+    if (manager) rightText += '<b style="color:#1a3a6b;">상황관리:</b> ' + _ui.escHtml(manager);
+    return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;">'
+         + '<span style="color:#cc0000;font-size:clamp(11px,2.5vw,14px);font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span>'
+         + '</div>'
+         + '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px 8px;gap:12px;">'
+         + '<div style="flex-shrink:0;">' + imgHtml + '</div>'
+         + '<div style="flex:1;text-align:right;font-size:clamp(11px,2vw,13px);color:#222;white-space:nowrap;">' + rightText + '</div>'
+         + '</div>';
   },
   _buildHeader: function(d) {
     var e = _ui.escHtml.bind(_ui);
-    return '<div style="border:1px solid #1a3a6b;border-radius:3px;margin-bottom:6px;overflow:hidden;">' +
       '<div style="padding:8px 10px;border-bottom:1px solid #dce4f0;background:#f0f4ff;text-align:center;">' +
         '<div style="font-size:45px;font-weight:900;color:#1a3a6b;line-height:1.4;">' + e(d.reportTitle) + '</div>' +
-      '</div>' +
-      '<div style="padding:6px 10px;font-size:30px;font-weight:700;color:#374151;text-align:center;line-height:1.8;">' +
-        (d.duty ? '당직: ' + e(d.duty) + '&nbsp;&nbsp;&nbsp;' : '') +
-        e(d.manager||'서산소방서') +
       '</div>' +
     '</div>';
   },
@@ -2824,9 +2879,16 @@ APP.report = {
         items.push('<div style="font-size:39px;line-height:1.9;"><span style="color:#E8600A;font-family:monospace;font-weight:900;">【'+_ui.escHtml(t)+'】</span> '+_ui.escHtml(inputs[1].value.trim())+'</div>');
       });
       if (!items.length) return '';
-      var allItems = items.join('');
+      if (!items.length) return '';
+      // ✅ 좌우 2열 배치: 홀수 항목은 왼쪽, 짝수는 오른쪽
+      var rows = '';
+      for (var i = 0; i < items.length; i += 2) {
+        var left  = items[i];
+        var right = items[i+1] || '';
+        rows += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">' + left + right + '</div>';
+      }
       return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">4. 주요 조치사항</span></div>' +
-        '<div style="padding-left:4px;margin-bottom:8px;">' + allItems + '</div>';
+        '<div style="padding-left:4px;margin-bottom:8px;">' + rows + '</div>';
     } catch(e) { return ''; }
   },
   _buildPhotoSection: function() {
@@ -2919,7 +2981,7 @@ APP.report = {
     var self = this;
     _ui.confirm('보고서 초기화', '작성된 보고서가 모두 삭제됩니다.', function() {
       try {
-        self._scanPhotos=[]; self._mapPhoto=null; self._scenePhotos=[];
+        self._scanPhotos=[]; self._mapPhoto=null; self._headerPhoto=null; self._scenePhotos=[];
         self._lastParsed=null; self._lastCacheKey=null;
         self._scanCache={};  // ✅ 버그픽스 #6: 메모리 누수 방지 — 캐시 전체 초기화
         _blob.revokeAll();
@@ -2934,6 +2996,11 @@ APP.report = {
         ['lbl_datetime','lbl_target','lbl_addr','lbl_summary','lbl_mainContent','lbl_casualty','lbl_personnel'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
         var tb=document.getElementById('bldgBody'); if(tb){tb.innerHTML='';self._bldgCount=0;} self.initBldgTable();
         var tl=document.getElementById('tlList'); if(tl){tl.innerHTML='';self._tlCount=0;} self.initTimeline();
+        // 헤더 이미지 UI 초기화
+        var hThumb=document.getElementById('headerImgThumb'); if(hThumb){hThumb.src='';hThumb.style.display='none';}
+        var hLabel=document.getElementById('headerImgLabel'); if(hLabel)hLabel.style.display='inline';
+        var hClear=document.getElementById('headerImgClearBtn'); if(hClear)hClear.style.display='none';
+        var hInp=document.getElementById('headerImgInput'); if(hInp)hInp.value='';
         self.goPage(0); _ui.toast('초기화됐습니다');
       } catch(e2) { console.error('[report.reset cb]', e2); }
     });
