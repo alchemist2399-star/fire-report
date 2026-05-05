@@ -2795,20 +2795,20 @@ APP.report = {
   },
   _buildBanner: function() {
     var self = this;
-    var imgHtml = '';
+    var imgHtml;
     if (self._headerPhoto) {
       var imgSrc = _ui.escHtml(_blob.create(self._headerPhoto));
-      imgHtml = '<img src="' + imgSrc + '" style="height:40px;max-width:160px;object-fit:contain;display:block;"/>';
+      imgHtml = '<img src="' + imgSrc + '" style="height:40px;max-width:200px;object-fit:contain;display:block;"/>';
     } else {
-      imgHtml = '<div style="height:40px;width:120px;background:#f0f0f0;border:1px dashed #ccc;border-radius:3px;display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:#999;">이미지</span></div>';
+      imgHtml = '<img src="https://raw.githubusercontent.com/alchemist2399-star/fire-report/main/1.png" style="height:40px;max-width:200px;object-fit:contain;display:block;" onerror="this.style.display=\'none\'"/>';
     }
     var d = this._collectData ? this._collectData() : {};
-    var duty = (d.duty || '').trim();
+    var duty    = (d.duty    || '').trim();
     var manager = (d.manager || '').trim();
     var rightText = '';
-    if (duty) rightText += '<b style="color:#1a3a6b;">당직:</b> ' + _ui.escHtml(duty);
+    if (duty)             rightText += '<b style="color:#1a3a6b;">당직:</b> ' + _ui.escHtml(duty);
     if (duty && manager) rightText += '&nbsp;&nbsp;&nbsp;';
-    if (manager) rightText += '<b style="color:#1a3a6b;">상황관리:</b> ' + _ui.escHtml(manager);
+    if (manager)          rightText += '<b style="color:#1a3a6b;">상황관리:</b> ' + _ui.escHtml(manager);
     return '<div style="margin:0 0 4px 0;padding:2px 4px;text-align:center;">'
          + '<span style="color:#cc0000;font-size:clamp(11px,2.5vw,14px);font-weight:900;">공공기관의 정보공개에 관한 법률 제9조제1항제6호에 의한 비공개 대상 정보임</span>'
          + '</div>'
