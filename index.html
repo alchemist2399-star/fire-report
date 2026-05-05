@@ -332,7 +332,8 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <button onclick="APP.dispatch.clearReports()" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:var(--font);">↺ 초기화</button>
     </div>
     <div style="background:var(--surface);padding:14px;">
-      <textarea id="reportContent" class="textarea" rows="4" placeholder="현장 상황을 입력하세요"></textarea>
+      <textarea id="reportContent" oninput="APP.dispatch.countChars(this)" class="textarea" rows="4" placeholder="현장 상황을 입력하세요" maxlength="500"></textarea>
+      <div style="text-align:right;margin-top:3px;"><span id="reportCharCount" style="font-size:10px;font-weight:700;color:var(--ink4);">0 / 500자</span></div>
       <button onclick="APP.dispatch.addReport()" class="btn btn-primary btn-full btn-lg" style="margin-top:10px;">+ 상황 추가</button>
     </div>
   </div>
@@ -1362,6 +1363,8 @@ var _autoLock = {
     _ui.toast(min === 0 ? '자동 잠금 해제됨' : min + '분 후 자동 잠금');
   },
   reset: function() {
+    // ✅ UX패치 #9: 백그라운드 체류 중에는 reset 무시 (bgTime guard)
+    if (this._bgTime) return;
     if (this._timer) clearTimeout(this._timer);
     if (this._minutes <= 0) return;
     var self = this;
@@ -1638,6 +1641,14 @@ APP.dispatch = {
       var box = document.getElementById('outputBox');
       if (box) await _ui.copy(box.textContent);
     } catch(e) { console.error('[dispatch.copyText]', e); }
+  },
+  // ✅ UX패치 #11: 글자 수 실시간 카운터
+  countChars: function(el) {
+    var counter = document.getElementById('reportCharCount');
+    if (!counter) return;
+    var len = (el.value || '').length;
+    counter.textContent = len + ' / 500자';
+    counter.style.color = len >= 450 ? 'var(--red)' : len >= 350 ? 'var(--orange)' : 'var(--ink4)';
   }
 };
 
@@ -1765,7 +1776,16 @@ APP.map = {
   },
   openTmap: function() {
     var a = _ui.val('dispLocation'); if (!a) { _ui.toast('출동 탭에서 주소를 먼저 입력하세요'); return; }
-    this._open('https://tmap.life/search?keyword=' + encodeURIComponent(a));
+    // ✅ UX패치 #12: tmap:// 앱스킴 우선, 미설치 시 웹 폴백
+    var tmapApp = 'tmap://search?name=' + encodeURIComponent(a);
+    var tmapWeb = 'https://tmap.life/search?keyword=' + encodeURIComponent(a);
+    var tmapEl = document.createElement('a');
+    tmapEl.href = tmapApp;
+    var fallbackTimer = setTimeout(function() { window.open(tmapWeb, '_blank'); }, 1500);
+    tmapEl.addEventListener('blur', function() { clearTimeout(fallbackTimer); });
+    document.body.appendChild(tmapEl);
+    tmapEl.click();
+    document.body.removeChild(tmapEl);
   }
 };
 
@@ -2109,7 +2129,12 @@ APP.report = {
       document.querySelectorAll('.rpt-page').forEach(function(p, i) { p.classList.toggle('on', i === page); });
       this._page = page;
       window.scrollTo({top:0, behavior:'smooth'});
-      if (page === 2) this.renderPreview();
+      if (page === 2) {
+        // ✅ UX패치 #8: DOM 페인트 완료 후 렌더링 (빈 화면 깜빡임 방지)
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() { APP.report.renderPreview(); });
+        });
+      }
     } catch(e) { console.error('[report.goPage]', e); }
   },
 
