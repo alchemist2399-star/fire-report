@@ -2808,6 +2808,7 @@ APP.report = {
     var managerEl = document.getElementById('f_manager');
     var duty    = dutyEl    ? (dutyEl.value    || '').trim() : '';
     var manager = managerEl ? (managerEl.value || '').trim() : '';
+    var rightText = '';
     if (duty)             rightText += '<b style="color:#1a3a6b;">당직:</b> ' + _ui.escHtml(duty);
     if (duty && manager) rightText += '&nbsp;&nbsp;&nbsp;';
     if (manager)          rightText += '<b style="color:#1a3a6b;">상황관리:</b> ' + _ui.escHtml(manager);
