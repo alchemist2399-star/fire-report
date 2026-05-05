@@ -1000,7 +1000,7 @@ window.addEventListener('unhandledrejection', function(e) {
   }
   console.error('[UnhandledRejection]', e.reason);
 });
-};
+
 
 /* ═══════════════════════════════════════════════════════════════════
    ② ENVIRONMENT — 브라우저 환경 감지
@@ -3347,7 +3347,6 @@ APP.usage = {
       el.style.border = '1px solid rgba(217,48,37,0.3)';
       el.innerHTML = '❌ localStorage 사용 불가: ' + String(e.message).slice(0,60) + '<br/>시크릿 모드 또는 브라우저 설정을 확인하세요.';
     }
-  }
   },
   // ✅ 코드품질 #14: clearAll을 APP.settings 네임스페이스 안으로 이동
   clearAll: function() {
