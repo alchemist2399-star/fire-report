@@ -440,7 +440,7 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:10
       <div id="cacheNotice" style="display:none;background:var(--purple-lt);border:1px solid rgba(124,58,237,0.2);border-radius:var(--r3);padding:8px 11px;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px;">
         ⚡ 동일 사진의 이전 분석 결과가 있습니다
         <div style="display:flex;gap:6px;margin-top:6px;">
-          <button onclick="APP.report.applyCached()" style="flex:1;padding:6px;border:none;border-radius:var(--r3);background:var(--purple);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚡ 캐시 결과 적용</button>
+          <button onclick="APP.report.applyCached()" style="flex:1;padding:6px;border:none;border-radius:var(--r3);background:var(--purple);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--font);">⚡ 이전 결과 바로 적용</button>
           <button onclick="APP.report.clearCache()" style="flex:1;padding:6px;border:1.5px solid rgba(124,58,237,0.3);border-radius:var(--r3);background:transparent;color:var(--purple);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">🔄 새로 분석</button>
         </div>
       </div>
@@ -1694,7 +1694,7 @@ APP.spell = {
       if (this._cache[text]) {
         if (corrEl) corrEl.textContent = this._cache[text];
         if (resultWrap) resultWrap.style.display = 'block';
-        _ui.toast('✅ 캐시에서 불러왔습니다'); return;
+        _ui.toast('✅ 이전 분석 결과를 불러왔습니다'); return;
       }
       var key = _apiKey.get();
       if (!key) { _ui.toast('설정에서 Gemini API Key를 입력해주세요'); return; }
@@ -2225,7 +2225,10 @@ APP.report = {
           var img = document.createElement('img'); img.className = 'thumb'; img.src = _blob.create(f); row.appendChild(img);
         });
       }
-      var btn = document.getElementById('rptAiBtn'); if (btn) btn.disabled = !this._scanPhotos.length;
+      if (btn) {
+        if (this._scanPhotos.length) this._setAiBtn('ready');
+        else this._setAiBtn('disabled');
+      }
       _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('cacheNotice');
 
       // ② 캐시 체크 — 동일 파일+모드 조합이면 캐시 알림
@@ -2318,6 +2321,28 @@ APP.report = {
       } catch(e) { resolve({dataUrl:null, origSize:file.size, newSize:file.size, resized:false}); }
     });
   },
+  // ✅ UX개선: AI 버튼 상태 통합 관리
+  _setAiBtn: function(state) {
+    var btn = document.getElementById('rptAiBtn');
+    if (!btn) return;
+    var S = {
+      ready:    { disabled: false, text: '🤖 AI 분석 시작',
+                  bg: 'var(--navy)', color: '#fff', cursor: 'pointer' },
+      running:  { disabled: true,  text: '⏳ 분석 중...',
+                  bg: '#555', color: '#fff', cursor: 'not-allowed' },
+      done:     { disabled: false, text: '✅ 분석 완료  ·  다시 분석하려면 누르세요',
+                  bg: 'var(--green)', color: '#fff', cursor: 'pointer' },
+      disabled: { disabled: true,  text: '🤖 AI 분석 시작',
+                  bg: 'var(--navy)', color: '#fff', cursor: 'not-allowed' },
+    };
+    var s = S[state] || S.disabled;
+    btn.disabled = s.disabled;
+    btn.textContent = s.text;
+    btn.style.background = s.bg;
+    btn.style.cursor = s.cursor;
+    btn.style.opacity = s.disabled && state !== 'done' ? '0.45' : '1';
+  },
+
   runAI: async function() {
     var btn  = document.getElementById('rptAiBtn');
     var prog = document.getElementById('rptProgress');
@@ -2334,11 +2359,12 @@ APP.report = {
         this._lastParsed = this._scanCache[cacheKey];
         this._applyAI(this._lastParsed);
         this._showScanResult(this._lastParsed, true);
-        _ui.toast('⚡ 캐시에서 즉시 적용됐습니다 (API 호출 없음)', 3000);
+        this._setAiBtn('done');
+        _ui.toast('⚡ 이전 분석 결과를 불러왔습니다', 3000);
         return;
       }
 
-      if (btn) btn.disabled = true;
+      if (btn) this._setAiBtn('running');
       _ui.hide('cacheNotice');
       if (prog) prog.style.display = 'block';
       _ui.hide('rptScanDone'); _ui.hide('rptScanResult');
@@ -2421,6 +2447,8 @@ APP.report = {
           self._applyAI(parsed);
           self._showScanResult(parsed, false);
           var filled = self._countFilled(parsed);
+          self._setAiBtn('done');
+          var filled = self._countFilled(parsed);
           _ui.toast('✅ 분석 완료 — ' + filled + '개 항목 추출됨', 3500);
         } catch(e2) { console.error('[runAI result cb]', e2); }
       }, 350);
@@ -2433,7 +2461,12 @@ APP.report = {
       _ui.toast('❌ ' + String(e.message).slice(0, 60), 5000);
       console.error('[report.runAI]', e);
     } finally {
-      if (btn) btn.disabled = !this._scanPhotos.length;
+      // 오류/취소 시 ready로 복원 (done 상태는 setTimeout에서 이미 설정)
+      // _scanDone 여부는 _lastParsed 존재로 판단
+      if (btn && !APP.report._lastParsed) {
+        if (APP.report._scanPhotos.length) APP.report._setAiBtn('ready');
+        else APP.report._setAiBtn('disabled');
+      }
     }
   },
 
@@ -2889,7 +2922,8 @@ APP.report = {
         ids.forEach(function(id) { var el=document.getElementById(id); if(el) el.innerHTML=''; });
         _ui.hide('rptScanResult'); _ui.hide('rptScanDone'); _ui.hide('aiFillBanner'); _ui.hide('cacheNotice');
         var mDz = document.getElementById('mapDropZone'); if(mDz) mDz.style.display='flex';
-        var aBtn = document.getElementById('rptAiBtn'); if(aBtn) aBtn.disabled=true;
+        var aBtn = document.getElementById('rptAiBtn');
+        if(aBtn) APP.report._setAiBtn('disabled');
         var fids = ['f_station','f_manager','f_duty','f_reportDate','f_callCount','f_datetime','f_distance','f_target','f_addr','f_summary','f_mainContent','f_casualty','f_damage','f_personnel','f_equipment','f_equipDetail'];
         fids.forEach(function(id){var el=document.getElementById(id);if(el){el.value=el.id==='f_station'?'서산소방서':'';el.classList.remove('ai-ok');}});
         ['lbl_datetime','lbl_target','lbl_addr','lbl_summary','lbl_mainContent','lbl_casualty','lbl_personnel'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
