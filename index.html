@@ -2240,6 +2240,7 @@ APP.report = {
           var img = document.createElement('img'); img.className = 'thumb'; img.src = _blob.create(f); row.appendChild(img);
         });
       }
+      var btn = document.getElementById('rptAiBtn');
       if (btn) {
         if (this._scanPhotos.length) this._setAiBtn('ready');
         else this._setAiBtn('disabled');
@@ -2253,7 +2254,7 @@ APP.report = {
           this._lastCacheKey = key;
           this._lastParsed = this._scanCache[key];
           _ui.show('cacheNotice');
-          if (btn) btn.disabled = false;
+          if (btn) this._setAiBtn('ready');
         }
       }
     } catch(e) { console.error('[report.handleFiles]', e); }
