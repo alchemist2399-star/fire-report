@@ -2898,7 +2898,9 @@ APP.report = {
   },
   _buildPhotoSection: function() {
     try {
+      var hasMap   = !!this._mapPhoto;
       var hasScene = Array.isArray(this._scenePhotos) && this._scenePhotos.length > 0;
+      if (!hasMap && !hasScene) return '';
       var H = 120, self = this;
       var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
       var out = '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">5. 위치도 및 현장사진</span></div>';
