@@ -2311,6 +2311,7 @@ APP.report = {
   },
   handleSceneFiles: function(files) {
     try {
+      if (!Array.isArray(this._scenePhotos)) this._scenePhotos = [];
       this._scenePhotos = this._scenePhotos.concat(Array.from(files || [])).slice(0, 6);
       this._renderSceneThumbs();
       _ui.toast('현장사진 ' + this._scenePhotos.length + '장 등록됨');
@@ -2877,12 +2878,13 @@ APP.report = {
       document.querySelectorAll('#tlList .tl-item').forEach(function(item) {
         var inputs = item.querySelectorAll('input');
         if (inputs.length < 2 || !inputs[1].value.trim()) return;
-        var t = inputs[0].value.trim().replace(/(\d{1,2}:\d{2}):\d{2}/,'$1').replace(/^\d{4}-/,'');
+        if (inputs.length < 2 || !inputs[1].value.trim()) return;
+        var t = inputs[0].value.trim()
+          .replace(/(\d{1,2}:\d{2}):\d{2}/,'$1')
+          .replace(/^\d{4}-\d{2}-\d{2}\s*/,'');
         items.push('<div style="font-size:39px;line-height:1.9;"><span style="color:#E8600A;font-family:monospace;font-weight:900;">【'+_ui.escHtml(t)+'】</span> '+_ui.escHtml(inputs[1].value.trim())+'</div>');
       });
       if (!items.length) return '';
-      if (!items.length) return '';
-      // ✅ 좌우 2열 배치: 홀수 항목은 왼쪽, 짝수는 오른쪽
       var rows = '';
       for (var i = 0; i < items.length; i += 2) {
         var left  = items[i];
@@ -2895,8 +2897,6 @@ APP.report = {
   },
   _buildPhotoSection: function() {
     try {
-      var hasMap = !!this._mapPhoto, hasScene = this._scenePhotos.length > 0;
-      var hasMap   = !!this._mapPhoto;
       var hasScene = Array.isArray(this._scenePhotos) && this._scenePhotos.length > 0;
       var H = 120, self = this;
       var safe = function(f) { return _ui.escHtml(_blob.create(f)); };
