@@ -2726,8 +2726,16 @@ APP.report = {
     try {
       var sub = function(lbl,val) { return val ? '<div style="font-size:32px;line-height:1.85;padding-left:8px;"><span style="color:#6B7280;">- '+_ui.escHtml(lbl)+' : </span>' + _ui.escHtml(val) + '</div>' : ''; };
       var perD='', agD='';
+      // ✅ 버그픽스 #7: 소방 vs 소방기관 분기 오류 수정
+      // 기존: /소방/.test(s) 는 "소방기관"도 매칭되어 분기 불안정
+      // 개선: 우선순위 — "소방기관" 먼저 체크 후 "소방" 단독 체크
       if (d.equipDetail) {
-        d.equipDetail.split('/').forEach(function(s){s=s.trim();if(/소방/.test(s))perD=s.replace(/^소방기관\s*:\s*|^소방\s*:\s*/,'').trim();else if(/유관기관/.test(s))agD=s.replace(/^유관기관\s*:\s*/,'').trim();});
+        d.equipDetail.split('/').forEach(function(s){
+          s = s.trim();
+          if (/소방기관/.test(s))      perD = s.replace(/^소방기관\s*:\s*/, '').trim();
+          else if (/^소방\s*:/.test(s)) perD = s.replace(/^소방\s*:\s*/, '').trim();
+          else if (/유관기관/.test(s))  agD  = s.replace(/^유관기관\s*:\s*/, '').trim();
+        });
       }
       return '<div style="margin-bottom:3px;"><span style="font-size:42px;font-weight:900;color:#1a3a6b;">3. 자원동원</span></div>' +
         '<div style="padding-left:4px;margin-bottom:8px;font-size:33px;">' + this._row('인 원',d.personnel) + this._row('장 비',d.equipment) + sub('소방기관',perD) + sub('유관기관',agD) + '</div>';
@@ -2825,7 +2833,7 @@ APP.report = {
           document.head.appendChild(s);
         });
       }
-      var canvas = await html2canvas(previewEl, {scale:2, useCORS:true, backgroundColor:'#ffffff', logging:false});
+      var canvas = await html2canvas(previewEl, {scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff', logging:false}); // ✅ 버그픽스 #5: Blob URL 이미지 렌더링 보장
       var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
       var now = new Date();
       var fname = now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_소방상황보고서.jpg';
@@ -2840,6 +2848,7 @@ APP.report = {
       try {
         self._scanPhotos=[]; self._mapPhoto=null; self._scenePhotos=[];
         self._lastParsed=null; self._lastCacheKey=null;
+        self._scanCache={};  // ✅ 버그픽스 #6: 메모리 누수 방지 — 캐시 전체 초기화
         _blob.revokeAll();
         var ids = ['rptThumbRow','rptScanResult','rptScanDone','mapThumbWrap','sceneThumbRow','aiFillBanner','cacheNotice'];
         ids.forEach(function(id) { var el=document.getElementById(id); if(el) el.innerHTML=''; });
